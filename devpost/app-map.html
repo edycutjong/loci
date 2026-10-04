@@ -37,7 +37,7 @@
 <body>
 <main>
   <h1>Loci — app map</h1>
-  <p class="snapshot">A snapshot of the code at commit <code>e7b39bc</code> (2026-10-05). The code can move on after this; the paths and names below were checked against that commit.</p>
+  <p class="snapshot">A snapshot of the code at commit <code>a203896</code> (2026-10-05, refreshed at shipping; first drawn at <code>e7b39bc</code>). The code can move on after this; the paths and names below were checked against that commit.</p>
 
   <p>Loci turns one photo of your own room into a memory palace for a list. It puts each item on a real object along one route, writes a short scene for each stop, and then tests you with the lights out: every item you remember turns its stop green and lights that part of the room again.</p>
 
@@ -91,7 +91,7 @@
   <h2>The route, stop by stop</h2>
   <ol class="route">
     <li><b><code>src/components/RecallPanel.tsx</code></b> — the answer form's <code>onSubmit</code> ignores an empty box, then calls <code>onAnswer(text)</code> and clears the box for the next stop. The input has autocorrect, autocapitalise and spellcheck off, so the phone keyboard can't change your answer.</li>
-    <li><b><code>src/screens/Palace.tsx</code></b> — <code>onAnswer</code> runs <code>const ok = isRight(text, askingStop.item)</code>, then <code>respond(ok, …)</code>. <code>respond()</code> moves the walk on with <code>answer(walk, ok, now)</code> from <code>src/lib/recall.ts</code> and hands it to <code>commit()</code>, which shows the feedback line and, after the last stop, calls <code>finish()</code> to compute and save the result. Spoken answers arrive through <code>onPhrase.current</code> and reach the same <code>commit()</code>.</li>
+    <li><b><code>src/screens/Palace.tsx</code></b> — <code>onAnswer</code> runs <code>const ok = isRight(text, askingStop.item)</code>, then <code>respond(ok, …)</code>. <code>respond()</code> moves the walk on with <code>answer(w, right, Date.now())</code> from <code>src/lib/recall.ts</code> and hands it to <code>commit()</code>, which shows the feedback line and, after the last stop, calls <code>finish()</code>. <code>finish()</code> works out the result, stores the walk on the device, and only then shows the result, so leaving right away never loses the score. Spoken answers arrive through <code>onPhrase.current</code> and reach the same <code>commit()</code>.</li>
     <li><b><code>shared/score.ts</code></b> — <code>normalize()</code> lowercases, strips accents, punctuation and a leading "1."; <code>closeEnough()</code> compares word by word: <code>distance()</code> (typing changes, a swap of neighbours counts once) must stay within <code>allowance(word length)</code> — 0 for up to 4 letters, 1 for 5–9, 2 for 10 or more — and within <code>MAX_TOTAL_TYPOS</code> (3) overall; words run together ("oatmilk") also match. <code>isRight()</code> tries the item and every accepted answer.</li>
   </ol>
   <p>Back on screen, <code>Palace.tsx</code> turns the walk into <code>pinStates</code> and <code>lit</code>; <code>src/components/Stage.tsx</code> draws <code>.pin[data-state="right"]</code> with a tick and opens that stop's <code>circle.pool</code> in the mask over the dark room.</p>
