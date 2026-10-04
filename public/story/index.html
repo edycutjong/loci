@@ -111,6 +111,8 @@ code, .code { font: 500 0.8125rem/1.4 var(--font-data); letter-spacing: 0; }
 .nav { display: flex; align-items: center; gap: 12px; min-height: 68px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; font: 650 1.5rem/1 var(--font-display); letter-spacing: -0.01em; border-radius: 10px; }
 .brand svg { width: 30px; height: 30px; }
+.brand { text-decoration: underline 1.5px transparent; text-underline-offset: 0.24em; transition: text-decoration-color 180ms var(--ease-out); }
+.brand:hover { text-decoration-color: var(--rule); }
 .links { display: flex; gap: 4px; margin: 0 12px 0 0; padding: 0; list-style: none; }
 .links a { display: block; padding: 10px 12px; border-radius: 10px; color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.9375rem; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
 .links a:hover { color: var(--ink); background: var(--night-800); }
@@ -346,6 +348,8 @@ h2 { margin: 18px 0 14px; max-width: 22ch; font: 640 clamp(2.1rem, 1.5rem + 2.4v
 .ver { font: 700 0.8125rem/1 var(--font-data); padding: 5px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--muted); text-decoration: none; }
 .ver:hover { border-color: var(--rule); color: var(--ink); }
 .credits { margin: 20px 0 0; max-width: 90ch; }
+.credits a { color: var(--muted); text-decoration-color: var(--night-600); transition: color 160ms var(--ease-out), text-decoration-color 160ms var(--ease-out); }
+.credits a:hover { color: var(--ink); text-decoration-color: currentColor; }
 
 /* One orchestrated load: the hero arrives in order. Content is visible by default; motion only adds. */
 @media (prefers-reduced-motion: no-preference) {
