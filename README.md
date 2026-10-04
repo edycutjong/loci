@@ -1,21 +1,68 @@
 <div align="center">
 
-<img src="docs/assets/icon.svg" width="72" height="72" alt="" />
+<img src="docs/assets/icon.svg" width="88" height="88" alt="Loci icon: a room with a dotted route through three stops, the last one lit green" />
 
-# Loci
+<h1>Loci</h1>
 
-**Your room is the memory palace.**
+<p><b>Your room is the memory palace.</b></p>
 
-Photograph your room, paste a list, and learn it along one route through real objects.<br />
-Then the lights go out, and every item you remember turns its stop back on.
-
-[**Open Loci**](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)) · [Story](https://loci.edycu.dev/story/) · [Pitch deck](https://loci.edycu.dev/deck/) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
+<p>Photograph your room, paste a list, and learn it along one route through real objects.<br />
+Then the lights go out, and every item you remember turns its stop back on.</p>
 
 <img src="docs/assets/readme-hero-animated.svg" width="100%" alt="Loci — your room as a memory palace. You say the item in the dark; its dim stop turns green and that part of your room lights up." />
 
+<br /><br />
+
+[![Open Loci](https://img.shields.io/badge/Open_Loci-loci.edycu.dev-eef1fa?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev)
+[![For judges](https://img.shields.io/badge/For_judges-30--second_path-eef1fa?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/judge/)
+[![Story](https://img.shields.io/badge/Story-the_night_room-b9c1dd?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/story/)
+[![Pitch deck](https://img.shields.io/badge/Pitch_deck-10_slides-b9c1dd?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/deck/)
+[![Devpost](https://img.shields.io/badge/Devpost-Build_With_AI%3A_Basics-8590b8?style=for-the-badge&labelColor=0e1534&logo=devpost&logoColor=white)](https://learn-ai-basics.devpost.com/)
+
+<br />
+
+[![CI](https://github.com/edycutjong/loci/actions/workflows/ci.yml/badge.svg)](https://github.com/edycutjong/loci/actions/workflows/ci.yml)
+[![gitleaks](https://github.com/edycutjong/loci/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/edycutjong/loci/actions/workflows/gitleaks.yml)
+[![Release](https://img.shields.io/github/v/release/edycutjong/loci?sort=semver&color=8590b8)](https://github.com/edycutjong/loci/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-eef1fa?style=flat)](LICENSE)
+<br />
+![React 19](https://img.shields.io/badge/React_19-20232a?style=flat&logo=react&logoColor=61DAFB)
+![TypeScript 7](https://img.shields.io/badge/TypeScript_7-3178C6?style=flat&logo=typescript&logoColor=white)
+![Vite 8](https://img.shields.io/badge/Vite_8-646CFF?style=flat&logo=vite&logoColor=white)
+![Vercel Functions](https://img.shields.io/badge/Vercel_Functions-000000?style=flat&logo=vercel&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini_Flash-1a73e8?style=flat&logo=googlegemini&logoColor=white)
+![DeepSeek](https://img.shields.io/badge/DeepSeek_Flash-4D6BFE?style=flat)
+![Vitest 5](https://img.shields.io/badge/Vitest_5-6E9F18?style=flat&logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright_1.63-2EAD33?style=flat)
+![fast-check](https://img.shields.io/badge/fast--check-60%2C000_cases-0e1534?style=flat)
+
 </div>
 
-## What it does
+---
+
+## 📸 See it in Action
+
+<div align="center">
+  <img src="docs/assets/loci-demo.gif" width="100%" alt="The Loci app: the example palace in a student's room. Learn walks stops 1 to 4 with a scene each; then the lights go out and each typed answer turns its stop green until the whole room is lit." />
+</div>
+
+<sub>The real app, recorded from the production build by <code>scripts/record-demo.mjs</code>: the one-tap example palace, four stops of Learn, then lights out and twelve answers until every stop is green. The answers are typed by the script, not recalled by a person.</sub>
+
+> **Try it in 30 seconds.** Open [Loci](https://loci.edycu.dev) → **Try it: 12 cranial nerves** → **Next stop** a few times → **Lights out** → type what you remember. The [judge page](https://loci.edycu.dev/judge/) walks you through it, with the answers.
+
+- **One tap:** on the home screen, **Try it: 12 cranial nerves** opens a palace prepared in advance in an AI-generated student room. No photo or AI call needed.
+- **Your own room:** choose a photo, paste a list, **Build my palace**. Building usually takes 10–30 seconds (finding objects, then writing scenes).
+- **Voice:** in Chrome or Edge, tap **Say it instead** once during recall and say the list. Other browsers type.
+
+If `loci.edycu.dev` doesn't open yet, the same app is at [devpost-learn-loci.vercel.app](https://devpost-learn-loci.vercel.app).
+
+## 💡 The Problem & Solution
+
+### The Problem
+
+Students have to learn ordered lists for exams: the 12 cranial nerves, the first 12 elements, the steps of a procedure. Most use flashcards, re-reading and first-letter sentences ("Oh Oh Oh To Touch And Feel…"), which hold the first letters but not the words. The memory palace works, but building one by hand takes a long time, so most people never try it.
+
+### The Solution
 
 Loci is the method of loci (the "memory palace") with your own room as the palace.
 
@@ -27,13 +74,14 @@ Loci is the method of loci (the "memory palace") with your own room as the palac
 
 Palaces stay on your device and are still there tomorrow.
 
-## Try it
+## 🏗️ Architecture & Tech Stack
 
-- **One tap:** on the home screen, **Try it: 12 cranial nerves** opens a palace prepared in advance in an AI-generated student room. No photo or AI call needed.
-- **Your own room:** choose a photo, paste a list, **Build my palace**. Building usually takes 10–30 seconds (finding objects, then writing scenes).
-- **Voice:** in Chrome or Edge, tap **Say it instead** once during recall and say the list. Other browsers type.
+<details>
+<summary><b>How it works</b>: the AI proposes, plain code decides, your device keeps the rest</summary>
 
-## How it works
+<br />
+
+<img src="docs/assets/how-it-works.png" width="100%" alt="Eight stations on one route. 1 Photo and list (your device). 2 Find objects (AI proposes, api/anchors.ts). 3 Choose the route (code decides, shared/route.ts). 4 Write scenes (AI proposes, api/scenes.ts). 5 Learn. 6 Lights out: say or type. 7 Check the answer (code decides, shared/score.ts). 8 The stop turns green; palaces stay in the browser." />
 
 | Step | Where | What decides |
 |---|---|---|
@@ -49,42 +97,142 @@ Palaces stay on your device and are still there tomorrow.
 
 **Voice** uses the same checker on each of the browser's guesses, plus a sound-alike key ("truck lear" = "trochlear"). You can say two items in one breath, say "skip" or "pass", or jump ahead. A phrase that matches nothing in your list counts as "didn't catch that" and costs nothing. What the browser heard is always shown.
 
-## Privacy
+**Every AI answer is checked before anything uses it** (`shared/validate.ts`): malformed boxes and empty scenes are dropped, never repaired, and the server helpers report which model answered, which ones they passed over and why, and the tokens each used.
 
-Your photo is sent once to an AI (Google Gemini, or DeepSeek if Gemini is busy) to find objects. The server does not store it. Writing scenes uses only object names and your list. Your palaces and results stay in your own browser. Leave people and private papers out of the photo.
+</details>
 
-## Run it locally
+| Layer | Technology |
+|---|---|
+| App | Vite 8, React 19, TypeScript 7 (strict); self-hosted Piazzolla and Atkinson Hyperlegible fonts; Lucide icons |
+| Server | Two Vercel Functions, `api/anchors.ts` and `api/scenes.ts`, using plain `fetch` (no AI SDK) |
+| AI | Objects: `gemini-3.8-flash` → `gemini-3.5-flash` → `gemini-3.1-flash-lite` → `deepseek-flash`. Scenes: `deepseek-flash` → Gemini |
+| Decisions | Plain TypeScript in `shared/`: list parser, route, answer checker, voice interpreter, validation |
+| On the device | IndexedDB through idb-keyval; Web Speech API for voice |
+| Tests | Vitest 5, fast-check, Playwright 1.63 |
 
-Needs Node 22 or newer.
+**Privacy.** Your photo is sent once to an AI (Google Gemini, or DeepSeek if Gemini is busy) to find objects. The server does not store it. Writing scenes uses only object names and your list. Your palaces and results stay in your own browser. Leave people and private papers out of the photo.
+
+## 🏆 Devpost Learn Skill Pack Integration
+
+The project was planned and built with the [Devpost Learn skill pack](https://github.com/challengepost/learn-ai-basics), `1-start` to `5-build`. The planning documents are in [`devpost/`](devpost):
+
+| Document | What it holds |
+|---|---|
+| [`scope.md`](devpost/scope.md) | the idea cut down to a proof of concept: who it's for, the core loop, what "working" looks like |
+| [`prd.md`](devpost/prd.md) | every screen, behaviour, state and edge case |
+| [`spec.md`](devpost/spec.md) | the technical blueprint: stack, components, the answer checker's rules, failure modes |
+| [`checklist.md`](devpost/checklist.md) | the build log: eight slices, each verified and committed, the hands-on checks and every revision |
+| [`app-map.html`](devpost/app-map.html) | a map of the finished code, from a typed answer to a green pin |
+
+The learner asked the agent to answer the skills' interview questions from their own planning notes; those answers are marked in each document.
+
+## 📊 Engineering Rigor
+
+A real run on the live site with nothing stubbed, and the checks that run on every push. Full record: [DEMO.md](DEMO.md) · one page for judges: [JUDGE.md](JUDGE.md).
+
+| What | Result | Proof |
+|---|---|---|
+| Palaces built on the live site from 3 AI-generated rooms × 3 lists | **9 / 9** | [`receipt-2026-10-04.json`](public/judge/receipt-2026-10-04.json) |
+| Stops placed by code, on the objects the AI found | **102** on 142 | [DEMO.md](DEMO.md) |
+| Scenes that spell their item exactly | **102 / 102** | [DEMO.md](DEMO.md) |
+| Wait from "Build my palace" to the first scene | median **14.45 s**, slowest 30.02 s | [DEMO.md](DEMO.md) |
+| Cost of all nine palaces | **$0.1151** at list prices, **$0.0115** billed | [DEMO.md](DEMO.md#tokens-and-cost) |
+| Unit tests | **97** | [`tests/`](tests) |
+| Generated answers on the checker, per run | **60,000** | [`tests/score.property.test.ts`](tests/score.property.test.ts) |
+| Browser checks, AI and microphone stubbed | **28** | [`e2e/`](e2e) |
+| Live checks with the real AI | **7** | [`e2e/live/`](e2e/live) |
+
+### Regression tests named after their bugs (8)
+
+Each one pins a real defect found while planning and building ([build log](devpost/checklist.md)):
+
+1. One typo allowance for the whole answer let "Vitamin D" pass for "Vitamin C"; typos now count per word. `tests/regressions.test.ts`
+2. The first sound key split "hippo glossal" from "hypoglossal" and nearly joined Hydrogen and Nitrogen. `tests/regressions.test.ts`
+3. With only a rule, DeepSeek dropped the item's exact spelling in 8 of 12 sound-alike scenes; the prompt now shows a worked example. `tests/regressions.test.ts`
+4. A scenes call ran out of its time budget; a model that times out now hands over to the next one inside the same budget. `tests/regressions.test.ts`
+5. The disabled Build button's label measured about 1.3:1 at 45% opacity; disabled controls use readable colours, never opacity. `tests/regressions.test.ts`
+6. The Recall tab did nothing on the result screen; every way back into the dark now starts a fresh walk. `e2e/regressions.spec.ts`
+7. A thin lit sliver showed at the photo's edge in recall on phones; the night now overhangs the photo. `e2e/regressions.spec.ts`
+8. The zoomed room looked soft because `will-change` kept the photo painted small; the camera never sets it. `e2e/regressions.spec.ts`
+
+### Checked, not promised
+
+- **No wrong answer turns a stop green.** Six properties over 60,000 generated answers per run: right answers typed sloppily (case, accents, spacing, punctuation, numbering, one typo in a long word) always count; a short word one letter off, one change too many, more than 3 changes, or an answer with no letters never count. Each case is built so its verdict is known without asking the checker.
+- **Keys never reach the browser.** `tests/keys.test.ts` builds the client with canary keys set and fails if any emitted file holds a key, a provider's address or a key header. `e2e/judge.spec.ts` follows the 30-second path and fails if the browser sends any request off the site.
+- **The judge's path works.** `e2e/judge.spec.ts` opens `/judge/` with no cookies or saved state, checks its numbers against the receipt, and follows its 30-second path through the app.
+
+### Honest limits (5)
+
+1. **Recall in one sitting, nothing more.** Loci shows a first-try score, learning time and recall time. It makes no claim about next week and has no spaced repetition.
+2. **The receipt's rooms are AI-generated.** Real rooms are messier. When free-tier Gemini quotas run out, objects come from `gemini-3.1-flash-lite`, which draws looser boxes.
+3. **Voice is Chrome and Edge only.** It uses the browser's own speech recognition. Automated Chrome can't open a microphone, so voice is tested with a stand-in recognizer; typing works everywhere.
+4. **Your photo goes to an AI once.** A free-tier Gemini key lets Google use what it receives, so leave people and papers out.
+5. **The two server helpers have no rate limit.** Heavy use by one person would spend the AI budget; a proof of concept for a handful of testers doesn't need one yet.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node 22 or newer, and npm
+- Optional: a Gemini and/or DeepSeek API key, only for building palaces from new photos on your own machine
+
+### Installation
 
 ```sh
-npm install
+npm ci
 cp .env.example .env.local   # add GEMINI_API_KEY and/or DEEPSEEK_API_KEY
-npm run dev                  # http://localhost:5174 (also serves /api/anchors, /api/scenes, /story/ and /deck/)
+npm run dev                  # http://localhost:5174 (also serves /api/anchors, /api/scenes, /story/, /deck/ and /judge/)
 ```
 
 `npm run examples` rebuilds the prepared example palaces from the real helpers (dev server running). `npm run demo` records the demo clip of the real app with Playwright and converts it with ffmpeg (preview server running).
 
-## Tests
+## 🧪 Testing & CI
 
-- `npm test`: 81 unit tests (Vitest) for the list parser, route, camera, answer checker, voice interpreter, recall walk, model-answer checks, storage, colour contrast and the prepared examples.
-- `npm run e2e`: 22 browser checks (Playwright) against the production build, with the AI helpers and the microphone stubbed, so no keys are needed. They cover typed and spoken recall, retries, saved palaces, examples, failure states, reduced motion and narrow phones (320–390 px), plus the story page, the pitch deck and the 404 page.
-- `LIVE=1 BASE_URL=http://localhost:5174 npx playwright test`: 7 checks that use the real AI (also run against the live site): your own photo, learning, and two hands-on passes (typos, a skip, a retry, keyboard only, odd inputs, a reload, delete).
-- `npm run build`: type-check and production build.
+```sh
+npm run typecheck   # tsc -b, strict
+npm test            # 97 unit tests, including 60,000 generated answers and the no-key build check
+npm run e2e         # 28 browser checks on the production build, AI helpers and microphone stubbed
+npm run receipt     # the real run: 9 palaces on the live site, nothing stubbed (needs no key)
+LIVE=1 BASE_URL=http://localhost:5174 npx playwright test   # 7 checks with the real AI
+```
 
-## Built with the Devpost Learn skill pack
+| Workflow | What it runs | When |
+|---|---|---|
+| [CI](.github/workflows/ci.yml) | `npm ci` → typecheck → unit tests → production build on Node 22 and 24, then the browser checks on `vite preview` with the AI stubbed | every push and pull request |
+| [gitleaks](.github/workflows/gitleaks.yml) | a secret scan of the whole git history with a pinned, checksum-verified gitleaks | every push and pull request, and weekly |
+| [Dependabot](.github/dependabot.yml) | npm and GitHub Actions updates, grouped, no major versions | monthly |
 
-The project was planned and built with the [Devpost Learn skill pack](https://github.com/challengepost/learn-ai-basics) (`1-start` to `5-build`). The planning documents are in [`devpost/`](devpost): [scope](devpost/scope.md), [PRD](devpost/prd.md), [technical spec](devpost/spec.md), and the [build checklist](devpost/checklist.md) with every step, check and revision. The learner asked the agent to answer the skills' interview questions from their own planning notes; those answers are marked in each document.
+The tests are a separate, deterministic replay: they stub the AI so they need no key, and they never stand in for the product. The product's own numbers come from `npm run receipt` against the live site ([DEMO.md](DEMO.md)).
 
-## Stack
+## 📁 Project Structure
 
-Vite 8, React 19, TypeScript 7 · two Vercel functions using plain `fetch` (no AI SDK) · idb-keyval · Web Speech API · Vitest 5 · Playwright 1.63.
+```
+api/          the two Vercel Functions: anchors.ts (find objects), scenes.ts (write scenes)
+shared/       code that decides: route, answer checker, voice interpreter, list parser, validation, model ladder
+src/          the React app: screens, the stage, recall and result panels, on-device storage
+public/       example rooms, fonts, media, and the story, deck, judge and 404 pages
+tests/        unit, regression, property and no-key tests (Vitest)
+e2e/          browser checks (Playwright); e2e/live/ uses the real AI
+scripts/      receipt.mjs (the real run), prebuild-examples.mjs, record-demo.mjs
+devpost/      the skill pack's planning documents and build log
+DEMO.md       the real run, with receipts
+JUDGE.md      one page for judges
+```
 
-## Credits
+## 📽️ Demo Materials
 
+- **App:** [loci.edycu.dev](https://loci.edycu.dev) (mirror: [devpost-learn-loci.vercel.app](https://devpost-learn-loci.vercel.app))
+- **For judges:** [/judge/](https://loci.edycu.dev/judge/) and [JUDGE.md](JUDGE.md)
+- **Story page and pitch deck:** [/story/](https://loci.edycu.dev/story/) · [/deck/](https://loci.edycu.dev/deck/)
+- **The real run:** [DEMO.md](DEMO.md), raw answers in [`public/judge/receipt-2026-10-04.json`](public/judge/receipt-2026-10-04.json)
+- **The demo clip:** the GIF above; full quality at [/media/loci-walk.mp4](https://loci.edycu.dev/media/loci-walk.mp4)
+
+## 📄 License
+
+[MIT](LICENSE) © 2026 Edy Cu
+
+## 🙏 Acknowledgments
+
+- Built for [Build With AI: Basics](https://learn-ai-basics.devpost.com/) (Devpost Learn), with the [Devpost Learn skill pack](https://github.com/challengepost/learn-ai-basics).
 - The three example rooms are AI-generated images (labelled in the app). Their generation prompts are embedded in the files.
 - Fonts: [Piazzolla](https://fonts.google.com/specimen/Piazzolla), [Atkinson Hyperlegible Next](https://fonts.google.com/specimen/Atkinson+Hyperlegible+Next) and [Atkinson Hyperlegible Mono](https://fonts.google.com/specimen/Atkinson+Hyperlegible+Mono) (SIL Open Font License). Icons: [Lucide](https://lucide.dev) (ISC).
-
-## License
-
-[MIT](LICENSE)
