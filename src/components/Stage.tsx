@@ -93,6 +93,9 @@ export function Stage(props: Props) {
   const ready = frame.w > 0;
 
   const centres = stops.map((s) => boxCentre(s.box, width, height));
+  // The night overhangs the photo and the camera clips both together: at fractional sizes the photo's edge pixel
+  // could paint past the SVG's, which left a thin lit sliver at the frame edge in recall on phones.
+  const bleed = Math.max(width, height) * 0.01;
   const offscreen = (i: number) => {
     const x = centres[i].x * cam.scale + cam.tx;
     const y = centres[i].y * cam.scale + cam.ty;
@@ -138,8 +141,8 @@ export function Stage(props: Props) {
               <stop offset="55%" stopColor="#000" stopOpacity="1" />
               <stop offset="100%" stopColor="#000" stopOpacity="0" />
             </radialGradient>
-            <mask id={`${uid}-lights`} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
-              <rect width={width} height={height} fill="#fff" />
+            <mask id={`${uid}-lights`} maskUnits="userSpaceOnUse" x={-bleed} y={-bleed} width={width + 2 * bleed} height={height + 2 * bleed}>
+              <rect x={-bleed} y={-bleed} width={width + 2 * bleed} height={height + 2 * bleed} fill="#fff" />
               {stops.map((s, i) => {
                 const c = centres[i];
                 const r = Math.max(((s.box[3] - s.box[1]) / 1000) * width, ((s.box[2] - s.box[0]) / 1000) * height) * 0.62 + Math.hypot(width, height) * 0.03;
@@ -147,7 +150,7 @@ export function Stage(props: Props) {
               })}
             </mask>
           </defs>
-          <rect className="night" width={width} height={height} mask={`url(#${uid}-lights)`} />
+          <rect className="night" x={-bleed} y={-bleed} width={width + 2 * bleed} height={height + 2 * bleed} mask={`url(#${uid}-lights)`} />
           {centres.slice(1).map((c, i) => {
             const from = centres[i];
             const d = `M${from.x} ${from.y}L${c.x} ${c.y}`;

@@ -657,6 +657,8 @@ textarea {
   top: 0;
   transform-origin: 0 0;
   transform: translate(var(--tx), var(--ty)) scale(var(--z));
+  /* Photo and night are clipped by the same edge, so the overhanging night always covers the photo's last pixel. */
+  overflow: hidden;
   /* No will-change here: it makes the browser keep the photo painted at its unzoomed size and stretch it when the
      camera zooms in. Without it the photo is repainted from the full-resolution source at the zoom it lands on. */
 }
