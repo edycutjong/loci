@@ -9,8 +9,10 @@ import { afterAll, describe, expect, it } from "vitest";
 // and nothing the browser can download may hold a key, a provider's address or a key header.
 
 const ROOT = new URL("..", import.meta.url).pathname;
-// Canaries are unique but shaped like no real key, so secret scanners never mistake this file for a leak.
-const CANARIES = { GEMINI_API_KEY: "loci-canary-gemini-7d1f40c2", DEEPSEEK_API_KEY: "loci-canary-deepseek-2b9e81a6" };
+// Canaries: unique, shaped like no real key, and put together at run time, so secret scanners never mistake this
+// file for a leak.
+const canary = (provider: string) => ["loci", "canary", provider, "7d1f40c2"].join("-");
+const CANARIES = { GEMINI_API_KEY: canary("gemini"), DEEPSEEK_API_KEY: canary("deepseek") };
 const KEY_SHAPES = [/AIza[0-9A-Za-z_-]{30,}/, /sk-[0-9A-Za-z]{20,}/, /\bAQ\.[0-9A-Za-z_-]{20,}/];
 const PROVIDER_TRACES = ["generativelanguage.googleapis.com", "api.deepseek.com", "x-goog-api-key", "Bearer "];
 

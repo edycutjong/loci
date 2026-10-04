@@ -1,0 +1,3 @@
+# Not a secret: a made-up canary value in tests/keys.test.ts (commit 31bb145), which checks that no key reaches the
+# browser build. The test now builds its canaries at run time, so newer commits don't trip the generic-api-key rule.
+31bb145837ca9f0042cb0fb58fcefce922a7de37:tests/keys.test.ts:generic-api-key:13
