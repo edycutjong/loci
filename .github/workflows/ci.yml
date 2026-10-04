@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: typecheck · unit tests · build (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24] # the README's minimum, and the version Vercel runs
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck (tsc -b, strict)
+        run: npm run typecheck
+
+      # The answer checker, route, voice, storage, the model ladder, the regressions, 60,000 generated answers,
+      # and the no-key check that builds the client with canary keys set. No network, no keys.
+      - name: Unit tests (Vitest)
+        run: npm test
+
+      - name: Production build (what Vercel runs)
+        run: npm run build
+
+  browser:
+    name: browser checks (AI and microphone stubbed)
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Every spec stubs /api/anchors, /api/scenes and the browser's speech recognition, so no AI provider is called.
+      # The checks against the real AI (e2e/live/) need keys and are run by hand: LIVE=1 BASE_URL=… npx playwright test
+      - name: Browser checks on the production build (vite preview)
+        run: npm run e2e
+
+      - name: Keep the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
