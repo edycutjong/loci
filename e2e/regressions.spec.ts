@@ -39,13 +39,23 @@ test.describe("on a phone with a fractional pixel ratio", () => {
     await page.getByRole("button", { name: "Recall, lights out" }).click();
     await expect(page.locator(".palace .stage")).toHaveAttribute("data-mode", "recall");
 
-    const photo = (await page.locator(".palace .camera > img").boundingBox())!;
-    const night = (await page.locator(".palace .camera rect.night").boundingBox())!;
-    expect(night.x).toBeLessThan(photo.x);
-    expect(night.y).toBeLessThan(photo.y);
-    expect(night.x + night.width).toBeGreaterThan(photo.x + photo.width);
-    expect(night.y + night.height).toBeGreaterThan(photo.y + photo.height);
-    const overflow = await page.locator(".palace .camera").evaluate((camera) => [getComputedStyle(camera).overflow, getComputedStyle(camera.querySelector("svg")!).overflow]);
+    // Both boxes in one synchronous read: the camera may still be gliding out of Learn's zoom, and photo and night
+    // move together inside it, so they must be measured in the same frame.
+    const { photo, night, overflow } = await page.locator(".palace .camera").evaluate((camera) => {
+      const box = (el: Element) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      };
+      return {
+        photo: box(camera.querySelector(":scope > img")!),
+        night: box(camera.querySelector("rect.night")!),
+        overflow: [getComputedStyle(camera).overflow, getComputedStyle(camera.querySelector("svg")!).overflow],
+      };
+    });
+    expect(night.left).toBeLessThan(photo.left);
+    expect(night.top).toBeLessThan(photo.top);
+    expect(night.right).toBeGreaterThan(photo.right);
+    expect(night.bottom).toBeGreaterThan(photo.bottom);
     expect(overflow).toEqual(["hidden", "visible"]);
   });
 });
