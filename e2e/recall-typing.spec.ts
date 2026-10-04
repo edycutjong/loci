@@ -45,4 +45,7 @@ test("skipping counts as a miss, and the right answer is never shown after a mis
   await typeAnswer(page, "oculomotor");
   await expect(page.locator(".result-title")).toHaveText("You remembered 1 of 3 on the first try.");
   await expect(page.getByRole("button", { name: "Retry the 2 missed stops" })).toBeVisible();
+  // From the result, the Recall tab starts a fresh walk.
+  await page.getByRole("button", { name: "Recall, lights out" }).click();
+  await expect(page.locator(".recall .scene-count")).toHaveText(" · stop 1 of 3");
 });

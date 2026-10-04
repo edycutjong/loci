@@ -97,6 +97,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
 
 ## Final Review
 
+- [x] From the result screen, the "Recall, lights out" tab starts a fresh walk (it did nothing before) — fixed, browser check added, retried on the live site
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

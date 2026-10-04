@@ -325,7 +325,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
               <button type="button" className="mode" aria-pressed={mode === "learn"} onClick={() => mode !== "learn" && toLearn()}>
                 Learn
               </button>
-              <button type="button" className="mode" aria-pressed={mode !== "learn"} onClick={() => mode === "learn" && startRecall()}>
+              <button type="button" className="mode" aria-pressed={mode !== "learn"} onClick={() => mode !== "recall" && startRecall()}>
                 Recall, lights out
               </button>
             </div>
