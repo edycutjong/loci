@@ -121,9 +121,10 @@ textarea {
 .btn:active:not(:disabled) {
   transform: translateY(1px);
 }
+/* Disabled stays readable (the reason sits beside it); it just stops looking pressable. */
 .btn:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
+  box-shadow: none;
 }
 .btn svg {
   flex: none;
@@ -137,6 +138,16 @@ textarea {
 .btn-primary:hover:not(:disabled) {
   background: #ffffff;
   box-shadow: var(--shadow-lift);
+}
+.btn-primary:disabled {
+  background: var(--night-700);
+  border-color: var(--night-600);
+  color: var(--moon-300);
+}
+.btn-quiet:disabled,
+.btn-text:disabled {
+  color: var(--moon-500);
+  border-color: var(--night-600);
 }
 
 .btn-quiet {
@@ -181,7 +192,9 @@ textarea {
   border-color: var(--moon-300);
 }
 .icon-btn:disabled {
-  opacity: 0.4;
+  color: var(--moon-500);
+  border-color: var(--night-600);
+  background: transparent;
   cursor: not-allowed;
 }
 

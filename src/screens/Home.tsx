@@ -13,7 +13,21 @@ import { EXAMPLE_LISTS } from "../examples/lists";
 
 export function Home() {
   const [room, setRoom] = useState<RoomChoice | null>(null);
-  const [text, setText] = useState("");
+  // The list you're typing survives a trip to the palace screen and back (this tab only).
+  const [text, setText] = useState(() => {
+    try {
+      return sessionStorage.getItem("loci:list") ?? "";
+    } catch {
+      return "";
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("loci:list", text);
+    } catch {
+      // private mode: nothing to keep
+    }
+  }, [text]);
   const parsed = useMemo(() => parseList(text), [text]);
   const [palaces, setPalaces] = useState<Loaded[]>([]);
 

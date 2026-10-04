@@ -69,7 +69,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: On the home screen tap an example room and an example list, build, and walk the palace without any photo of your own.
   Commit: `feat: example rooms and lists ready in seconds`
 
-- [ ] **7. Honest failure states, accessibility and finish**
+- [x] **7. Honest failure states, accessibility and finish**
   Becomes usable: Too few spots → shorten the list or try another photo; AI unreachable → try again repeats only the failed step; unreadable photo → plain message; reduced motion; full keyboard use; checked contrast; phone and laptop layouts; favicon and social card.
   Why now: The proof of concept must not break in front of someone, and every state now has a real screen to attach to.
   PRD ref: `prd.md > States and Boundaries`, `prd.md > Look and Feel`
@@ -118,3 +118,5 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - The scene prompt now shows one worked example ("…honking 'Trochlear!'…"): with only a rule, DeepSeek dropped the exact item in 8 of 12 scenes when it used a sound-alike. The example script also re-asks up to 3 times until every scene names its item (all 9 prepared sets: every item named).
 - Free-tier Gemini quotas ran out during the build day (`gemini-3.8-flash` then `gemini-3.5-flash` returned 429 on every key), so the example objects come from `gemini-3.1-flash-lite`, checked by eye on all three rooms; the scene ladder gained `gemini-3.5-flash` and a 45 s budget after one scenes call ran out of time.
 - Home gained the hero the spec's first-viewport plan asked for: the student room's route demonstrating lights out and the room coming back, with a one-tap example.
+- "Too few spots" keeps the objects already found, so "Use the first N items" re-plans instantly with no new AI call; "Try another photo" keeps the typed list for the tab.
+- Disabled buttons use readable colours instead of 45% opacity — impeccable's detector measured the disabled Build label at about 1.3:1. Detector clean afterwards at 390 and 1280 px.

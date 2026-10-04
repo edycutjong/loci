@@ -249,7 +249,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
   const stop = palace?.stops[current];
   const askingStop = palace && asking !== null ? palace.stops[asking] : null;
   // The object's name floats beside its pin only while the room is lit; in recall the heading names it.
-  const labelIndex = learning ? current : null;
+  const labelIndex = learning && !overview ? current : null;
 
   return (
     <>
@@ -310,7 +310,16 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
           )}
         </div>
         <section className="panel">
-          {!palace && <BuildProgress phase={build.phase} stops={total} items={job?.items.length ?? 0} onRetry={build.retry} />}
+          {!palace && (
+            <BuildProgress
+              phase={build.phase}
+              stops={total}
+              items={build.items.length}
+              onRetry={build.retry}
+              onShorten={(n) => build.shorten(n)}
+              onNewPhoto={() => go("/")}
+            />
+          )}
           {palace && (
             <div className="modes" role="group" aria-label="Mode">
               <button type="button" className="mode" aria-pressed={mode === "learn"} onClick={() => mode !== "learn" && toLearn()}>
@@ -382,7 +391,9 @@ function pinLabel(i: number, total: number, object: string, state: PinState | un
   return base;
 }
 
-function BuildProgress({ phase, stops, items, onRetry }: { phase: BuildPhase; stops: number; items: number; onRetry: () => void }) {
+type ProgressProps = { phase: BuildPhase; stops: number; items: number; onRetry: () => void; onShorten: (n: number) => void; onNewPhoto: () => void };
+
+function BuildProgress({ phase, stops, items, onRetry, onShorten, onNewPhoto }: ProgressProps) {
   const findState = phase.name === "finding" ? "active" : phase.name === "too-few" || (phase.name === "failed" && phase.step === "finding") ? "waiting" : "done";
   const writeState = phase.name === "writing" ? "active" : phase.name === "done" ? "done" : "waiting";
   const steps = [
@@ -408,6 +419,16 @@ function BuildProgress({ phase, stops, items, onRetry }: { phase: BuildPhase; st
             Found {phase.available} good spots for {items} items.
           </h2>
           <p>Two items never share one object. Shorten the list, or try a photo with more different things in it.</p>
+          <div className="actions">
+            {phase.available >= 3 && (
+              <button type="button" className="btn btn-primary" onClick={() => onShorten(phase.available)}>
+                Use the first {phase.available} items
+              </button>
+            )}
+            <button type="button" className="btn btn-quiet" onClick={onNewPhoto}>
+              Try another photo
+            </button>
+          </div>
         </div>
       )}
       {phase.name === "failed" && (

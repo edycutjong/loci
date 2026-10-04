@@ -1,5 +1,6 @@
 // The palace builder: objects → route → scenes, with progress, and a retry that repeats only the step that failed.
 import { useEffect, useState } from "react";
+import { listTitle } from "../../shared/list";
 import { planRoute } from "../../shared/route";
 import type { Anchor, Palace, Scene } from "../../shared/types";
 import { ApiError, findAnchors, writeScenes } from "./api";
@@ -59,24 +60,22 @@ export function assemble(job: BuildJob, route: Anchor[], scenes: Scene[], size: 
 
 export function usePalaceBuild(job: BuildJob | null, onDone: (palace: Palace) => void, sources: { anchors: AnchorSource; scenes: SceneSource }) {
   const [phase, setPhase] = useState<BuildPhase>({ name: "finding" });
+  const [found, setFound] = useState<{ anchors: Anchor[]; model: string; size: PhotoSize } | null>(null);
   const [route, setRoute] = useState<Anchor[]>([]);
-  const [found, setFound] = useState<{ model: string; size: PhotoSize } | null>(null);
+  const [limit, setLimit] = useState<number | null>(null);
   const [tries, setTries] = useState({ finding: 0, writing: 0 });
 
-  // Step 1: find objects and lay the route.
+  // The list as built: all items, or the first `limit` when the photo has fewer good spots.
+  const items = job ? (limit === null ? job.items : job.items.slice(0, limit)) : [];
+  const built: BuildJob | null = job && limit !== null ? { ...job, items, title: job.exampleListId ? job.title : listTitle(items) } : job;
+
+  // Step 1: find objects in the photo (or take the example's).
   useEffect(() => {
     if (!job) return;
     let live = true;
     setPhase({ name: "finding" });
     once(`anchors:${job.id}:${tries.finding}`, () => sources.anchors(job))
-      .then(({ anchors, model, size }) => {
-        if (!live) return;
-        const plan = planRoute(anchors, job.items.length, size.width, size.height);
-        if (plan.available < job.items.length) return setPhase({ name: "too-few", available: plan.available });
-        setFound({ model, size });
-        setRoute(plan.stops);
-        setPhase({ name: "writing" });
-      })
+      .then((answer) => live && setFound(answer))
       .catch((err) => live && setPhase({ name: "failed", step: "finding", message: message(err, "Something went wrong while reading your photo.") }));
     return () => {
       live = false;
@@ -85,28 +84,45 @@ export function usePalaceBuild(job: BuildJob | null, onDone: (palace: Palace) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job, tries.finding]);
 
+  // Step 1b: choose the stops and lay the route (plain code, instant). Shortening the list re-plans without asking the AI again.
+  useEffect(() => {
+    if (!job || !found) return;
+    const plan = planRoute(found.anchors, items.length, found.size.width, found.size.height);
+    if (plan.available < items.length) {
+      setRoute([]);
+      setPhase({ name: "too-few", available: plan.available });
+      return;
+    }
+    setRoute(plan.stops);
+    setPhase({ name: "writing" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [job, found, limit]);
+
   // Step 2: write a scene for each stop.
   useEffect(() => {
-    if (!job || !found || route.length === 0) return;
+    if (!built || !found || route.length === 0 || route.length !== items.length) return;
     let live = true;
     setPhase({ name: "writing" });
-    once(`scenes:${job.id}:${tries.writing}:${tries.finding}`, () => sources.scenes(job, route))
+    once(`scenes:${job!.id}:${tries.writing}:${tries.finding}:${route.length}`, () => sources.scenes(built, route))
       .then(({ scenes, model, prepared }) => {
         if (!live) return;
         setPhase({ name: "done" });
-        onDone(assemble(job, route, scenes, found.size, { anchors: found.model, scenes: model, prepared }));
+        onDone(assemble(built, route, scenes, found.size, { anchors: found.model, scenes: model, prepared }));
       })
       .catch((err) => live && setPhase({ name: "failed", step: "writing", message: message(err, "Something went wrong while writing your scenes.") }));
     return () => {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [job, found, route, tries.writing]);
+  }, [found, route, tries.writing]);
 
   const retry = () => {
     if (phase.name !== "failed") return;
     setTries((t) => (phase.step === "finding" ? { ...t, finding: t.finding + 1 } : { ...t, writing: t.writing + 1 }));
   };
 
-  return { phase, route, size: found?.size ?? null, retry };
+  /** Keep only as many items as the photo has good spots for. */
+  const shorten = (count: number) => setLimit(Math.max(1, count));
+
+  return { phase, route, size: found?.size ?? null, retry, shorten, items };
 }

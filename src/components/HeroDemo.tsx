@@ -37,14 +37,17 @@ export function HeroDemo() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !visible || total === 0) return;
+    if (reduced || !visible || total === 0 || new URLSearchParams(window.location.search).has("still")) return;
     const id = window.setInterval(() => setTick((t) => (t + 1) % loop), TICK_MS);
     return () => window.clearInterval(id);
   }, [reduced, visible, total, loop]);
 
   if (!prepared) return null;
-  const lightsOn = !reduced && tick < LIGHTS_ON_TICKS;
-  const litCount = reduced ? total : Math.max(0, Math.min(total, tick - LIGHTS_ON_TICKS - 1));
+  // "?still=7" freezes the demo with 7 stops lit (for screenshots and video frames).
+  const still = Number(new URLSearchParams(window.location.search).get("still"));
+  const frozen = Number.isInteger(still) && still > 0 ? Math.min(total, still) : null;
+  const lightsOn = frozen === null && !reduced && tick < LIGHTS_ON_TICKS;
+  const litCount = frozen ?? (reduced ? total : Math.max(0, Math.min(total, tick - LIGHTS_ON_TICKS - 1)));
   const mode: StageMode = lightsOn ? "learn" : litCount >= total ? "result" : "recall";
   const states: PinState[] = prepared.anchors.map((_, i) => (lightsOn ? "plain" : i < litCount ? "right" : i === litCount ? "current" : "ahead"));
 
