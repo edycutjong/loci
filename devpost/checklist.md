@@ -116,7 +116,7 @@ Activity and evidence: Brief recap (focused alternative for a plan-first learner
 Route and stops: Reference route in the map, not toured live: `src/components/RecallPanel.tsx` (`onSubmit` → `onAnswer`) → `src/screens/Palace.tsx` (`isRight` → `respond()` → `commit()`) → `shared/score.ts` (`normalize`, `distance`, `allowance`, `closeEnough`, `isRight`) → `src/components/Stage.tsx` (`.pin[data-state="right"]`, `circle.pool`).
 Edit outcome: not applicable (no edit, per the learner's standing instruction not to be asked questions).
 Reflection: not offered (standing instruction: "No questions to me").
-Activity mode: recap; the app map was rendered offline in a browser and every path and symbol checked against commit `f6b30fe`.
+Activity mode: recap; the app map was rendered offline in a browser and every path and symbol checked against commit `e7b39bc`.
 
 ## Revisions
 - Voice accuracy with a real microphone was not measured by the agent — automated Chrome on the build machine can't open a microphone (the planning spike hit the same wall). The interpreter is covered by unit tests and by browser checks that drive a stand-in recognizer; the learner's own voice is the remaining check.
