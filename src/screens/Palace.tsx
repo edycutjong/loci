@@ -14,7 +14,7 @@ import { answer, currentStop, fold, skipTo, startWalk, type Result, type Walking
 import { dropJob, getJob, type BuildJob } from "../lib/session";
 import { canListen, createListener, type ListenError } from "../lib/speech";
 import { loadPalace, peekPalace, savePalace, saveWalk, type Loaded } from "../lib/store";
-import { formatDuration, useElapsed } from "../lib/time";
+import { formatDuration, scrollBehavior, useElapsed } from "../lib/time";
 
 type Mode = "learn" | "recall" | "result";
 const SOURCES = { anchors: liveAnchors, scenes: liveScenes };
@@ -128,7 +128,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
     setFeedback(null);
     setWalk(startWalk(total, Date.now(), retryStops));
     setMode("recall");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
   }
 
   function finish(done: Walking, learnMs: number) {

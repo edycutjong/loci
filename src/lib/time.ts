@@ -20,3 +20,7 @@ export function useElapsed(since: number | null, running: boolean): number {
   }, [running]);
   return since === null ? 0 : Math.max(0, (running ? now : Date.now()) - since);
 }
+
+/** "smooth", unless the person asked their device for less motion. */
+export const scrollBehavior = (): ScrollBehavior =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";

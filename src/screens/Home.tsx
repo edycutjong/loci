@@ -9,6 +9,7 @@ import { PalaceList } from "../components/PalaceList";
 import { RoomPicker } from "../components/RoomPicker";
 import { addJob, newId, type RoomChoice } from "../lib/session";
 import { deletePalace, listPalaces, type Loaded } from "../lib/store";
+import { scrollBehavior } from "../lib/time";
 import { EXAMPLE_LISTS } from "../examples/lists";
 
 export function Home() {
@@ -83,7 +84,7 @@ export function Home() {
                 Try it: 12 cranial nerves
                 <ArrowRight size={18} strokeWidth={2.25} aria-hidden="true" />
               </button>
-              <a className="btn btn-text" href="#new-palace-form" onClick={(e) => (e.preventDefault(), document.getElementById("new-palace")?.scrollIntoView({ behavior: "smooth" }))}>
+              <a className="btn btn-text" href="#new-palace-form" onClick={(e) => (e.preventDefault(), document.getElementById("new-palace")?.scrollIntoView({ behavior: scrollBehavior() }))}>
                 <ArrowDown size={17} strokeWidth={2} aria-hidden="true" />
                 Use your own room
               </a>
