@@ -1,0 +1,719 @@
+<!doctype html>
+<!--
+  Loci — the story page (/story/). One file; fonts, photos and the demo clip load from ../fonts, ../rooms, ../media.
+  Everything shown is the app's own: the hero stage copies the example palace's real stops, route and pools
+  (src/examples/), the clip is the production build recorded by scripts/record-demo.mjs, and every checker line is
+  what shared/score.ts and shared/voice.ts answered for that input.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0e1534" />
+<title>Loci — say your list in the dark, your room lights up</title>
+<meta name="description" content="Photograph your room and paste a list you must learn in order. Loci puts each item on a real object along one route. Then the lights go out, and every item you say back turns its stop green." />
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+<link rel="canonical" href="https://loci.edycu.dev/story/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Loci" />
+<meta property="og:title" content="Loci — say your list in the dark, your room lights up" />
+<meta property="og:description" content="Your room becomes a memory palace for any list. Then the lights go out, and every item you remember turns its stop back on." />
+<meta property="og:url" content="https://loci.edycu.dev/story/" />
+<meta property="og:image" content="https://loci.edycu.dev/og.jpg?v=2" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Loci: one photo, 12 stops. A student's room with the lights out; five remembered stops are lit green." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://loci.edycu.dev/og.jpg?v=2" />
+<link rel="preload" href="../fonts/piazzolla-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+@font-face { font-family: "Piazzolla Variable"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-normal.woff2) format("woff2"); }
+@font-face { font-family: "Piazzolla Variable"; font-style: italic; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-italic.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next Variable"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(../fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-700-normal.woff2) format("woff2"); }
+
+/* Loci's tokens: the night, moonlight and state colours of src/styles/tokens.css */
+:root {
+  --bg:      #0e1534;  /* night-900: a room at night is blue, not black (the Blue Night Rule) */
+  --ink:     #eef1fa;  /* moon-100: moonlight type, the current station, primary actions */
+  --muted:   #b9c1dd;  /* moon-300: secondary text */
+  --before:  #8590b8;  /* state: stop still dark — moon-500, the hollow station rim and the resting dotted route */
+  --after:   #46d98a;  /* state: item recalled — the station turns green and its part of the room lights up; fires only on a right answer */
+  --rule:    #6e7aa6;  /* line: every control outline, 1.5px */
+  --miss:    #ff7f6e;  /* judged wrong: the stop stays dark; never decoration */
+  --font-display: "Piazzolla Variable", "Piazzolla", Georgia, serif;  /* a bookish serif with optical sizing: the things to remember are set in it */
+  --font-body:    "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-data:    "Atkinson Hyperlegible Mono", ui-monospace, monospace;  /* ONLY station numerals, timers and scores (and file paths) */
+}
+/* The night steps and the app's motion. */
+:root {
+  --night-800: #141c40; --night-700: #1d2752; --night-600: #2a3668;
+  --shadow-lift: 0 2px 4px rgb(4 7 22 / 0.5), 0 10px 28px rgb(4 7 22 / 0.42);
+  --shadow-pin: 0 1px 2px rgb(4 7 22 / 0.7), 0 4px 10px rgb(4 7 22 / 0.5);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --light-ms: 700ms; --room-ms: 900ms;
+  --wrap: 1180px;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) { :root { --light-ms: 0ms; --room-ms: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 88px; scrollbar-color: var(--night-600) var(--bg); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; color: var(--ink); font: 400 1.0625rem/1.55 var(--font-body);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; caret-color: var(--after);
+  background:
+    radial-gradient(70rem 42rem at 82% -6rem, #18224f 0%, rgb(24 34 79 / 0) 70%),
+    radial-gradient(50rem 36rem at -10% 38rem, #121a3d 0%, rgb(18 26 61 / 0) 70%),
+    var(--bg);
+}
+/* Night photo grain: the dark has texture, never a glow. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .94 0 0 0 0 .98 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body > * { position: relative; z-index: 1; }
+::selection { background: rgb(70 217 138 / 0.32); color: var(--ink); }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--night-600); border-radius: 999px; border: 3px solid var(--bg); }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+img, video, svg { display: block; max-width: 100%; }
+:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); border-radius: 10px; }
+.wrap { width: min(100% - 48px, var(--wrap)); margin-inline: auto; }
+@media (max-width: 560px) { .wrap { width: min(100% - 32px, var(--wrap)); } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+code, .code { font: 500 0.8125rem/1.4 var(--font-data); letter-spacing: 0; }
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Buttons: moonlight primary, night quiet (the app's button vocabulary). */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: 10px;
+  font: 650 1rem/1 var(--font-body); text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1.5px solid var(--rule); background: var(--night-700); color: var(--ink);
+  transition: background-color 180ms var(--ease-out), border-color 180ms var(--ease-out), transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+.btn:hover { background: #253064; border-color: var(--ink); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); box-shadow: 0 1px 2px rgb(4 7 22 / 0.4); }
+.btn-primary:hover { background: #ffffff; border-color: #ffffff; box-shadow: var(--shadow-lift); }
+.btn-primary .ic { transition: transform 220ms var(--ease-out); }
+.btn-primary:hover .ic { transform: translateX(3px); }
+.btn.sm { min-height: 40px; padding: 0 16px; font-size: 0.9375rem; }
+
+/* Top bar */
+.top { position: sticky; top: 0; z-index: 20; background: rgb(14 21 52 / 0.92); border-bottom: 1px solid var(--night-600); }
+@supports (backdrop-filter: blur(1px)) { .top { background: rgb(14 21 52 / 0.84); backdrop-filter: saturate(1.2) blur(10px); } }
+.nav { display: flex; align-items: center; gap: 12px; min-height: 68px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; font: 650 1.5rem/1 var(--font-display); letter-spacing: -0.01em; border-radius: 10px; }
+.brand svg { width: 30px; height: 30px; }
+.links { display: flex; gap: 4px; margin: 0 12px 0 0; padding: 0; list-style: none; }
+.links a { display: block; padding: 10px 12px; border-radius: 10px; color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.9375rem; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.links a:hover { color: var(--ink); background: var(--night-800); }
+@media (max-width: 1000px) { .links { display: none; } }
+@media (max-width: 480px) { .nav .btn-quiet { display: none; } }
+
+/* Themed labels: each section is a stop on the page's own walk. */
+.label { display: flex; align-items: center; gap: 12px; margin: 0; color: var(--before); font: 650 0.8125rem/1.2 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.disc { position: relative; width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--before); background: var(--bg); transition: background-color 400ms var(--ease-out), border-color 400ms var(--ease-out), box-shadow 400ms var(--ease-out); }
+.disc[data-state="walked"] { background: var(--muted); border-color: var(--muted); }
+.disc[data-state="current"] { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding: clamp(40px, 6vw, 76px) 0 28px; }
+h1 { margin: 22px 0 22px; font: 650 clamp(3rem, 1.9rem + 4.4vw, 5.6rem)/0.99 var(--font-display); font-optical-sizing: auto; letter-spacing: -0.028em; text-wrap: balance; }
+h1 em, h2 em { font-style: italic; font-weight: 560; color: var(--after); letter-spacing: -0.02em; }
+/* Green is only ever the remembered state; other emphasis stays moonlight. */
+h2 i { font-style: italic; font-weight: 560; letter-spacing: -0.02em; }
+.lede { max-width: 58ch; margin: 0; color: var(--muted); font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem); line-height: 1.55; }
+.lede b { color: var(--ink); font-weight: 650; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 32px 0 20px; }
+.proof { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin: 0; padding: 0; list-style: none; color: var(--before); font-size: 0.875rem; font-weight: 600; }
+.proof li { display: inline-flex; align-items: center; gap: 8px; }
+.proof li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--before); }
+
+/* The stage: the room photo under the night, pools at remembered stops, the route, HTML pins (they keep their size). */
+.stage-wrap { margin: 0; justify-self: center; width: min(100%, 470px); }
+.stage { position: relative; aspect-ratio: 853 / 1280; border-radius: 16px; overflow: hidden; background: var(--night-800); box-shadow: var(--shadow-lift), 0 40px 80px -30px rgb(4 7 22 / 0.8); isolation: isolate; }
+.room, .room > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.night { fill: var(--bg); opacity: 0.93; transition: opacity var(--room-ms) var(--ease-out); }
+.stage[data-all-lit="true"] .night { opacity: 0; }
+.pool { transform-box: fill-box; transform-origin: center; transform: scale(0.15); opacity: 0; transition: transform var(--light-ms) var(--ease-out), opacity var(--light-ms) var(--ease-out); }
+.pool[data-on="true"] { transform: scale(1); opacity: 1; }
+.seg path { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.seg .casing { stroke: transparent; stroke-width: 6px; }
+.seg .track { stroke: var(--before); stroke-width: 2.5px; stroke-dasharray: 0.1px 7px; transition: stroke 400ms var(--ease-out); }
+.seg .track[data-walked="true"] { stroke: var(--muted); stroke-dasharray: none; }
+.stage[data-all-lit="true"] .seg .casing { stroke: rgb(14 21 52 / 0.72); }
+.stage[data-all-lit="true"] .seg .track { stroke: var(--ink); }
+.pins { position: absolute; inset: 0; }
+.pin {
+  --size: 30px; position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%);
+  width: var(--size); height: var(--size); margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--ink); background: rgb(14 21 52 / 0.9); color: var(--ink);
+  font: 700 12px/1 var(--font-data); font-variant-numeric: tabular-nums; box-shadow: var(--shadow-pin);
+  transition: background-color 260ms var(--ease-out), border-color 260ms var(--ease-out), color 260ms var(--ease-out), box-shadow 260ms var(--ease-out), transform 260ms var(--ease-out);
+}
+@media (min-width: 960px) { .pin { --size: 34px; } }
+.pin svg { display: none; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.pin[data-state="ahead"] { background: rgb(20 28 64 / 0.92); border-color: var(--before); color: var(--muted); }
+.pin[data-state="current"] { z-index: 2; background: var(--ink); border-color: var(--ink); color: var(--bg); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink), var(--shadow-pin); }
+.pin[data-state="right"] { background: var(--after); border-color: var(--after); color: var(--bg); }
+.pin[data-state="right"] b { display: none; }
+.pin[data-state="right"] svg { display: block; }
+.pin[data-pop="true"] { animation: pop 520ms var(--ease-out); }
+@keyframes pop { 40% { transform: scale(1.22); } }
+.pin[data-state="current"]::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 2px solid var(--ink); animation: listen 1600ms var(--ease-out) infinite; }
+@keyframes listen { from { opacity: 0.7; transform: scale(0.9); } to { opacity: 0; transform: scale(1.5); } }
+.heard {
+  position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 3; margin: 0; display: flex; align-items: center; gap: 10px;
+  min-height: 46px; padding: 10px 14px; border-radius: 10px; background: rgb(14 21 52 / 0.9); border: 1px solid var(--night-600);
+  font-weight: 650; font-size: 0.9375rem; box-shadow: var(--shadow-pin);
+}
+.heard .ic { width: 18px; height: 18px; color: var(--after); stroke-width: 3; }
+.heard[data-kind="all"] .ic { stroke-width: 2; }
+.heard span { transition: opacity 200ms var(--ease-out); }
+.stage-wrap figcaption { margin-top: 14px; color: var(--before); font-size: 0.875rem; text-align: center; text-wrap: balance; }
+
+/* The line strip: every station in order, like the strip above a night-train door. */
+.strip-wrap { padding: 8px 0 8px; }
+.strip { --gap: clamp(4px, 1vw, 10px); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.strip li { position: relative; display: grid; justify-items: center; gap: 10px; text-align: center; }
+.strip li + li::before { content: ""; position: absolute; top: 13px; right: calc(50% + 15px); width: calc(100% - 30px); border-top: 2.5px dotted var(--before); }
+.strip li[data-state="right"] + li::before, .strip li[data-state="right"] + li[data-state="current"]::before { border-top-style: solid; border-top-color: var(--muted); }
+.strip .dot { position: relative; z-index: 1; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--before); background: var(--bg); color: var(--muted); font: 700 11px/1 var(--font-data); transition: background-color 260ms var(--ease-out), border-color 260ms var(--ease-out), color 260ms var(--ease-out), box-shadow 260ms var(--ease-out); }
+.strip .dot svg { display: none; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.strip [data-state="right"] .dot { background: var(--after); border-color: var(--after); color: var(--bg); }
+.strip [data-state="right"] .dot b { display: none; }
+.strip [data-state="right"] .dot svg { display: block; }
+.strip [data-state="current"] .dot { background: var(--ink); border-color: var(--ink); color: var(--bg); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); }
+.strip small { max-width: 11ch; color: var(--before); font-size: 0.75rem; font-weight: 600; line-height: 1.25; transition: color 260ms var(--ease-out); }
+.strip [data-state="right"] small, .strip [data-state="current"] small { color: var(--muted); }
+@media (max-width: 760px) { .strip small { display: none; } .strip .dot { width: 22px; height: 22px; font-size: 9px; } .strip li + li::before { top: 10px; right: calc(50% + 12px); width: calc(100% - 24px); } }
+
+/* Receipts */
+.receipts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: clamp(40px, 6vw, 72px); border-block: 1px solid var(--night-600); }
+.rc { padding: 30px 24px 28px 0; }
+.rc + .rc { padding-left: 24px; border-left: 1px solid var(--night-600); }
+.rc .num { margin: 0; font: 700 clamp(2.75rem, 2rem + 2.6vw, 4rem)/1 var(--font-data); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.rc .num.word { font: 600 italic clamp(2.25rem, 1.7rem + 2vw, 3.25rem)/1.05 var(--font-display); letter-spacing: -0.02em; }
+.rc .what { margin: 12px 0 6px; font-weight: 650; }
+.rc .src { margin: 0; color: var(--before); }
+.rc .src a { text-decoration-color: var(--night-600); }
+.rc .src a:hover { color: var(--muted); text-decoration-color: currentColor; }
+@media (max-width: 860px) { .receipts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rc:nth-child(3) { padding-left: 0; border-left: 0; } .rc:nth-child(n + 3) { border-top: 1px solid var(--night-600); } }
+
+/* Sections */
+.sec { padding: clamp(72px, 10vw, 128px) 0 0; }
+h2 { margin: 18px 0 14px; max-width: 22ch; font: 640 clamp(2.1rem, 1.5rem + 2.4vw, 3.4rem)/1.04 var(--font-display); font-optical-sizing: auto; letter-spacing: -0.022em; text-wrap: balance; }
+.intro { max-width: 62ch; margin: 0 0 40px; color: var(--muted); font-size: 1.125rem; }
+
+/* The walk: the real app beside the real checker */
+.pair { display: grid; grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.browser { margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--night-600); background: var(--night-800); box-shadow: var(--shadow-lift); }
+.chrome { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-bottom: 1px solid var(--night-600); background: #111939; }
+.chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--night-600); }
+.chrome span { margin-left: 10px; padding: 3px 12px; border-radius: 999px; background: var(--bg); color: var(--before); font: 500 0.75rem/1.4 var(--font-data); }
+.chrome .vbtn { margin-left: auto; }
+.vbtn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--night-600); background: transparent; color: var(--muted); font: 600 0.75rem/1 var(--font-body); cursor: pointer; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.vbtn:hover { color: var(--ink); border-color: var(--rule); }
+.vbtn .ic { width: 14px; height: 14px; }
+.vbtn[hidden] { display: none; }
+.browser video { width: 100%; height: auto; aspect-ratio: 1280 / 800; background: var(--bg); }
+.browser figcaption { padding: 14px 16px 16px; color: var(--before); font-size: 0.875rem; border-top: 1px solid var(--night-600); }
+.browser figcaption code { color: var(--muted); font-size: 0.78rem; }
+.replay-card { border-radius: 14px; border: 1px solid var(--night-600); background: var(--night-800); overflow: hidden; box-shadow: var(--shadow-lift); }
+.rc-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--night-600); font-weight: 650; }
+.rc-head code { color: var(--before); }
+.replay { margin: 0; padding: 8px 0; list-style: none; }
+.replay li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; padding: 12px 18px; }
+.replay li + li { border-top: 1px dashed var(--night-600); }
+.replay .mark { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; margin-top: 2px; }
+.replay .mark svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.replay [data-ok="true"] .mark { background: var(--after); color: var(--bg); }
+.replay [data-ok="false"] .mark { background: var(--miss); color: var(--bg); }
+.replay .said { margin: 0; font: 500 0.875rem/1.4 var(--font-data); color: var(--muted); }
+.replay .said q { color: var(--ink); quotes: "“" "”"; }
+.replay .said span { color: var(--before); }
+.replay .why { margin: 4px 0 0; font-size: 0.9375rem; color: var(--muted); }
+.replay .why b { font: 600 1.0625rem/1.2 var(--font-display); color: var(--ink); }
+.replay.typing li { opacity: 0; transform: translateY(6px); }
+.replay.typing li.shown { opacity: 1; transform: none; transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out); }
+.replay .caret::after { content: ""; display: inline-block; width: 0.55em; height: 1em; margin-left: 2px; vertical-align: -0.15em; background: var(--muted); animation: blink 900ms steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.rc-foot { margin: 0; padding: 12px 18px 16px; color: var(--before); font-size: 0.8125rem; border-top: 1px solid var(--night-600); }
+@media (max-width: 960px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+
+/* Learn, then lights out: three real captures on one line */
+.three { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 3vw, 40px); margin: 0; padding: 0; list-style: none; }
+.three::before { content: ""; position: absolute; top: 15px; left: 16.6%; right: 16.6%; border-top: 2.5px solid var(--muted); }
+.three li { display: grid; gap: 18px; justify-items: center; align-content: start; }
+.three .step { position: relative; z-index: 1; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--ink); background: var(--bg); color: var(--ink); }
+.three .step svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.three li:nth-child(2) .step { background: var(--ink); color: var(--bg); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); }
+.three li:nth-child(3) .step { background: var(--after); border-color: var(--after); color: var(--bg); }
+.three figure { margin: 0; width: 100%; }
+.three img { width: 100%; height: auto; aspect-ratio: 720 / 1079; object-fit: cover; border-radius: 14px; box-shadow: var(--shadow-lift); background: var(--night-800); }
+.three li:nth-child(2) img { outline: 1.5px solid var(--night-600); outline-offset: 6px; }
+.three h3 { margin: 18px 0 6px; font: 600 1.5rem/1.2 var(--font-display); }
+.three p { margin: 0; color: var(--muted); max-width: 34ch; }
+.three q { font-family: var(--font-display); font-style: italic; color: var(--ink); }
+@media (max-width: 760px) { .three { grid-template-columns: minmax(0, 1fr); gap: 48px; } .three::before { display: none; } .three figure { max-width: 320px; } }
+
+/* Who decides: an asymmetric bento */
+.bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 16px; border: 1px solid var(--night-600); background: linear-gradient(180deg, var(--night-800), rgb(20 28 64 / 0.6)); transition: border-color 200ms var(--ease-out), transform 200ms var(--ease-out); }
+.card:hover { border-color: var(--rule); }
+.card .who { position: absolute; top: 22px; right: 22px; font: 650 0.6875rem/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--before); }
+.card .who[data-who="code"] { color: var(--ink); border-color: var(--rule); }
+.card .glyph { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--night-700); color: var(--ink); }
+.card h3 { margin: 6px 0 0; font: 600 1.375rem/1.2 var(--font-display); }
+.card p { margin: 0; color: var(--muted); }
+.card .chip { margin-top: auto; padding-top: 10px; color: var(--before); }
+.card .chip code { display: inline-block; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--night-600); background: var(--bg); color: var(--muted); }
+.c-check { grid-column: 1 / span 3; grid-row: 1 / span 2; }
+.c-find { grid-column: 4 / span 3; }
+.c-route { grid-column: 4 / span 3; }
+.c-scene, .c-voice, .c-keep { grid-column: span 2; }
+.rules { margin: 10px 0 6px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.rules li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; background: var(--bg); border: 1px solid var(--night-600); }
+.rules .w { font: 600 1.125rem/1.2 var(--font-display); }
+.rules .w small { margin-left: 8px; font: 500 0.75rem var(--font-data); color: var(--before); }
+.rules .t { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.875rem; font-weight: 600; }
+.rules .t i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--muted); }
+.rules .t i.x { border-color: var(--before); border-style: dotted; }
+@media (max-width: 960px) { .c-check, .c-find, .c-route { grid-column: 1 / -1; grid-row: auto; } .c-scene, .c-voice, .c-keep { grid-column: span 3; } }
+@media (max-width: 640px) { .bento { grid-template-columns: minmax(0, 1fr); } .bento > * { grid-column: 1 / -1 !important; } }
+
+/* The scenes: the example palace, stop by stop, on two cased lines */
+.scenes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(24px, 4vw, 56px); margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.scenes li { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 18px; padding-bottom: 30px; }
+.scenes li::before { content: ""; position: absolute; left: 16px; top: 34px; bottom: 0; border-left: 2.5px dotted var(--before); }
+.scenes li:nth-child(6)::before, .scenes li:nth-child(12)::before { display: none; }
+.scenes .disc { width: 34px; height: 34px; display: grid; place-items: center; border-color: var(--ink); color: var(--ink); font: 700 12px/1 var(--font-data); font-variant-numeric: tabular-nums; background: rgb(14 21 52 / 0.9); }
+.scenes .obj { margin: 6px 0 0; color: var(--before); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+.scenes .item { margin: 2px 0 6px; font: 620 1.625rem/1.15 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.scenes .item i { margin-left: 6px; font-weight: 420; font-size: 1rem; color: var(--muted); letter-spacing: 0; white-space: nowrap; }
+.scenes .scene { margin: 0; color: var(--muted); max-width: 46ch; }
+@media (min-width: 761px) { .scenes { grid-auto-flow: column; grid-template-rows: repeat(6, auto); } }
+@media (max-width: 760px) { .scenes { grid-template-columns: minmax(0, 1fr); } .scenes li:nth-child(6)::before { display: block; } }
+.made { margin: 8px 0 0; color: var(--before); font-size: 0.875rem; }
+
+/* Honest by design */
+.quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.quotes blockquote { margin: 0; height: 100%; display: flex; flex-direction: column; gap: 18px; padding: 28px 26px 24px; border-radius: 16px; border: 1px solid var(--night-600); background: var(--night-800); }
+.quotes .ic { width: 22px; height: 22px; color: var(--before); stroke-width: 1.75; }
+.quotes p { margin: 0; font: italic 500 1.375rem/1.35 var(--font-display); color: var(--ink); }
+.quotes footer { margin-top: auto; color: var(--before); font-size: 0.875rem; }
+.quotes footer code { color: var(--muted); }
+@media (max-width: 900px) { .quotes { grid-template-columns: minmax(0, 1fr); } }
+
+/* Questions a judge would ask */
+.faq { border-top: 1px solid var(--night-600); max-width: 860px; }
+.faq details { border-bottom: 1px solid var(--night-600); }
+.faq summary { display: flex; align-items: center; gap: 16px; padding: 22px 4px; cursor: pointer; list-style: none; font: 600 1.375rem/1.25 var(--font-display); border-radius: 10px; transition: color 160ms var(--ease-out); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: #ffffff; }
+.faq summary .ic { margin-left: auto; width: 22px; height: 22px; color: var(--before); transition: transform 260ms var(--ease-out), color 160ms var(--ease-out); }
+.faq details[open] summary .ic { transform: rotate(45deg); color: var(--ink); }
+.faq .a { padding: 0 48px 24px 4px; color: var(--muted); max-width: 68ch; }
+.faq .a p { margin: 0; }
+.faq .a code { color: var(--ink); }
+
+/* The end of the line */
+.end { position: relative; overflow: hidden; margin-top: clamp(80px, 11vw, 140px); padding: clamp(40px, 6vw, 72px); border-radius: 22px; border: 1px solid var(--night-600); background: var(--night-800); }
+.end > div { position: relative; z-index: 1; max-width: 560px; }
+.end h2 { margin-top: 0; }
+.end p { margin: 0; color: var(--muted); max-width: 46ch; }
+.end .ctas { margin: 30px 0 0; }
+.end img { position: absolute; z-index: 0; top: -12%; right: -2%; width: min(46%, 460px); height: auto; border-radius: 16px; opacity: 0.9;
+  transform: rotate(4deg); box-shadow: var(--shadow-lift);
+  -webkit-mask-image: linear-gradient(100deg, transparent 0%, #000 42%); mask-image: linear-gradient(100deg, transparent 0%, #000 42%); }
+@media (max-width: 860px) { .end img { position: relative; top: auto; right: auto; display: block; width: min(100%, 300px); margin: 36px auto -40%; transform: rotate(2deg); -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent); mask-image: linear-gradient(180deg, #000 40%, transparent); } }
+
+/* Footer */
+.foot { margin-top: 72px; padding: 32px 0 48px; border-top: 1px solid var(--night-600); color: var(--before); font-size: 0.875rem; }
+.foot-grid { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; }
+.foot .brand { margin: 0; font-size: 1.25rem; color: var(--ink); }
+.foot .brand svg { width: 24px; height: 24px; }
+.foot ul { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; padding: 0; list-style: none; }
+.foot ul a { color: var(--muted); text-decoration: none; }
+.foot ul a:hover { color: var(--ink); text-decoration: underline; }
+.ver { font: 700 0.8125rem/1 var(--font-data); padding: 5px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--muted); text-decoration: none; }
+.ver:hover { border-color: var(--rule); color: var(--ink); }
+.credits { margin: 20px 0 0; max-width: 90ch; }
+
+/* One orchestrated load: the hero arrives in order. Content is visible by default; motion only adds. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero .label, .js .hero h1, .js .hero .lede, .js .hero .ctas, .js .hero .proof { animation: rise 900ms var(--ease-out) both; }
+  .js .hero h1 { animation-delay: 80ms; }
+  .js .hero .lede { animation-delay: 180ms; }
+  .js .hero .ctas { animation-delay: 260ms; }
+  .js .hero .proof { animation-delay: 340ms; }
+  .js .stage { animation: dusk 1400ms var(--ease-out) 120ms both; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes dusk { from { opacity: 0; transform: translateY(10px) scale(0.985); filter: brightness(1.5); } }
+
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .stage-wrap { width: min(100%, 440px); }
+}
+@media print {
+  body::before, .top, .vbtn { display: none; }
+  .night { opacity: 0.93 !important; }
+  .replay.typing li { opacity: 1; transform: none; }
+  .sec, .hero { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="mark" viewBox="0 0 32 32"><rect x="2.5" y="2.5" width="27" height="27" rx="8" fill="none" stroke="#eef1fa" stroke-width="2"/><path d="M8.5 21.5 L15.5 11.5 L23.5 19.5" fill="none" stroke="#8590b8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.1 3.4"/><circle cx="8.5" cy="21.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="15.5" cy="11.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="23.5" cy="19.5" r="3.4" fill="#46d98a"/></symbol>
+</svg>
+
+<header class="top">
+  <nav class="wrap nav" aria-label="Loci">
+    <a class="brand" href="../"><svg aria-hidden="true"><use href="#mark"/></svg>Loci</a>
+    <ul class="links">
+      <li><a href="#walk">The walk</a></li>
+      <li><a href="#lights-out">Lights out</a></li>
+      <li><a href="#decides">Who decides</a></li>
+      <li><a href="#scenes">The scenes</a></li>
+      <li><a href="#questions">Questions</a></li>
+    </ul>
+    <a class="btn btn-quiet sm" href="../deck/"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Pitch deck</a>
+    <a class="btn btn-primary sm" href="../">Open Loci<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+  </nav>
+</header>
+
+<main>
+<section class="hero wrap" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <p class="label"><span class="disc" data-state="current"></span>Build With AI: Basics · Devpost Learn</p>
+    <h1 id="hero-title">Say your list in the dark. Your room <em>lights&nbsp;up.</em></h1>
+    <p class="lede">Photograph your room and paste a list you must learn in order. Loci puts each item on a real object along <b>one route of up to 12&nbsp;stops</b>, with a strange little scene for each. Then the lights go out. Say or type the list back: <b>code, not an AI,</b> checks every answer, and each right one turns its stop green.</p>
+    <div class="ctas">
+      <a class="btn" href="https://github.com/edycutjong/loci"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></svg>GitHub</a>
+      <a class="btn" href="../deck/"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Pitch deck</a>
+      <a class="btn btn-primary" href="../">Open Loci<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </div>
+    <ul class="proof"><li>One photo</li><li>Up to 12 stops</li><li>Code checks every answer</li><li>Your photo isn't stored</li></ul>
+  </div>
+  <figure class="stage-wrap">
+    <div class="stage" id="hero-stage" data-all-lit="false" role="img" aria-label="An AI-generated student room with the lights out. Each remembered item turns its stop green and lights that part of the room again, until the whole room is back.">
+      <div class="room" aria-hidden="true"><svg viewBox="0 0 853 1280" preserveAspectRatio="none" focusable="false"><defs><radialGradient id="hero-pool"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><mask id="hero-lights" maskUnits="userSpaceOnUse" x="-12.8" y="-12.8" width="878.6" height="1305.6"><rect x="-12.8" y="-12.8" width="878.6" height="1305.6" fill="#fff"/><circle class="pool" data-on="true" cx="74.2" cy="435.2" r="366.8" fill="url(#hero-pool)"/><circle class="pool" data-on="true" cx="268.3" cy="620.8" r="295.3" fill="url(#hero-pool)"/><circle class="pool" data-on="true" cx="265.3" cy="469.1" r="103.3" fill="url(#hero-pool)"/><circle class="pool" data-on="true" cx="274.7" cy="209.3" r="91.4" fill="url(#hero-pool)"/><circle class="pool" data-on="true" cx="375.7" cy="313.6" r="136.6" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="455.5" cy="414.1" r="107.3" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="541.2" cy="570.9" r="147.7" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="450.8" cy="952.3" r="349.2" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="806.1" cy="922.9" r="282.6" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="812.9" cy="646.4" r="104.9" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="694.8" cy="536.3" r="190.6" fill="url(#hero-pool)"/><circle class="pool" data-on="false" cx="815.9" cy="385.9" r="120.0" fill="url(#hero-pool)"/></mask></defs><image href="../rooms/kos.jpg" width="853" height="1280" preserveAspectRatio="none"/><rect class="night" x="-12.8" y="-12.8" width="878.6" height="1305.6" mask="url(#hero-lights)"/><g class="seg"><path class="casing" d="M74.2 435.2L268.3 620.8"/><path class="track" data-walked="true" d="M74.2 435.2L268.3 620.8"/></g><g class="seg"><path class="casing" d="M268.3 620.8L265.3 469.1"/><path class="track" data-walked="true" d="M268.3 620.8L265.3 469.1"/></g><g class="seg"><path class="casing" d="M265.3 469.1L274.7 209.3"/><path class="track" data-walked="true" d="M265.3 469.1L274.7 209.3"/></g><g class="seg"><path class="casing" d="M274.7 209.3L375.7 313.6"/><path class="track" data-walked="true" d="M274.7 209.3L375.7 313.6"/></g><g class="seg"><path class="casing" d="M375.7 313.6L455.5 414.1"/><path class="track" data-walked="true" d="M375.7 313.6L455.5 414.1"/></g><g class="seg"><path class="casing" d="M455.5 414.1L541.2 570.9"/><path class="track" data-walked="false" d="M455.5 414.1L541.2 570.9"/></g><g class="seg"><path class="casing" d="M541.2 570.9L450.8 952.3"/><path class="track" data-walked="false" d="M541.2 570.9L450.8 952.3"/></g><g class="seg"><path class="casing" d="M450.8 952.3L806.1 922.9"/><path class="track" data-walked="false" d="M450.8 952.3L806.1 922.9"/></g><g class="seg"><path class="casing" d="M806.1 922.9L812.9 646.4"/><path class="track" data-walked="false" d="M806.1 922.9L812.9 646.4"/></g><g class="seg"><path class="casing" d="M812.9 646.4L694.8 536.3"/><path class="track" data-walked="false" d="M812.9 646.4L694.8 536.3"/></g><g class="seg"><path class="casing" d="M694.8 536.3L815.9 385.9"/><path class="track" data-walked="false" d="M694.8 536.3L815.9 385.9"/></g></svg><div class="pins"><span class="pin" data-state="right" style="--x:8.699;--y:34.000"><b>1</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.454;--y:48.500"><b>2</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.102;--y:36.648"><b>3</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:32.204;--y:16.352"><b>4</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:44.045;--y:24.500"><b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="current" style="--x:53.400;--y:32.352"><b>6</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:63.447;--y:44.602"><b>7</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:52.849;--y:74.398"><b>8</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:94.502;--y:72.102"><b>9</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.299;--y:50.500"><b>10</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:81.454;--y:41.898"><b>11</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.651;--y:30.148"><b>12</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span></div></div>
+      <p class="heard" data-kind="right" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Stop 5: Trigeminal. Right.</span></p>
+    </div>
+    <figcaption>AI-generated example room. The stops, the route and the pools of light are the real example palace's.</figcaption>
+  </figure>
+</section>
+<div class="wrap strip-wrap"><ol class="strip" aria-label="The 12 stops of the example palace, in order"><li data-state="right"><span class="dot"><b>1</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>yellow raincoat</small></li><li data-state="right"><span class="dot"><b>2</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>blue bed</small></li><li data-state="right"><span class="dot"><b>3</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>orange cat plush</small></li><li data-state="right"><span class="dot"><b>4</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>wall clock</small></li><li data-state="right"><span class="dot"><b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>cork board</small></li><li data-state="current"><span class="dot"><b>6</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>yellow desk lamp</small></li><li data-state="ahead"><span class="dot"><b>7</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>black backpack</small></li><li data-state="ahead"><span class="dot"><b>8</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>striped rug</small></li><li data-state="ahead"><span class="dot"><b>9</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>snake plant</small></li><li data-state="ahead"><span class="dot"><b>10</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>red kettle</small></li><li data-state="ahead"><span class="dot"><b>11</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>acoustic guitar</small></li><li data-state="ahead"><span class="dot"><b>12</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>globe</small></li></ol></div>
+
+<section class="receipts wrap" aria-label="Receipts">
+  <div class="rc"><p class="num" data-count="12">12</p><p class="what">stops from one photo</p><p class="src"><a href="https://github.com/edycutjong/loci/blob/main/shared/list.ts"><code>shared/list.ts</code></a></p></div>
+  <div class="rc"><p class="num" data-count="81">81</p><p class="what">unit tests</p><p class="src"><a href="https://github.com/edycutjong/loci/tree/main/tests"><code>tests/</code></a> · <code>npm test</code></p></div>
+  <div class="rc"><p class="num" data-count="22">22</p><p class="what">browser checks, plus 7 with the real AI</p><p class="src"><a href="https://github.com/edycutjong/loci/tree/main/e2e"><code>e2e/</code></a> · <code>npm run e2e</code></p></div>
+  <div class="rc"><p class="num word">never AI</p><p class="what">checks your answers</p><p class="src"><a href="https://github.com/edycutjong/loci/blob/main/shared/score.ts"><code>shared/score.ts</code></a></p></div>
+</section>
+
+<section class="sec wrap" id="walk" aria-labelledby="walk-title">
+  <p class="label"><span class="disc"></span>Stop 1 · The walk</p>
+  <h2 id="walk-title">The real app, from the first stop to <em>every light on.</em></h2>
+  <p class="intro">The one-tap example: twelve cranial nerves in a student room. A short walk with the lights on, then lights out and the list typed back, one stop at a time.</p>
+  <div class="pair">
+    <figure class="browser">
+      <div class="chrome"><i></i><i></i><i></i><span>loci.edycu.dev</span><button class="vbtn" type="button" hidden aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></svg><span>Pause</span></button></div>
+      <video id="walk-video" src="../media/loci-walk.mp4" poster="../media/loci-walk-poster.webp" width="1280" height="800" muted loop playsinline controls preload="metadata" aria-label="Screen recording of Loci: the example palace, a walk through four stops, then twelve answers typed with the lights out until every stop is green."></video>
+      <figcaption>Recorded from the v0.1.0 production build by <code>scripts/record-demo.mjs</code>. The answers are typed by the script, not remembered by a person; one has a typo, one is an accepted answer.</figcaption>
+    </figure>
+    <div class="replay-card">
+      <p class="rc-head">The answer checker, on real answers <code>shared/score.ts</code></p>
+      <ol class="replay" id="replay">
+        <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="said">typed <q>occulomotor</q> <span>→</span> Oculomotor</p><p class="why"><b>Right.</b> One slip in a long word.</p></div></li>
+        <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="said">typed <q>trochlaer</q> <span>→</span> Trochlear</p><p class="why"><b>Right.</b> Two letters swapped count as one.</p></div></li>
+        <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="said">typed <q>auditory</q> <span>→</span> Vestibulocochlear</p><p class="why"><b>Right.</b> Your list accepts it after “ / ”.</p></div></li>
+        <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="said">typed <q>1. Optic</q> <span>→</span> Optic</p><p class="why"><b>Right.</b> Numbering is ignored.</p></div></li>
+        <li data-ok="false"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span><div><p class="said">typed <q>Vitamin D</q> <span>→</span> Vitamin C</p><p class="why"><b>Wrong.</b> Short words must be exact.</p></div></li>
+        <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="said">said <q>truck lear</q> <span>→</span> Trochlear</p><p class="why"><b>Right.</b> It sounds alike: both are <code>trklr</code>.</p></div></li>
+      </ol>
+      <p class="rc-foot">Each line is what the real checker answered, run on these inputs (<code>isRight</code> for typing, <code>spokenMatch</code> for speech).</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap" id="lights-out" aria-labelledby="lights-title">
+  <p class="label"><span class="disc"></span>Stop 2 · Lights out</p>
+  <h2 id="lights-title">Learn with the lights on. Recall in the dark.</h2>
+  <p class="intro">Three real screens from the same palace. Code never shows you the answer while you recall; a miss stays dark until you retry it.</p>
+  <ol class="three">
+    <li><span class="step"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v16"/><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"/></svg></span><figure><img src="../media/stage-learn-stop4.webp" width="720" height="1079" loading="lazy" alt="Learn: the student room lit, the view walked to stop 4, the wall clock." /><figcaption><h3>Learn</h3><p>The view walks the route, one scene per stop. Stop 4, the wall clock: <q>Your wall clock turns into a little truck-lear, honking ‘Trochlear!’ as it circles the room.</q></p></figcaption></figure></li>
+    <li><span class="step"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg></span><figure><img src="../media/stage-recall-5.webp" width="720" height="1079" loading="lazy" alt="Lights out: the room dark, five stops green with five pools of the photo back, stop 6 asked." /><figcaption><h3>Lights out</h3><p>The room goes dark. Say or type each item. Five right so far, so five pools of the room are back.</p></figcaption></figure></li>
+    <li><span class="step"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span><figure><img src="../media/stage-all-lit.webp" width="720" height="1079" loading="lazy" alt="Every light on: all twelve stops green and the whole room lit again." /><figcaption><h3>Every light on</h3><p>When every stop is green, the whole room comes back. The result shows the first-try score and both times.</p></figcaption></figure></li>
+  </ol>
+</section>
+
+<section class="sec wrap" id="decides" aria-labelledby="decides-title">
+  <p class="label"><span class="disc"></span>Stop 3 · Who decides</p>
+  <h2 id="decides-title">The AI proposes. <i>Code</i> decides.</h2>
+  <p class="intro">Two AI calls suggest objects and scenes. Plain code picks the stops, draws the route and checks every answer, so the score means what it says.</p>
+  <div class="bento">
+    <article class="card c-check">
+      <span class="who" data-who="code">Code</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg></span>
+      <h3>Checks every answer</h3>
+      <p>Plain code, never an AI. It forgives slips in long words, keeps short words exact, and takes your own accepted answers after “ / ”.</p>
+      <ul class="rules" aria-label="Slips forgiven per word">
+        <li><span class="w">Na<small>2 letters</small></span><span class="t">exact</span></li>
+        <li><span class="w">Optic<small>5 letters</small></span><span class="t"><i></i>1 slip</span></li>
+        <li><span class="w">Oculomotor<small>10 letters</small></span><span class="t"><i></i><i></i>2 slips</span></li>
+        <li><span class="w">Vitamin C<small>7 + 1 letters</small></span><span class="t"><i></i>1, then exact</span></li>
+      </ul>
+      <p class="chip"><code>shared/score.ts · edit distance per word</code></p>
+    </article>
+    <article class="card c-find">
+      <span class="who">AI</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg></span>
+      <h3>Finds real objects</h3>
+      <p>Your photo is shrunk to 1280 px on your device, then a vision model names objects and boxes each one.</p>
+      <p class="chip"><code>api/anchors.ts · Gemini, DeepSeek last</code></p>
+    </article>
+    <article class="card c-route">
+      <span class="who" data-who="code">Code</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span>
+      <h3>Draws one route</h3>
+      <p>It keeps distinct, uncrowded objects and finds the shortest route from the leftmost stop to the rightmost.</p>
+      <p class="chip"><code>shared/route.ts · Held-Karp, exact</code></p>
+    </article>
+    <article class="card c-scene">
+      <span class="who">AI</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg></span>
+      <h3>Writes a strange scene</h3>
+      <p>From object names only, never the photo, with a sound-alike for hard words.</p>
+      <p class="chip"><code>api/scenes.ts · deepseek-flash</code></p>
+    </article>
+    <article class="card c-voice">
+      <span class="who" data-who="code">Code</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg></span>
+      <h3>Hears you, eyes closed</h3>
+      <p>In Chrome or Edge, say the list. The same checker reads what the browser heard.</p>
+      <p class="chip"><code>Web Speech API · shared/voice.ts</code></p>
+    </article>
+    <article class="card c-keep">
+      <span class="who" data-who="code">Device</span>
+      <span class="glyph"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
+      <h3>Stays on your device</h3>
+      <p>Palaces and results live in your browser. The server never stores your photo.</p>
+      <p class="chip"><code>IndexedDB · idb-keyval</code></p>
+    </article>
+  </div>
+</section>
+
+<section class="sec wrap" id="scenes" aria-labelledby="scenes-title">
+  <p class="label"><span class="disc"></span>Stop 4 · The scenes</p>
+  <h2 id="scenes-title">Twelve stops, twelve strange scenes.</h2>
+  <p class="intro">The example palace in full, word for word. Strange is the point: an odd picture on a thing you see every day is hard to forget.</p>
+  <ol class="scenes"><li><span class="disc">1</span><div><p class="obj">yellow raincoat</p><p class="item">Olfactory <i>sounds like old factory</i></p><p class="scene">Your yellow raincoat turns into an old factory, puffing perfume and humming &#x27;Olfactory!&#x27;</p></div></li><li><span class="disc">2</span><div><p class="obj">blue bed</p><p class="item">Optic <i>sounds like op-tick</i></p><p class="scene">Your blue bed becomes an op-tick, ticking like a giant eye and chirping &#x27;Optic!&#x27;</p></div></li><li><span class="disc">3</span><div><p class="obj">orange cat plush</p><p class="item">Oculomotor <i>sounds like a cool motor</i></p><p class="scene">Your orange cat plush grows a cool motor, rolling its eyes and purring &#x27;Oculomotor!&#x27;</p></div></li><li><span class="disc">4</span><div><p class="obj">wall clock</p><p class="item">Trochlear <i>sounds like truck-lear</i></p><p class="scene">Your wall clock turns into a little truck-lear, honking &#x27;Trochlear!&#x27; as it circles the room.</p></div></li><li><span class="disc">5</span><div><p class="obj">cork board</p><p class="item">Trigeminal <i>sounds like try-gem-in-all</i></p><p class="scene">Your cork board pushes out three gems, chanting &#x27;Trigeminal!&#x27; like a try-gem-in-all choir.</p></div></li><li><span class="disc">6</span><div><p class="obj">yellow desk lamp</p><p class="item">Abducens <i>sounds like ab-duck-ins</i></p><p class="scene">Your yellow desk lamp sprouts ducklings that do sit-ups, quacking &#x27;Abducens!&#x27;</p></div></li><li><span class="disc">7</span><div><p class="obj">black backpack</p><p class="item">Facial</p><p class="scene">Your black backpack grows a grinning face, stretching its cheeks and laughing &#x27;Facial!&#x27;</p></div></li><li><span class="disc">8</span><div><p class="obj">striped rug</p><p class="item">Vestibulocochlear <i>sounds like vestibule-oh-cock-leer</i></p><p class="scene">Your striped rug rolls into a vestibule, where a bull and a rooster leer, blaring &#x27;Vestibulocochlear!&#x27;</p></div></li><li><span class="disc">9</span><div><p class="obj">snake plant</p><p class="item">Glossopharyngeal <i>sounds like glossy pharaoh in jail</i></p><p class="scene">Your snake plant polishes a glossy pharaoh, who gargles &#x27;Glossopharyngeal!&#x27; from a tiny jail.</p></div></li><li><span class="disc">10</span><div><p class="obj">red kettle</p><p class="item">Vagus <i>sounds like vague us</i></p><p class="scene">Your red kettle whistles vaguely, steaming the words &#x27;Vagus!&#x27; at you.</p></div></li><li><span class="disc">11</span><div><p class="obj">acoustic guitar</p><p class="item">Accessory</p><p class="scene">Your acoustic guitar sprouts extra strings, wearing rings and scarves as it strums &#x27;Accessory!&#x27;</p></div></li><li><span class="disc">12</span><div><p class="obj">globe</p><p class="item">Hypoglossal <i>sounds like hippo-glossal</i></p><p class="scene">Your globe spins into a hippo with a glossy tongue, licking continents and roaring &#x27;Hypoglossal!&#x27;</p></div></li></ol>
+  <p class="made">Objects found by gemini-3.1-flash-lite and scenes written by deepseek-flash, prepared in advance on 2026-10-04. The room is AI-generated.</p>
+</section>
+
+<section class="sec wrap" id="honest" aria-labelledby="honest-title">
+  <p class="label"><span class="disc"></span>Stop 5 · Honest by design</p>
+  <h2 id="honest-title">What Loci doesn't claim.</h2>
+  <p class="intro">Lifted word for word from the plan and the README.</p>
+  <ul class="quotes">
+    <li><blockquote><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg><p>A proof of concept can only show recall in one sitting.</p><footer>Scope · Explicitly cut · <code>devpost/scope.md</code></footer></blockquote></li>
+    <li><blockquote><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg><p>Your photo is sent once to an AI (Google Gemini, or DeepSeek if Gemini is busy) to find objects. The server does not store it.</p><footer>README · Privacy · <code>README.md</code></footer></blockquote></li>
+    <li><blockquote><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg><p>Checking a whole sentence, spoken or typed, can't be fair or reliable. Short items only.</p><footer>Scope · Explicitly cut · <code>devpost/scope.md</code></footer></blockquote></li>
+  </ul>
+</section>
+
+<section class="sec wrap" id="questions" aria-labelledby="questions-title">
+  <p class="label"><span class="disc"></span>Stop 6 · Questions</p>
+  <h2 id="questions-title">Questions a judge would ask.</h2>
+  <div class="faq">
+    <details><summary>Does an AI decide if I'm right?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>No. AI finds the objects and writes the scenes. A small checker in <code>shared/score.ts</code> decides green or red. “Vitamin D” never counts for “Vitamin C”.</p></div></details>
+    <details><summary>Where does my room photo go?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>It is shrunk on your device, then sent once to Gemini (or DeepSeek if Gemini is busy) to find objects. The server does not store it. Scenes are written from object names only.</p></div></details>
+    <details><summary>What is prepared in advance?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>The one-tap example, 12 cranial nerves in an AI-generated student room, was built ahead of time by the same helpers, so it opens with no AI call. Your own photo goes through the real AI; building usually takes 10–30 seconds.</p></div></details>
+    <details><summary>Does voice work everywhere?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>In Chrome and Edge, through the browser's own speech recognition. Everywhere else you type, and typing always works.</p></div></details>
+    <details><summary>What lists work?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>3 to 12 items, in order, 4 words or fewer each. Add other accepted answers after “ / ”, like <code>Sodium / Na</code>.</p></div></details>
+    <details><summary>Will I still remember it next week?<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><div class="a"><p>Loci doesn't claim that. It shows recall in one sitting: the first-try score, the learning time and the recall time. Walk your saved palace again before the exam.</p></div></details>
+  </div>
+</section>
+
+<section class="end wrap" aria-labelledby="end-title">
+  <div>
+    <h2 id="end-title">Your room is the memory palace.</h2>
+    <p>Try the 12 cranial nerves in one tap, or bring your own room and your own list.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="../">Open Loci<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a class="btn" href="../deck/"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Pitch deck</a>
+      <a class="btn" href="https://github.com/edycutjong/loci"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></svg>GitHub</a>
+    </div>
+  </div>
+  <img src="../media/stage-all-lit.webp" width="720" height="1079" loading="lazy" alt="The example room with every light back on: all twelve stops green." />
+</section>
+</main>
+
+<footer class="foot wrap">
+  <div class="foot-grid">
+    <a class="brand" href="../"><svg aria-hidden="true"><use href="#mark"/></svg>Loci</a>
+    <ul>
+      <li><a href="../">Open Loci</a></li>
+      <li><a href="../deck/">Pitch deck</a></li>
+      <li><a href="https://github.com/edycutjong/loci">GitHub</a></li>
+      <li><a href="https://github.com/edycutjong/loci/blob/main/devpost/scope.md">Scope</a></li>
+      <li><a href="https://github.com/edycutjong/loci/blob/main/devpost/prd.md">PRD</a></li>
+      <li><a href="https://github.com/edycutjong/loci/blob/main/devpost/spec.md">Spec</a></li>
+      <li><a href="https://github.com/edycutjong/loci/blob/main/LICENSE">MIT License</a></li>
+    </ul>
+    <a class="ver" href="https://github.com/edycutjong/loci/releases/tag/v0.1.0" title="Latest release">v0.1.0</a>
+  </div>
+  <p class="credits">Built for Build With AI: Basics (Devpost Learn). The example room is AI-generated. Type: Piazzolla, Atkinson Hyperlegible Next and Atkinson Hyperlegible Mono (<a href="../fonts/OFL.txt">SIL Open Font License</a>).</p>
+</footer>
+
+<script>
+(() => {
+  document.documentElement.classList.add("js");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const seen = (el, cb, threshold = 0.35) => {
+    if (!("IntersectionObserver" in window)) return cb(true);
+    new IntersectionObserver((entries) => entries.forEach((e) => cb(e.isIntersecting)), { threshold }).observe(el);
+  };
+
+  // The hero: the example palace's lights-out walk, on a loop. It starts from the state the page loads with
+  // (five remembered, stop 6 asked), lights the rest, brings the whole room back, then goes dark and starts again.
+  const ITEMS = ["Olfactory", "Optic", "Oculomotor", "Trochlear", "Trigeminal", "Abducens", "Facial", "Vestibulocochlear", "Glossopharyngeal", "Vagus", "Accessory", "Hypoglossal"];
+  const stage = $("#hero-stage");
+  const pins = $$(".pin", stage), pools = $$(".pool", stage), tracks = $$(".track", stage);
+  const dots = $$(".strip li");
+  const heard = $(".heard", stage), heardText = $("span", heard);
+  const ICON_CHECK = "<svg class=\"ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M20 6 9 17l-5-5\"/></svg>", ICON_SUN = "<svg class=\"ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2\"/><path d=\"M12 20v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"m17.66 17.66 1.41 1.41\"/><path d=\"M2 12h2\"/><path d=\"M20 12h2\"/><path d=\"m6.34 17.66-1.41 1.41\"/><path d=\"m19.07 4.93-1.41 1.41\"/></svg>";
+  let lit = 5, timer = 0, running = false, visible = true;
+  const say = (kind, text) => {
+    heard.dataset.kind = kind;
+    heard.querySelector("svg").outerHTML = kind === "all" ? ICON_SUN : ICON_CHECK;
+    heardText.textContent = text;
+  };
+  const paint = (n, allLit) => {
+    pins.forEach((p, i) => (p.dataset.state = i < n ? "right" : i === n ? "current" : "ahead"));
+    dots.forEach((d, i) => (d.dataset.state = i < n ? "right" : i === n ? "current" : "ahead"));
+    pools.forEach((c, i) => (c.dataset.on = String(i < n)));
+    tracks.forEach((t, i) => (t.dataset.walked = String(i < n)));
+    stage.dataset.allLit = String(!!allLit);
+  };
+  const step = () => {
+    if (!running) return;
+    if (lit < ITEMS.length) {
+      lit += 1;
+      paint(lit, false);
+      const pin = pins[lit - 1];
+      pin.dataset.pop = "true";
+      setTimeout(() => (pin.dataset.pop = "false"), 600);
+      say("right", `Stop ${lit}: ${ITEMS[lit - 1]}. Right.`);
+      timer = setTimeout(step, lit === ITEMS.length ? 900 : 1150);
+    } else if (stage.dataset.allLit !== "true") {
+      paint(lit, true);
+      say("all", "Every light is on.");
+      timer = setTimeout(step, 3600);
+    } else {
+      lit = 0;
+      paint(0, false);
+      say("right", "Lights out. Stop 1: the yellow raincoat.");
+      timer = setTimeout(step, 1700);
+    }
+  };
+  const play = (on) => {
+    if (still || on === running) return;
+    running = on;
+    clearTimeout(timer);
+    if (on) timer = setTimeout(step, 1600);
+  };
+  if (!still) {
+    seen(stage, (v) => { visible = v; play(v && !document.hidden); }, 0.2);
+    document.addEventListener("visibilitychange", () => play(visible && !document.hidden));
+  }
+
+  // Receipts count up once, from 0, when they come into view (the final value is already in the page).
+  $$("[data-count]").forEach((el) => {
+    const end = Number(el.dataset.count);
+    el.setAttribute("aria-label", String(end));
+    if (still) return;
+    let done = false;
+    seen(el, (v) => {
+      if (!v || done) return;
+      done = true;
+      const t0 = performance.now(), dur = 1100;
+      const tick = (t) => {
+        const k = Math.min(1, (t - t0) / dur);
+        el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 4))));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, 0.6);
+  });
+
+  // The checker replay: each real answer is typed, then its verdict lands.
+  const replay = $("#replay");
+  if (replay && !still) {
+    const rows = $$("li", replay);
+    const said = rows.map((li) => $("q", li));
+    const full = said.map((q) => q.textContent);
+    replay.classList.add("typing");
+    let started = false;
+    seen(replay, async (v) => {
+      if (!v || started) return;
+      started = true;
+      for (let i = 0; i < rows.length; i++) {
+        said[i].textContent = "";
+        said[i].classList.add("caret");
+        rows[i].classList.add("shown");
+        for (const ch of full[i]) {
+          said[i].textContent += ch;
+          await new Promise((r) => setTimeout(r, 42));
+        }
+        said[i].classList.remove("caret");
+        await new Promise((r) => setTimeout(r, 380));
+      }
+    }, 0.4);
+  }
+
+  // The real clip plays while it is on screen; a themed button pauses it (no browser chrome over the video).
+  const video = $("#walk-video"), vbtn = $(".vbtn");
+  if (video && !still) {
+    video.removeAttribute("controls");
+    vbtn.hidden = false;
+    let userPaused = false;
+    const label = () => {
+      const paused = video.paused;
+      vbtn.setAttribute("aria-pressed", String(paused));
+      vbtn.querySelector("span").textContent = paused ? "Play" : "Pause";
+      vbtn.querySelector("svg").outerHTML = paused ? "<svg class=\"ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"/></svg>" : "<svg class=\"ic\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/><rect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/></svg>";
+    };
+    video.addEventListener("play", label);
+    video.addEventListener("pause", label);
+    vbtn.addEventListener("click", () => { userPaused = !video.paused; userPaused ? video.pause() : video.play(); });
+    seen(video, (v) => { if (v && !userPaused) video.play().catch(() => {}); else if (!v) video.pause(); }, 0.4);
+  }
+
+  // The page is a walk too: the section in view is the current stop, the ones above it are walked.
+  const marks = $$(".sec .label .disc");
+  const secs = marks.map((d) => d.closest("section"));
+  const mark = () => {
+    const y = innerHeight * 0.45;
+    let cur = -1;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top < y) cur = i; });
+    marks.forEach((d, i) => (d.dataset.state = i < cur ? "walked" : i === cur ? "current" : "ahead"));
+  };
+  addEventListener("scroll", mark, { passive: true });
+  mark();
+})();
+</script>
+</body>
+</html>
