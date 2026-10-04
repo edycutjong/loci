@@ -102,15 +102,15 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: [what actually happened; real document/test/code references; unfinished work if interrupted]
-Route and stops: [actual paths and symbols; guided stops completed, or reference-only route]
-Edit outcome: [tried/kept/reverted/declined/not applicable; verification if changed]
-Reflection: [offered/answered/declined/already covered — personal answer belongs only in the ignored profile]
-Activity mode: [live app and editor, explicit static fallback, focused alternative, prior practice, or recap]
+Activity and evidence: Brief recap (focused alternative for a plan-first learner), tied to the stated learning goal, understanding the answer checker. The real moment: the planning notes first proposed one typo allowance for the whole answer; the spec's must-be-wrong pairs ("Vitamin C" vs "Vitamin D", "Henry VII" vs "Henry VIII") showed that rule would accept both, so the checker became per word with short words exact. Evidence: `tests/score.test.ts` ("needs short words exactly", "forgives up to the allowance and not one more", "never accepts a different item from the same list").
+Route and stops: Reference route in the map, not toured live: `src/components/RecallPanel.tsx` (`onSubmit` → `onAnswer`) → `src/screens/Palace.tsx` (`isRight` → `respond()` → `commit()`) → `shared/score.ts` (`normalize`, `distance`, `allowance`, `closeEnough`, `isRight`) → `src/components/Stage.tsx` (`.pin[data-state="right"]`, `circle.pool`).
+Edit outcome: not applicable (no edit, per the learner's standing instruction not to be asked questions).
+Reflection: not offered (standing instruction: "No questions to me").
+Activity mode: recap; the app map was rendered offline in a browser and every path and symbol checked against commit `f6b30fe`.
 
 ## Revisions
 - Voice accuracy with a real microphone was not measured by the agent — automated Chrome on the build machine can't open a microphone (the planning spike hit the same wall). The interpreter is covered by unit tests and by browser checks that drive a stand-in recognizer; the learner's own voice is the remaining check.

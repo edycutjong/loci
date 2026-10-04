@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loci — app map</title>
+<style>
+  :root { color-scheme: dark; --bg: #0e1534; --panel: #141c40; --raised: #1d2752; --line: #6e7aa6; --text: #eef1fa; --soft: #b9c1dd; --dim: #8590b8; --lit: #46d98a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font: 650 2.1rem/1.1 Georgia, "Times New Roman", serif; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font: 600 1.4rem/1.2 Georgia, "Times New Roman", serif; margin: 40px 0 12px; }
+  p, li { color: var(--soft); max-width: 70ch; }
+  strong, b { color: var(--text); }
+  code { font: 0.9em ui-monospace, Menlo, monospace; background: var(--raised); color: var(--text); padding: 1px 6px; border-radius: 6px; }
+  .snapshot { color: var(--dim); font-size: 0.875rem; }
+  .pieces { display: grid; gap: 10px; padding: 0; list-style: none; }
+  .pieces li { background: var(--panel); border: 1px solid #2a3668; border-radius: 12px; padding: 12px 16px; }
+  figure { margin: 0; background: var(--panel); border: 1px solid #2a3668; border-radius: 16px; padding: 16px; }
+  figcaption { color: var(--dim); font-size: 0.875rem; margin-top: 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  ol.route { padding-left: 1.4em; }
+  ol.route li { margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #2a3668; vertical-align: top; color: var(--soft); }
+  th { color: var(--text); font-weight: 650; }
+  details { background: var(--panel); border: 1px solid #2a3668; border-radius: 12px; padding: 12px 16px; margin-top: 12px; }
+  summary { cursor: pointer; font-weight: 650; color: var(--text); }
+  summary:focus-visible, a:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; border-radius: 6px; }
+  a { color: var(--text); text-underline-offset: 3px; }
+  .practice { border: 1.5px solid var(--lit); border-radius: 16px; padding: 16px 20px; background: var(--panel); }
+  pre { background: var(--raised); padding: 12px 14px; border-radius: 10px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Loci — app map</h1>
+  <p class="snapshot">A snapshot of the code at commit <code>f6b30fe</code> (2026-10-04). The code can move on after this; the paths and names below were checked against that commit.</p>
+
+  <p>Loci turns one photo of your own room into a memory palace for a list. It puts each item on a real object along one route, writes a short scene for each stop, and then tests you with the lights out: every item you remember turns its stop green and lights that part of the room again.</p>
+
+  <h2>The main pieces</h2>
+  <ul class="pieces">
+    <li><strong>The app in the browser</strong> — <code>src/</code>. Screens (<code>src/screens/Home.tsx</code>, <code>src/screens/Palace.tsx</code>), the photo stage with pins and route (<code>src/components/Stage.tsx</code>), and the learn, recall and result panels.</li>
+    <li><strong>Two small server helpers</strong> — <code>api/anchors.ts</code> finds objects in the photo (Gemini, DeepSeek last); <code>api/scenes.ts</code> writes one scene per stop from object names only. They hold the AI keys, which never reach the browser.</li>
+    <li><strong>Plain rules the AI never overrides</strong> — <code>shared/route.ts</code> (which objects become stops, and the route), <code>shared/score.ts</code> (is an answer right?), <code>shared/voice.ts</code> (what a spoken phrase means).</li>
+    <li><strong>Storage on the device</strong> — <code>src/lib/store.ts</code> keeps palaces, photos and results in the browser's IndexedDB.</li>
+    <li><strong>Speech-to-text</strong> — <code>src/lib/speech.ts</code> wraps the browser's own Web Speech API for spoken recall.</li>
+  </ul>
+
+  <h2>One action, followed through the code</h2>
+  <p><b>You type an answer during recall and press Enter.</b> Here is where it goes, and how it ends up as a green pin with a pool of light.</p>
+  <figure>
+    <svg viewBox="0 0 840 250" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">How a typed answer becomes a green pin</title>
+      <desc id="flow-desc">The answer box in RecallPanel sends the text to the Palace screen, which asks the answer checker in shared/score.ts. A right answer updates the walk, and the Stage turns the pin green and opens a pool of light.</desc>
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8590b8"/></marker></defs>
+      <g font-family="system-ui, sans-serif">
+        <rect x="10" y="30" width="180" height="96" rx="14" fill="#1d2752" stroke="#6e7aa6"/>
+        <text x="100" y="62" text-anchor="middle" fill="#eef1fa" font-size="16" font-weight="650">You type, Enter</text>
+        <text x="100" y="86" text-anchor="middle" fill="#b9c1dd" font-size="13">RecallPanel.tsx</text>
+        <text x="100" y="106" text-anchor="middle" fill="#8590b8" font-size="12">onSubmit → onAnswer(text)</text>
+
+        <rect x="230" y="30" width="180" height="96" rx="14" fill="#1d2752" stroke="#6e7aa6"/>
+        <text x="320" y="62" text-anchor="middle" fill="#eef1fa" font-size="16" font-weight="650">The Palace screen</text>
+        <text x="320" y="86" text-anchor="middle" fill="#b9c1dd" font-size="13">Palace.tsx</text>
+        <text x="320" y="106" text-anchor="middle" fill="#8590b8" font-size="12">respond() → commit()</text>
+
+        <rect x="450" y="30" width="180" height="96" rx="14" fill="#1d2752" stroke="#eef1fa" stroke-width="1.5"/>
+        <text x="540" y="62" text-anchor="middle" fill="#eef1fa" font-size="16" font-weight="650">The answer checker</text>
+        <text x="540" y="86" text-anchor="middle" fill="#b9c1dd" font-size="13">shared/score.ts</text>
+        <text x="540" y="106" text-anchor="middle" fill="#8590b8" font-size="12">isRight() → closeEnough()</text>
+
+        <rect x="670" y="30" width="160" height="96" rx="14" fill="#1d2752" stroke="#46d98a" stroke-width="1.5"/>
+        <text x="750" y="62" text-anchor="middle" fill="#eef1fa" font-size="16" font-weight="650">You see it</text>
+        <text x="750" y="86" text-anchor="middle" fill="#b9c1dd" font-size="13">Stage.tsx</text>
+        <text x="750" y="106" text-anchor="middle" fill="#8590b8" font-size="12">green pin + light pool</text>
+
+        <line x1="192" y1="78" x2="226" y2="78" stroke="#8590b8" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="412" y1="70" x2="446" y2="70" stroke="#8590b8" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="446" y1="92" x2="412" y2="92" stroke="#8590b8" stroke-width="2" marker-end="url(#arrow)"/>
+        <path d="M320 128 C 320 200, 750 200, 750 130" fill="none" stroke="#8590b8" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round" marker-end="url(#arrow)"/>
+        <text x="535" y="214" text-anchor="middle" fill="#b9c1dd" font-size="13">right → the walk records it (src/lib/recall.ts answer()) → pin state "right" → pool opens</text>
+      </g>
+    </svg>
+    <figcaption>Reference route, recapped rather than walked through live in an editor. The checker sits in the middle on purpose: it is plain code, so the score never depends on an AI.</figcaption>
+  </figure>
+
+  <h2>The route, stop by stop</h2>
+  <ol class="route">
+    <li><b><code>src/components/RecallPanel.tsx</code></b> — the answer form's <code>onSubmit</code> ignores an empty box, then calls <code>onAnswer(text)</code> and clears the box for the next stop. The input has autocorrect, autocapitalise and spellcheck off, so the phone keyboard can't change your answer.</li>
+    <li><b><code>src/screens/Palace.tsx</code></b> — <code>onAnswer</code> runs <code>const ok = isRight(text, askingStop.item)</code>, then <code>respond(ok, …)</code>. <code>respond()</code> moves the walk on with <code>answer(walk, ok, now)</code> from <code>src/lib/recall.ts</code> and hands it to <code>commit()</code>, which shows the feedback line and, after the last stop, calls <code>finish()</code> to compute and save the result. Spoken answers arrive through <code>onPhrase.current</code> and reach the same <code>commit()</code>.</li>
+    <li><b><code>shared/score.ts</code></b> — <code>normalize()</code> lowercases, strips accents, punctuation and a leading "1."; <code>closeEnough()</code> compares word by word: <code>distance()</code> (typing changes, a swap of neighbours counts once) must stay within <code>allowance(word length)</code> — 0 for up to 4 letters, 1 for 5–9, 2 for 10 or more — and within <code>MAX_TOTAL_TYPOS</code> (3) overall; words run together ("oatmilk") also match. <code>isRight()</code> tries the item and every accepted answer.</li>
+  </ol>
+  <p>Back on screen, <code>Palace.tsx</code> turns the walk into <code>pinStates</code> and <code>lit</code>; <code>src/components/Stage.tsx</code> draws <code>.pin[data-state="right"]</code> with a tick and opens that stop's <code>circle.pool</code> in the mask over the dark room.</p>
+
+  <h2>To change this, start here</h2>
+  <table>
+    <thead><tr><th scope="col">If you want to change…</th><th scope="col">Start at</th></tr></thead>
+    <tbody>
+      <tr><td>How forgiving typed answers are</td><td><code>allowance</code> and <code>MAX_TOTAL_TYPOS</code> in <code>shared/score.ts</code> (then <code>npm test</code>: <code>tests/score.test.ts</code> holds the boundary cases)</td></tr>
+      <tr><td>What a spoken phrase can mean ("skip", sound-alikes)</td><td><code>SKIP_PHRASES</code>, <code>soundKey</code>, <code>interpret</code> in <code>shared/voice.ts</code></td></tr>
+      <tr><td>How close pins may sit, or the route rule</td><td><code>MIN_GAP</code>, <code>chooseAnchors</code>, <code>shortestRoute</code> in <code>shared/route.ts</code></td></tr>
+      <tr><td>What the AI is asked</td><td><code>ANCHOR_PROMPT</code> and <code>scenePrompt</code> in <code>shared/prompts.ts</code></td></tr>
+      <tr><td>Which models are tried, in what order</td><td><code>attempts()</code> in <code>api/anchors.ts</code> and <code>api/scenes.ts</code></td></tr>
+      <tr><td>Colours, fonts, motion timings</td><td><code>src/styles/tokens.css</code> (contrast is checked by <code>tests/contrast.test.ts</code>)</td></tr>
+      <tr><td>The example rooms and lists</td><td><code>src/examples/lists.ts</code>, then <code>npm run examples</code> (<code>scripts/prebuild-examples.mjs</code>) with the dev server running</td></tr>
+    </tbody>
+  </table>
+
+  <h2>A practice to reuse</h2>
+  <div class="practice">
+    <p><b>Before trusting a "close enough" rule, write down the pairs that must match and the pairs that must not, and make them tests.</b></p>
+    <p>What happened here: the first plan used one typo allowance for the whole answer. The spec listed "Vitamin C" vs "Vitamin D" and "Henry VII" vs "Henry VIII" as answers that must be wrong. Worked through, a whole-answer allowance of 1 would have accepted both. So the rule became per word, with short words exact. The evidence is in <code>tests/score.test.ts</code>: "needs short words exactly" and "forgives up to the allowance and not one more". A later test, "never accepts a different item from the same list", checks all 132 pairs of cranial nerves.</p>
+    <p>Where else it helps: search boxes, duplicate detection, "did you mean", matching names across lists. Any time an agent writes a tolerant comparison, ask it for the must-match and must-not-match table first, and keep the table as tests.</p>
+  </div>
+
+  <details>
+    <summary>Run it again</summary>
+    <pre><code>npm install
+cp .env.example .env.local   # add GEMINI_API_KEY and/or DEEPSEEK_API_KEY
+npm run dev                  # http://localhost:5174
+npm test                     # unit tests
+npm run e2e                  # browser checks (no keys needed)</code></pre>
+    <p>Live: <a href="https://loci.edycu.dev">loci.edycu.dev</a> (also <a href="https://devpost-learn-loci.vercel.app">devpost-learn-loci.vercel.app</a>).</p>
+  </details>
+</main>
+</body>
+</html>
