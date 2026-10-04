@@ -1,0 +1,552 @@
+<!doctype html>
+<!--
+  Loci — pitch deck (/deck/). One file, 10 slides on a 1920×1080 stage, scaled to fit the window.
+  Keys: ← → / Space / PageUp PageDown / Home End to move · Esc slide grid · P presenter (notes, timer) ·
+        C contrast check (outlines every text block) · Cmd/Ctrl+P → Save as PDF (16 × 9 in, one slide per page).
+  Touch: swipe left or right. Deep link: /deck/#4.
+  Images: ../media/app-*.webp and stage-*.webp are real captures of the live app (2026-10-04); the lights-out
+  stages copy the example palace's real stops, route and pools (src/examples/); the QR encodes https://loci.edycu.dev.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0e1534" />
+<title>Loci — pitch deck</title>
+<meta name="description" content="Loci in ten slides: your room becomes a memory palace, and every item you say back in the dark lights its stop again." />
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="canonical" href="https://loci.edycu.dev/deck/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Loci" />
+<meta property="og:title" content="Loci — pitch deck" />
+<meta property="og:description" content="Say your list in the dark. Your room lights up." />
+<meta property="og:url" content="https://loci.edycu.dev/deck/" />
+<meta property="og:image" content="https://loci.edycu.dev/og.jpg?v=2" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preload" href="../fonts/piazzolla-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+@font-face { font-family: "Piazzolla Variable"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-normal.woff2) format("woff2"); }
+@font-face { font-family: "Piazzolla Variable"; font-style: italic; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-italic.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next Variable"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(../fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-700-normal.woff2) format("woff2"); }
+
+/* Loci's tokens: the night, moonlight and state colours of src/styles/tokens.css (the story page uses the same block) */
+:root {
+  --bg:      #0e1534;  /* night-900: a room at night is blue, not black (the Blue Night Rule) */
+  --ink:     #eef1fa;  /* moon-100: moonlight type, the current station, primary actions */
+  --muted:   #b9c1dd;  /* moon-300: secondary text */
+  --before:  #8590b8;  /* state: stop still dark — moon-500, the hollow station rim and the resting dotted route */
+  --after:   #46d98a;  /* state: item recalled — the station turns green and its part of the room lights up; fires only on a right answer */
+  --rule:    #6e7aa6;  /* line: every control outline, 1.5px */
+  --miss:    #ff7f6e;  /* judged wrong: the stop stays dark; never decoration */
+  --font-display: "Piazzolla Variable", "Piazzolla", Georgia, serif;  /* a bookish serif with optical sizing: the things to remember are set in it */
+  --font-body:    "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-data:    "Atkinson Hyperlegible Mono", ui-monospace, monospace;  /* ONLY station numerals, timers and scores (and file paths) */
+}
+:root {
+  --night-800: #141c40; --night-700: #1d2752; --night-600: #2a3668;
+  --shadow-lift: 0 2px 4px rgb(4 7 22 / 0.5), 0 10px 28px rgb(4 7 22 / 0.42);
+  --shadow-pin: 0 1px 2px rgb(4 7 22 / 0.7), 0 4px 10px rgb(4 7 22 / 0.5);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --light-ms: 700ms; --room-ms: 900ms;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) { :root { --light-ms: 0ms; --room-ms: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #090e24; overflow: hidden; }
+body { color: var(--ink); font: 400 30px/1.45 var(--font-body); -webkit-font-smoothing: antialiased; }
+::selection { background: rgb(70 217 138 / 0.32); color: var(--ink); }
+:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); border-radius: 10px; }
+img, svg { display: block; max-width: 100%; }
+code { font: 500 0.8em/1.4 var(--font-data); }
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* The stage: 1920×1080, scaled to the window from documentElement.client* (innerWidth lies on phones). */
+.viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.slide {
+  position: absolute; inset: 0; overflow: hidden; padding: 112px 128px 120px; background: var(--bg);
+  opacity: 0; visibility: hidden; transform: translateX(28px); transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out), visibility 0s 420ms;
+}
+.slide::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.14; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .94 0 0 0 0 .98 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 85% 0%, #18224f 0%, rgb(24 34 79 / 0) 70%); z-index: -1; }
+.slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out); }
+.slide.before { transform: translateX(-28px); }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.on { transition: none; transform: none; } }
+
+/* Shared slide type */
+.kicker { display: flex; align-items: center; gap: 16px; margin: 0 0 28px; color: var(--before); font: 650 22px/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.kicker i { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--before); }
+.kicker i.cur { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5.5px var(--ink); }
+h1, h2 { margin: 0; font-family: var(--font-display); font-optical-sizing: auto; text-wrap: balance; }
+h2 { font-weight: 640; font-size: 88px; line-height: 1.02; letter-spacing: -0.024em; max-width: 15ch; }
+h1 em, h2 em, .big em { font-style: italic; font-weight: 560; color: var(--after); letter-spacing: -0.02em; }
+h2 i { font-style: italic; font-weight: 560; }
+.body { margin: 30px 0 0; max-width: 34ch; color: var(--muted); font-size: 34px; line-height: 1.42; }
+.body b { color: var(--ink); font-weight: 650; }
+.foot { position: absolute; left: 128px; right: 128px; bottom: 44px; display: flex; align-items: center; gap: 14px; color: var(--before); font: 600 20px/1 var(--font-body); }
+.foot svg { width: 28px; height: 28px; }
+.foot .ver { font: 700 18px/1 var(--font-data); padding: 6px 9px; border-radius: 7px; border: 1px solid var(--night-600); color: var(--muted); }
+.foot .url { margin-left: auto; margin-right: 150px; font-family: var(--font-data); font-weight: 500; }
+.contrast-check { }
+body.debug-contrast .contrast-check, body.debug-contrast .slide :is(h1, h2, h3, p, li, figcaption, small, code) { outline: 1.5px dashed rgb(255 127 110 / 0.8); outline-offset: 3px; } /* Press C to toggle contrast debug mode */
+
+/* Lights-out stage (same geometry and rules as the landing and the app) */
+.stagebox { position: relative; aspect-ratio: 853 / 1280; border-radius: 22px; overflow: hidden; background: var(--night-800); box-shadow: var(--shadow-lift), 0 50px 100px -40px rgb(4 7 22 / 0.85); isolation: isolate; }
+.room, .room > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.night { fill: var(--bg); opacity: 0.93; transition: opacity var(--room-ms) var(--ease-out); }
+.stagebox[data-all-lit="true"] .night { opacity: 0; }
+.pool { transform-box: fill-box; transform-origin: center; transform: scale(0.15); opacity: 0; transition: transform var(--light-ms) var(--ease-out), opacity var(--light-ms) var(--ease-out); }
+.pool[data-on="true"] { transform: scale(1); opacity: 1; }
+.seg path { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.seg .casing { stroke: transparent; stroke-width: 9px; }
+.seg .track { stroke: var(--before); stroke-width: 3.5px; stroke-dasharray: 0.1px 10px; }
+.seg .track[data-walked="true"] { stroke: var(--muted); stroke-dasharray: none; }
+.stagebox[data-all-lit="true"] .seg .casing { stroke: rgb(14 21 52 / 0.72); }
+.stagebox[data-all-lit="true"] .seg .track { stroke: var(--ink); }
+.pins { position: absolute; inset: 0; }
+.pin { --size: 48px; position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: var(--size); height: var(--size); margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  display: grid; place-items: center; border-radius: 50%; border: 3px solid var(--ink); background: rgb(14 21 52 / 0.9); color: var(--ink);
+  font: 700 19px/1 var(--font-data); box-shadow: var(--shadow-pin); transition: background-color 260ms var(--ease-out), border-color 260ms var(--ease-out), color 260ms var(--ease-out), transform 260ms var(--ease-out); }
+.pin svg { display: none; width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.pin[data-state="ahead"] { background: rgb(20 28 64 / 0.92); border-color: var(--before); color: var(--muted); }
+.pin[data-state="current"] { z-index: 2; background: var(--ink); color: var(--bg); box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px var(--ink), var(--shadow-pin); }
+.pin[data-state="right"] { background: var(--after); border-color: var(--after); color: var(--bg); }
+.pin[data-state="right"] b { display: none; }
+.pin[data-state="right"] svg { display: block; }
+.slide.on .pin[data-state="current"]::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 3px solid var(--ink); animation: listen 1600ms var(--ease-out) 4; }
+@keyframes listen { from { opacity: 0.7; transform: scale(0.9); } to { opacity: 0; transform: scale(1.5); } }
+.heard { position: absolute; left: 20px; right: 20px; bottom: 20px; z-index: 3; margin: 0; display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 14px; background: rgb(14 21 52 / 0.9); border: 1px solid var(--night-600); font: 650 26px/1.2 var(--font-body); }
+.heard .ic { color: var(--after); stroke-width: 3; }
+
+/* 1 · cover */
+.s-cover { display: grid; grid-template-columns: 1fr 600px; gap: 110px; align-items: center; padding-top: 96px; }
+.badge { display: inline-flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 999px; border: 1.5px solid var(--night-600); color: var(--muted); font: 650 21px/1 var(--font-body); letter-spacing: 0.04em; }
+.badge i { width: 12px; height: 12px; border-radius: 50%; background: var(--after); }
+.brand { display: flex; align-items: center; gap: 26px; margin: 44px 0 30px; font: 650 150px/0.9 var(--font-display); letter-spacing: -0.03em; }
+.brand svg { width: 132px; height: 132px; }
+.s-cover h1 { font-weight: 600; font-size: 70px; line-height: 1.06; letter-spacing: -0.02em; max-width: 17ch; }
+.s-cover .sub { margin: 26px 0 0; color: var(--muted); font-size: 32px; }
+.s-cover .meta { display: flex; gap: 22px; align-items: center; margin-top: 46px; color: var(--before); font: 600 22px/1 var(--font-body); }
+.s-cover .meta code { font-size: 22px; color: var(--muted); }
+.s-cover .meta .v { font: 700 22px/1 var(--font-data); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--night-600); color: var(--ink); }
+
+/* 2 · hook */
+.s-hook { display: grid; align-content: center; gap: 70px; }
+.big { margin: 0; max-width: 18ch; font: 620 120px/1.02 var(--font-display); letter-spacing: -0.03em; text-wrap: balance; }
+.hookstrip .strip { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.strip li { position: relative; display: grid; justify-items: center; gap: 12px; text-align: center; }
+.strip li + li::before { content: ""; position: absolute; top: 21px; right: calc(50% + 22px); width: calc(100% - 44px); border-top: 3.5px dotted var(--before); }
+.strip li[data-state="right"] + li::before { border-top-style: solid; border-top-color: var(--muted); }
+.strip .dot { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--before); background: var(--bg); color: var(--muted); font: 700 17px/1 var(--font-data); }
+.strip .dot svg { display: none; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.strip [data-state="right"] .dot { background: var(--after); border-color: var(--after); color: var(--bg); }
+.strip [data-state="right"] .dot b { display: none; }
+.strip [data-state="right"] .dot svg { display: block; }
+.strip [data-state="current"] .dot { background: var(--ink); border-color: var(--ink); color: var(--bg); box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px var(--ink); }
+.strip small { color: var(--before); font: 600 19px/1.2 var(--font-body); max-width: 9ch; }
+.strip [data-state="right"] small, .strip [data-state="current"] small { color: var(--muted); }
+
+/* 3 · problem */
+.s-problem { display: grid; grid-template-columns: 1fr 820px; gap: 100px; align-items: center; }
+.mnemo { padding: 56px 60px; border-radius: 26px; border: 1px solid var(--night-600); background: var(--night-800); }
+.mnemo p { margin: 0; font: italic 500 64px/1.2 var(--font-display); color: var(--muted); }
+.mnemo p b { font-style: normal; font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 10px; text-decoration-color: var(--before); }
+.mnemo .q { margin-top: 40px; padding-top: 30px; border-top: 1px dashed var(--night-600); font: 600 30px/1.35 var(--font-body); color: var(--muted); font-style: normal; }
+.mnemo .q code { font-size: 26px; color: var(--before); }
+
+/* 4 · solution, 6 · demo: real captures in a browser frame */
+.browser { border-radius: 20px; overflow: hidden; border: 1px solid var(--night-600); background: var(--night-800); box-shadow: var(--shadow-lift), 0 50px 100px -40px rgb(4 7 22 / 0.8); }
+.chrome { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px; border-bottom: 1px solid var(--night-600); background: #111939; }
+.chrome i { width: 13px; height: 13px; border-radius: 50%; background: var(--night-600); }
+.chrome span { margin-left: 12px; padding: 4px 16px; border-radius: 999px; background: var(--bg); color: var(--before); font: 500 17px/1.4 var(--font-data); }
+.browser img { width: 100%; height: auto; aspect-ratio: 1600 / 1000; }
+.s-solution { display: grid; grid-template-columns: 600px 1fr; gap: 90px; align-items: center; }
+.s-demo h2 { max-width: none; font-size: 76px; }
+.s-demo { padding-top: 96px; }
+.flow { display: grid; grid-template-columns: repeat(3, 360px); justify-content: space-between; margin: 48px 0 0; padding: 0 70px; list-style: none; position: relative; }
+.flow figure { margin: 0; }
+.cap { position: relative; width: 360px; border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-lift), 0 40px 80px -40px rgb(4 7 22 / 0.8); }
+.cap img { width: 360px; height: 540px; object-fit: cover; }
+.ring { position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: 74px; height: 74px; margin: -37px 0 0 -37px; border-radius: 50%; border: 3px dashed var(--ink); }
+.flow figcaption { display: grid; grid-template-columns: auto 1fr; column-gap: 18px; align-items: center; margin-top: 26px; color: var(--muted); font-size: 26px; line-height: 1.3; }
+.flow figcaption b { color: var(--ink); font: 600 34px/1.15 var(--font-display); }
+.flow figcaption .callout { grid-row: span 2; }
+.callout { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; border: 3px solid var(--ink); background: var(--bg); color: var(--ink); font: 700 23px/1 var(--font-data); }
+.callout.lit { background: var(--after); border-color: var(--after); color: var(--bg); }
+
+/* 5 · how it works */
+.s-how h2 { max-width: none; }
+.arch { margin-top: 64px; width: 1664px; height: 600px; }
+.arch .lane { fill: var(--night-800); stroke: var(--night-600); stroke-width: 1.5; }
+.arch .lane-t { fill: var(--before); font: 650 19px var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.arch .node rect { fill: var(--bg); stroke: var(--rule); stroke-width: 2; }
+.arch .node.ai rect { stroke: var(--before); stroke-dasharray: 7 7; }
+.arch .node.key rect { stroke: var(--ink); stroke-width: 2.5; }
+.arch .t { fill: var(--ink); font: 600 27px var(--font-display); }
+.arch .s { fill: var(--before); font: 500 17px var(--font-data); }
+.arch .wire { fill: none; stroke: var(--muted); stroke-width: 2.5; }
+.arch .wire.dash { stroke-dasharray: 2 9; stroke-linecap: round; stroke: var(--before); }
+.arch .w-t { fill: var(--muted); font: 600 18px var(--font-body); }
+.arch .lit { fill: var(--after); }
+
+/* 7 · the frozen slide */
+.s-frozen { display: grid; grid-template-columns: 560px 1fr; gap: 110px; align-items: center; padding-top: 80px; padding-bottom: 96px; }
+.s-frozen .stagebox { width: 560px; }
+.s-frozen .big { font-size: 84px; max-width: 16ch; }
+.s-frozen .frozen-note { margin: 34px 0 0; color: var(--before); font-size: 26px; max-width: 40ch; }
+
+/* 8 · who decides */
+.s-check { display: grid; grid-template-columns: 1fr 1010px; gap: 90px; align-items: center; }
+.replay { margin: 0; padding: 14px 0; list-style: none; border-radius: 22px; border: 1px solid var(--night-600); background: var(--night-800); box-shadow: var(--shadow-lift); }
+.replay li { display: grid; grid-template-columns: 44px 1fr; gap: 22px; align-items: center; padding: 20px 32px; }
+.replay li + li { border-top: 1px dashed var(--night-600); }
+.replay .mark { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; }
+.replay .mark svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.replay [data-ok="true"] .mark { background: var(--after); color: var(--bg); }
+.replay [data-ok="false"] .mark { background: var(--miss); color: var(--bg); }
+.replay .said { margin: 0; font: 500 30px/1.3 var(--font-data); color: var(--muted); }
+.replay .said q { color: var(--ink); quotes: "“" "”"; }
+.replay .said span { color: var(--before); }
+.replay .said em { font: 600 34px/1 var(--font-display); color: var(--ink); font-style: normal; }
+
+/* 9 · proof */
+.s-proof { display: grid; grid-template-columns: 1fr 1fr; gap: 90px; align-content: center; }
+.counts { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--night-600); margin-top: 50px; }
+.counts div { padding: 34px 26px 30px 0; }
+.counts div + div { padding-left: 26px; border-left: 1px solid var(--night-600); }
+.counts b { display: block; font: 700 96px/1 var(--font-data); letter-spacing: -0.03em; }
+.counts span { display: block; margin-top: 12px; color: var(--muted); font-size: 26px; line-height: 1.3; }
+.docs { margin: 0; padding: 0; list-style: none; align-self: center; display: grid; gap: 18px; }
+.docs li { display: grid; grid-template-columns: 56px 1fr; gap: 22px; align-items: center; padding: 22px 28px; border-radius: 18px; border: 1px solid var(--night-600); background: var(--night-800); }
+.docs .g { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 14px; background: var(--night-700); font-size: 28px; }
+.docs b { display: block; font: 600 32px/1.2 var(--font-display); }
+.docs span { color: var(--muted); font-size: 24px; }
+.docs code { font-size: 21px; color: var(--before); }
+
+/* 10 · the ask */
+.s-ask { display: grid; grid-template-columns: 1fr 560px; gap: 120px; align-items: center; }
+.steps { margin: 44px 0 0; padding: 0; list-style: none; display: grid; gap: 22px; counter-reset: k; }
+.steps li { display: grid; grid-template-columns: 56px 1fr; gap: 22px; align-items: center; font-size: 34px; color: var(--muted); }
+.steps li::before { counter-increment: k; content: counter(k); display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--ink); font: 700 22px/1 var(--font-data); color: var(--ink); }
+.steps b { color: var(--ink); font-weight: 650; }
+.qr { padding: 44px; border-radius: 30px; background: var(--ink); box-shadow: var(--shadow-lift); text-align: center; }
+.qr svg { width: 100%; height: auto; }
+.qr p { margin: 26px 0 0; color: var(--bg); font: 700 30px/1 var(--font-data); }
+.closer { margin: 60px 0 0; font: italic 560 52px/1.15 var(--font-display); }
+
+/* Chrome around the stage: counter, arrows, presenter notes, grid */
+.ui { position: fixed; z-index: 5; display: flex; align-items: center; gap: 10px; }
+.counter { right: 22px; bottom: 18px; font: 700 15px/1 var(--font-data); color: var(--muted); padding: 8px 10px; border-radius: 8px; background: rgb(14 21 52 / 0.8); border: 1px solid var(--night-600); }
+.arrows { left: 22px; bottom: 14px; transition: opacity 400ms var(--ease-out); }
+body.calm .arrows { opacity: 0; }
+body.calm .arrows:focus-within { opacity: 1; }
+.arrows button, .help { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--night-600); background: rgb(14 21 52 / 0.8); color: var(--muted); cursor: pointer; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.arrows button:hover { color: var(--ink); border-color: var(--rule); }
+.arrows button:disabled { opacity: 0.4; cursor: default; }
+.arrows .ic { width: 20px; height: 20px; }
+.keys { margin-left: 8px; color: var(--before); font: 500 13px/1 var(--font-data); }
+@media (max-width: 720px) { .keys { display: none; } }
+.notes-panel { position: fixed; left: 0; right: 0; bottom: 0; height: 20vh; z-index: 6; display: none; grid-template-columns: 1fr auto; gap: 24px; padding: 18px 28px; background: #070b1d; border-top: 1px solid var(--night-600); color: var(--ink); font: 400 19px/1.5 var(--font-body); }
+.notes-panel .n { overflow: auto; max-width: 110ch; }
+.notes-panel .n p { margin: 0 0 6px; }
+.notes-panel .side { text-align: right; color: var(--before); font: 500 15px/1.6 var(--font-data); }
+.notes-panel .side b { display: block; color: var(--ink); font-size: 26px; }
+body.presenter .notes-panel { display: grid; }
+body.presenter .viewport { bottom: 20vh; }
+body.presenter.idle { cursor: none; }
+body.presenter .arrows, body.presenter .counter { opacity: 0.35; }
+.speaker-notes { display: none; }
+body.grid .slide { opacity: 1; visibility: visible; transition: transform 300ms var(--ease-out); cursor: pointer; outline: 2px solid var(--night-600); }
+body.grid .slide.on { outline: 4px solid var(--ink); }
+body.grid .slide:hover { outline-color: var(--rule); }
+
+@media print {
+  @page { size: 16in 9in landscape; margin: 0; }
+  html, body { height: auto; overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .viewport { position: static; display: block; }
+  .stage { position: static; transform: none !important; width: auto; height: auto; }
+  .slide { position: relative; inset: auto; width: 1920px; height: 1080px; zoom: 0.8; opacity: 1 !important; visibility: visible !important; transform: none !important; break-after: page; break-inside: avoid; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ui, .notes-panel, .speaker-notes { display: none !important; }
+  .night { transition: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="mark" viewBox="0 0 32 32"><rect x="2.5" y="2.5" width="27" height="27" rx="8" fill="none" stroke="#eef1fa" stroke-width="2"/><path d="M8.5 21.5 L15.5 11.5 L23.5 19.5" fill="none" stroke="#8590b8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.1 3.4"/><circle cx="8.5" cy="21.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="15.5" cy="11.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="23.5" cy="19.5" r="3.4" fill="#46d98a"/></symbol>
+</svg>
+
+<div class="viewport"><main class="stage" id="stage" aria-live="polite">
+
+<!-- 1 · Cover -->
+<section class="slide s-cover" data-title="Cover" aria-label="Slide 1: Loci">
+  <div>
+    <span class="badge contrast-check"><i></i>Built for Build With AI: Basics · Devpost Learn</span>
+    <p class="brand"><svg aria-hidden="true"><use href="#mark"/></svg>Loci</p>
+    <h1 class="contrast-check">Say your list in the dark. Your room <em>lights&nbsp;up.</em></h1>
+    <p class="sub">A memory palace from one photo of your own room.</p>
+    <p class="meta"><span class="v">v0.1.0</span><code>loci.edycu.dev</code></p>
+  </div>
+  <div class="stagebox" data-all-lit="false" role="img" aria-label="An AI-generated student room with the lights out; five remembered stops are lit."><div class="room" aria-hidden="true"><svg viewBox="0 0 853 1280" preserveAspectRatio="none" focusable="false"><defs><radialGradient id="cover-pool"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><mask id="cover-lights" maskUnits="userSpaceOnUse" x="-12.8" y="-12.8" width="878.6" height="1305.6"><rect x="-12.8" y="-12.8" width="878.6" height="1305.6" fill="#fff"/><circle class="pool" data-on="true" cx="74.2" cy="435.2" r="366.8" fill="url(#cover-pool)"/><circle class="pool" data-on="true" cx="268.3" cy="620.8" r="295.3" fill="url(#cover-pool)"/><circle class="pool" data-on="true" cx="265.3" cy="469.1" r="103.3" fill="url(#cover-pool)"/><circle class="pool" data-on="true" cx="274.7" cy="209.3" r="91.4" fill="url(#cover-pool)"/><circle class="pool" data-on="true" cx="375.7" cy="313.6" r="136.6" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="455.5" cy="414.1" r="107.3" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="541.2" cy="570.9" r="147.7" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="450.8" cy="952.3" r="349.2" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="806.1" cy="922.9" r="282.6" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="812.9" cy="646.4" r="104.9" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="694.8" cy="536.3" r="190.6" fill="url(#cover-pool)"/><circle class="pool" data-on="false" cx="815.9" cy="385.9" r="120.0" fill="url(#cover-pool)"/></mask></defs><image href="../rooms/kos.jpg" width="853" height="1280" preserveAspectRatio="none"/><rect class="night" x="-12.8" y="-12.8" width="878.6" height="1305.6" mask="url(#cover-lights)"/><g class="seg"><path class="casing" d="M74.2 435.2L268.3 620.8"/><path class="track" data-walked="true" d="M74.2 435.2L268.3 620.8"/></g><g class="seg"><path class="casing" d="M268.3 620.8L265.3 469.1"/><path class="track" data-walked="true" d="M268.3 620.8L265.3 469.1"/></g><g class="seg"><path class="casing" d="M265.3 469.1L274.7 209.3"/><path class="track" data-walked="true" d="M265.3 469.1L274.7 209.3"/></g><g class="seg"><path class="casing" d="M274.7 209.3L375.7 313.6"/><path class="track" data-walked="true" d="M274.7 209.3L375.7 313.6"/></g><g class="seg"><path class="casing" d="M375.7 313.6L455.5 414.1"/><path class="track" data-walked="true" d="M375.7 313.6L455.5 414.1"/></g><g class="seg"><path class="casing" d="M455.5 414.1L541.2 570.9"/><path class="track" data-walked="false" d="M455.5 414.1L541.2 570.9"/></g><g class="seg"><path class="casing" d="M541.2 570.9L450.8 952.3"/><path class="track" data-walked="false" d="M541.2 570.9L450.8 952.3"/></g><g class="seg"><path class="casing" d="M450.8 952.3L806.1 922.9"/><path class="track" data-walked="false" d="M450.8 952.3L806.1 922.9"/></g><g class="seg"><path class="casing" d="M806.1 922.9L812.9 646.4"/><path class="track" data-walked="false" d="M806.1 922.9L812.9 646.4"/></g><g class="seg"><path class="casing" d="M812.9 646.4L694.8 536.3"/><path class="track" data-walked="false" d="M812.9 646.4L694.8 536.3"/></g><g class="seg"><path class="casing" d="M694.8 536.3L815.9 385.9"/><path class="track" data-walked="false" d="M694.8 536.3L815.9 385.9"/></g></svg><div class="pins"><span class="pin" data-state="right" style="--x:8.699;--y:34.000"><b>1</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.454;--y:48.500"><b>2</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.102;--y:36.648"><b>3</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:32.204;--y:16.352"><b>4</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:44.045;--y:24.500"><b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="current" style="--x:53.400;--y:32.352"><b>6</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:63.447;--y:44.602"><b>7</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:52.849;--y:74.398"><b>8</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:94.502;--y:72.102"><b>9</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.299;--y:50.500"><b>10</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:81.454;--y:41.898"><b>11</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.651;--y:30.148"><b>12</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span></div></div><p class="heard"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Stop 5: Trigeminal. Right.</span></p></div>
+  <aside class="speaker-notes"><p>Loci turns one photo of your room into a memory palace for any list you must learn in order.</p><p>Then it tests you with the lights out: every item you say back turns its stop green.</p></aside>
+</section>
+
+<!-- 2 · Hook -->
+<section class="slide s-hook" data-title="Hook" aria-label="Slide 2: the idea">
+  <p class="big contrast-check">Every item you remember turns a light <em>back&nbsp;on.</em></p>
+  <div class="hookstrip"><ol class="strip" aria-label="The 12 stops of the example palace, in order"><li data-state="right"><span class="dot"><b>1</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>yellow raincoat</small></li><li data-state="right"><span class="dot"><b>2</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>blue bed</small></li><li data-state="right"><span class="dot"><b>3</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>orange cat plush</small></li><li data-state="right"><span class="dot"><b>4</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>wall clock</small></li><li data-state="right"><span class="dot"><b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>cork board</small></li><li data-state="current"><span class="dot"><b>6</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>yellow desk lamp</small></li><li data-state="ahead"><span class="dot"><b>7</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>black backpack</small></li><li data-state="ahead"><span class="dot"><b>8</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>striped rug</small></li><li data-state="ahead"><span class="dot"><b>9</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>snake plant</small></li><li data-state="ahead"><span class="dot"><b>10</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>red kettle</small></li><li data-state="ahead"><span class="dot"><b>11</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>acoustic guitar</small></li><li data-state="ahead"><span class="dot"><b>12</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><small>globe</small></li></ol></div>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>This is the whole idea in one line. The strip is the real route: twelve stops through a student room.</p><p>Five are green because five items were said back correctly.</p></aside>
+</section>
+
+<!-- 3 · Problem -->
+<section class="slide s-problem" data-title="Problem" aria-label="Slide 3: the problem">
+  <div>
+    <p class="kicker"><i></i>The problem</p>
+    <h2 class="contrast-check">Lists in order are hard.</h2>
+    <p class="body contrast-check">A memory palace works, but building one by hand <b>takes a long time</b>.</p>
+  </div>
+  <div class="mnemo contrast-check">
+    <p><b>O</b>h <b>O</b>h <b>O</b>h <b>T</b>o <b>T</b>ouch <b>A</b>nd <b>F</b>eel…</p>
+    <p class="q">First-letter sentences hold the letters, not the words. <code>devpost/scope.md</code></p>
+  </div>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>(your own reason, one line)</p><p>Exams ask for lists in order: the 12 cranial nerves, the first 12 elements, the steps of a procedure. Flashcards and first-letter sentences hold the letters, not the words; a memory palace works, but almost nobody builds one by hand.</p></aside>
+</section>
+
+<!-- 4 · Solution -->
+<section class="slide s-solution" data-title="Solution" aria-label="Slide 4: the solution">
+  <div>
+    <p class="kicker"><i></i>Loci</p>
+    <h2 class="contrast-check">Your room becomes the palace.</h2>
+    <p class="body contrast-check">AI finds real objects in one photo. Code lays <b>one route through up to 12</b>, with a strange scene for each stop.</p>
+  </div>
+  <figure class="browser" style="margin:0"><div class="chrome"><i></i><i></i><i></i><span>loci.edycu.dev</span></div><img src="../media/app-learn-stop4.webp" width="1600" height="1000" alt="Loci learning a palace: stop 4 of 12, the wall clock, with the item Trochlear and its scene." /></figure>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>This is the real app on the example palace. Stop 4 is the wall clock; the item is Trochlear.</p><p>The scene turns the clock into a little truck-lear, honking its name: strange on purpose.</p></aside>
+</section>
+
+<!-- 5 · How it works -->
+<section class="slide s-how" data-title="How it works" aria-label="Slide 5: how it works">
+  <p class="kicker"><i></i>How it works</p>
+  <h2 class="contrast-check">The AI proposes. <i>Code</i> decides.</h2>
+  <svg class="arch" viewBox="0 0 1664 600" role="img" aria-label="In the browser: photo and list, shrink, route, learn, lights out, check, save. Two Vercel functions ask the AI for objects and for scenes.">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#b9c1dd"/></marker></defs>
+    <rect class="lane" x="0" y="0" width="1664" height="250" rx="22"/><text class="lane-t" x="30" y="44">In your browser</text>
+    <rect class="lane" x="0" y="350" width="1664" height="250" rx="22"/><text class="lane-t" x="1634" y="394" text-anchor="end">Two Vercel functions</text>
+    <g class="node"><rect x="30" y="80" width="190" height="120" rx="16"/><text class="t" x="52" y="130">Photo + list</text><text class="s" x="52" y="168">3–12</text></g>
+    <g class="node"><rect x="260" y="80" width="220" height="120" rx="16"/><text class="t" x="282" y="130">Shrink</text><text class="s" x="282" y="168">1280 px</text></g>
+    <g class="node key"><rect x="560" y="80" width="200" height="120" rx="16"/><text class="t" x="582" y="130">Route</text><text class="s" x="582" y="168">route.ts</text></g>
+    <g class="node"><rect x="860" y="80" width="190" height="120" rx="16"/><text class="t" x="882" y="130">Learn</text><text class="s" x="882" y="168">scene per stop</text></g>
+    <g class="node"><rect x="1090" y="80" width="190" height="120" rx="16"/><text class="t" x="1112" y="130">Lights out</text><text class="s" x="1112" y="168">say or type</text></g>
+    <g class="node key"><rect x="1320" y="80" width="160" height="120" rx="16"/><text class="t" x="1342" y="130">Check</text><text class="s" x="1342" y="168">score.ts</text></g>
+    <g class="node"><rect x="1510" y="80" width="130" height="120" rx="16"/><text class="t" x="1530" y="130">Save</text><text class="s" x="1530" y="168">IndexedDB</text></g>
+    <g class="node ai"><rect x="300" y="430" width="340" height="130" rx="16"/><text class="t" x="324" y="482">/api/anchors</text><text class="s" x="324" y="520">Gemini, DeepSeek last</text></g>
+    <g class="node ai"><rect x="700" y="430" width="340" height="130" rx="16"/><text class="t" x="724" y="482">/api/scenes</text><text class="s" x="724" y="520">deepseek-flash</text></g>
+    <path class="wire" d="M220 140H252" marker-end="url(#ah)"/>
+    <path class="wire" d="M370 200V422" marker-end="url(#ah)"/><text class="w-t" x="384" y="306">photo</text>
+    <path class="wire" d="M600 430V208" marker-end="url(#ah)"/><text class="w-t" x="614" y="306">boxes</text>
+    <path class="wire" d="M720 200V422" marker-end="url(#ah)"/><text class="w-t" x="734" y="306">names</text>
+    <path class="wire" d="M980 430V208" marker-end="url(#ah)"/><text class="w-t" x="994" y="306">scenes</text>
+    <path class="wire" d="M760 140H852" marker-end="url(#ah)"/>
+    <path class="wire" d="M1050 140H1082" marker-end="url(#ah)"/>
+    <path class="wire" d="M1280 140H1312" marker-end="url(#ah)"/>
+    <path class="wire" d="M1480 140H1502" marker-end="url(#ah)"/>
+  </svg>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>Two AI calls only: one finds objects and boxes in the photo, one writes scenes from object names, never the photo.</p><p>Everything that decides what is true runs as plain code in the browser: the route, and right or wrong.</p></aside>
+</section>
+
+<!-- 6 · Demo -->
+<section class="slide s-demo" data-title="Demo" aria-label="Slide 6: the demo">
+  <p class="kicker"><i></i>The real app</p>
+  <h2 class="contrast-check">One flow, start to finish.</h2>
+  <ol class="flow">
+    <li><figure><div class="cap"><img src="../media/stage-learn-stop4.webp" width="720" height="1079" alt="Learn: the room lit, the view walked to stop 4, the wall clock." /><span class="ring" style="--x:34.7;--y:17.6"></span></div><figcaption><span class="callout">1</span><b>Learn</b>a scene per stop</figcaption></figure></li>
+    <li><figure><div class="cap"><img src="../media/stage-recall-5.webp" width="720" height="1079" alt="Lights out: the room dark, five stops green with pools of the photo, stop 6 asked." /><span class="ring" style="--x:53.4;--y:32.35"></span></div><figcaption><span class="callout">2</span><b>Lights out</b>say or type each item</figcaption></figure></li>
+    <li><figure><div class="cap"><img src="../media/stage-all-lit.webp" width="720" height="1079" alt="Every light on: all twelve stops green and the whole room lit again." /></div><figcaption><span class="callout lit">3</span><b>Every light on</b>the whole room comes back</figcaption></figure></li>
+  </ol>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>Three real screens of the live app on the example palace; the recall answers in them were typed by a capture script.</p><p>One: learn with the lights on, here stop 4, the wall clock. Two: the room goes dark and stop 6 is asked. Three: every stop green, the whole room back.</p></aside>
+</section>
+
+<!-- 7 · The frozen slide -->
+<section class="slide s-frozen" data-title="Lights out" aria-label="Slide 7: lights out">
+  <div class="stagebox" id="frozen" data-all-lit="false" role="img" aria-label="The example room with the lights out. Each remembered stop turns green and lights that part of the room again."><div class="room" aria-hidden="true"><svg viewBox="0 0 853 1280" preserveAspectRatio="none" focusable="false"><defs><radialGradient id="frozen-pool"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><mask id="frozen-lights" maskUnits="userSpaceOnUse" x="-12.8" y="-12.8" width="878.6" height="1305.6"><rect x="-12.8" y="-12.8" width="878.6" height="1305.6" fill="#fff"/><circle class="pool" data-on="true" cx="74.2" cy="435.2" r="366.8" fill="url(#frozen-pool)"/><circle class="pool" data-on="true" cx="268.3" cy="620.8" r="295.3" fill="url(#frozen-pool)"/><circle class="pool" data-on="true" cx="265.3" cy="469.1" r="103.3" fill="url(#frozen-pool)"/><circle class="pool" data-on="true" cx="274.7" cy="209.3" r="91.4" fill="url(#frozen-pool)"/><circle class="pool" data-on="true" cx="375.7" cy="313.6" r="136.6" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="455.5" cy="414.1" r="107.3" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="541.2" cy="570.9" r="147.7" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="450.8" cy="952.3" r="349.2" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="806.1" cy="922.9" r="282.6" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="812.9" cy="646.4" r="104.9" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="694.8" cy="536.3" r="190.6" fill="url(#frozen-pool)"/><circle class="pool" data-on="false" cx="815.9" cy="385.9" r="120.0" fill="url(#frozen-pool)"/></mask></defs><image href="../rooms/kos.jpg" width="853" height="1280" preserveAspectRatio="none"/><rect class="night" x="-12.8" y="-12.8" width="878.6" height="1305.6" mask="url(#frozen-lights)"/><g class="seg"><path class="casing" d="M74.2 435.2L268.3 620.8"/><path class="track" data-walked="true" d="M74.2 435.2L268.3 620.8"/></g><g class="seg"><path class="casing" d="M268.3 620.8L265.3 469.1"/><path class="track" data-walked="true" d="M268.3 620.8L265.3 469.1"/></g><g class="seg"><path class="casing" d="M265.3 469.1L274.7 209.3"/><path class="track" data-walked="true" d="M265.3 469.1L274.7 209.3"/></g><g class="seg"><path class="casing" d="M274.7 209.3L375.7 313.6"/><path class="track" data-walked="true" d="M274.7 209.3L375.7 313.6"/></g><g class="seg"><path class="casing" d="M375.7 313.6L455.5 414.1"/><path class="track" data-walked="true" d="M375.7 313.6L455.5 414.1"/></g><g class="seg"><path class="casing" d="M455.5 414.1L541.2 570.9"/><path class="track" data-walked="false" d="M455.5 414.1L541.2 570.9"/></g><g class="seg"><path class="casing" d="M541.2 570.9L450.8 952.3"/><path class="track" data-walked="false" d="M541.2 570.9L450.8 952.3"/></g><g class="seg"><path class="casing" d="M450.8 952.3L806.1 922.9"/><path class="track" data-walked="false" d="M450.8 952.3L806.1 922.9"/></g><g class="seg"><path class="casing" d="M806.1 922.9L812.9 646.4"/><path class="track" data-walked="false" d="M806.1 922.9L812.9 646.4"/></g><g class="seg"><path class="casing" d="M812.9 646.4L694.8 536.3"/><path class="track" data-walked="false" d="M812.9 646.4L694.8 536.3"/></g><g class="seg"><path class="casing" d="M694.8 536.3L815.9 385.9"/><path class="track" data-walked="false" d="M694.8 536.3L815.9 385.9"/></g></svg><div class="pins"><span class="pin" data-state="right" style="--x:8.699;--y:34.000"><b>1</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.454;--y:48.500"><b>2</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:31.102;--y:36.648"><b>3</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:32.204;--y:16.352"><b>4</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="right" style="--x:44.045;--y:24.500"><b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="current" style="--x:53.400;--y:32.352"><b>6</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:63.447;--y:44.602"><b>7</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:52.849;--y:74.398"><b>8</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:94.502;--y:72.102"><b>9</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.299;--y:50.500"><b>10</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:81.454;--y:41.898"><b>11</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><span class="pin" data-state="ahead" style="--x:95.651;--y:30.148"><b>12</b><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span></div></div><p class="heard"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg><span>Stop 5: Trigeminal. Right.</span></p></div>
+  <div>
+    <p class="kicker"><i class="cur"></i>Lights out</p>
+    <p class="big contrast-check">You say the item in the dark; its dim stop turns green and that part of your room <em>lights&nbsp;up.</em></p>
+    <p class="frozen-note">The real example palace's stops, route and pools.</p>
+  </div>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>This is the moment the whole product is built for. Eyes closed, you say the list.</p><p>Each right answer opens a pool of your own room again. When all twelve are green, the room comes back.</p></aside>
+</section>
+
+<!-- 8 · Who decides -->
+<section class="slide s-check" data-title="The checker" aria-label="Slide 8: who decides">
+  <div>
+    <p class="kicker"><i></i>Who decides</p>
+    <h2 class="contrast-check">Code checks every answer.</h2>
+    <p class="body contrast-check">Real outputs of <code>shared/score.ts</code>. <b>Never an AI.</b></p>
+  </div>
+  <ol class="replay contrast-check">
+    <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><p class="said"><q>occulomotor</q> <span>→</span> <em>Oculomotor</em></p></li>
+    <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><p class="said"><q>trochlaer</q> <span>→</span> <em>Trochlear</em></p></li>
+    <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><p class="said"><q>auditory</q> <span>→</span> <em>Vestibulocochlear</em></p></li>
+    <li data-ok="false"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span><p class="said"><q>Vitamin D</q> <span>→</span> <em>Vitamin C</em></p></li>
+    <li data-ok="true"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><p class="said">said <q>truck lear</q> <span>→</span> <em>Trochlear</em></p></li>
+  </ol>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>A typo in a long word counts; swapped letters count as one slip; your own accepted answers count.</p><p>Short words must be exact, so Vitamin D never passes for Vitamin C. Spoken answers also match by sound: truck lear is Trochlear.</p></aside>
+</section>
+
+<!-- 9 · Proof -->
+<section class="slide s-proof" data-title="Proof" aria-label="Slide 9: proof">
+  <div>
+    <p class="kicker"><i></i>Proof</p>
+    <h2 class="contrast-check">Built, tested, written down.</h2>
+    <div class="counts">
+      <div><b>81</b><span>unit tests</span></div>
+      <div><b>22</b><span>browser checks</span></div>
+      <div><b>7</b><span>live AI checks</span></div>
+    </div>
+  </div>
+  <ul class="docs contrast-check">
+    <li><span class="g"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><div><b>Scope, PRD, spec</b><span>approved plan <code>devpost/</code></span></div></li>
+    <li><span class="g"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></svg></span><div><b>Release v0.1.0</b><span>MIT license <code>LICENSE</code></span></div></li>
+    <li><span class="g"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><div><b>No user numbers</b><span>one sitting is what it shows</span></div></li>
+  </ul>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">loci.edycu.dev</span></div>
+  <aside class="speaker-notes"><p>Every number here is in the repo: unit tests with Vitest, browser checks with Playwright, and live checks with the real AI.</p><p>No users or long-term results are claimed; a proof of concept can only show recall in one sitting.</p></aside>
+</section>
+
+<!-- 10 · The ask -->
+<section class="slide s-ask" data-title="Try it" aria-label="Slide 10: try it">
+  <div>
+    <p class="kicker"><i></i>Try it</p>
+    <h2 class="contrast-check">Try it in one tap.</h2>
+    <ol class="steps contrast-check">
+      <li><span>Open <b>loci.edycu.dev</b></span></li>
+      <li><span>Tap <b>Try it: 12 cranial nerves</b></span></li>
+      <li><span>Walk the room, then <b>lights out</b></span></li>
+    </ol>
+    <p class="closer contrast-check">Your room is the memory palace.</p>
+  </div>
+  <div class="qr"><svg viewBox="-4 -4 33 33" role="img" aria-label="QR code for https://loci.edycu.dev"><path d="M0 0.5h7m3 0h1m2 0h1m4 0h7m-25 1h1m5 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m5 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m3 0h1m1 0h1m3 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h3m1 0h1m-25 1h1m1 0h3m1 0h1m5 0h2m2 0h1m1 0h1m1 0h3m1 0h1m-25 1h1m5 0h1m4 0h1m1 0h2m1 0h1m1 0h1m5 0h1m-25 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-17 1h2m-10 1h1m5 0h1m1 0h2m3 0h2m1 0h3m2 0h3m-22 1h4m1 0h1m6 0h2m3 0h5m-24 1h1m1 0h1m1 0h1m1 0h2m1 0h1m2 0h1m1 0h2m1 0h1m3 0h1m1 0h2m-25 1h1m2 0h3m1 0h1m1 0h1m1 0h1m4 0h2m1 0h3m2 0h1m-25 1h4m1 0h3m1 0h4m2 0h2m1 0h2m4 0h1m-25 1h3m2 0h1m3 0h1m5 0h2m2 0h1m3 0h1m-24 1h1m1 0h7m1 0h3m1 0h3m1 0h4m1 0h2m-25 1h1m4 0h1m1 0h1m1 0h3m5 0h1m1 0h1m1 0h2m1 0h1m-25 1h1m1 0h1m1 0h3m1 0h2m1 0h1m1 0h8m1 0h1m-15 1h1m1 0h1m1 0h1m1 0h1m1 0h1m3 0h1m-21 1h7m3 0h2m4 0h1m1 0h1m1 0h1m3 0h1m-25 1h1m5 0h1m2 0h1m2 0h1m2 0h2m3 0h1m-21 1h1m1 0h3m1 0h1m5 0h1m2 0h6m1 0h3m-25 1h1m1 0h3m1 0h1m3 0h1m3 0h1m2 0h2m4 0h2m-25 1h1m1 0h3m1 0h1m3 0h3m3 0h1m4 0h2m1 0h1m-25 1h1m5 0h1m2 0h3m4 0h1m2 0h2m3 0h1m-25 1h7m1 0h3m1 0h5m1 0h1m2 0h1m2 0h1" stroke="#0e1534" fill="none"/></svg><p>loci.edycu.dev</p></div>
+  <div class="foot"><svg aria-hidden="true"><use href="#mark"/></svg>Loci <span class="ver">v0.1.0</span><span class="url">github.com/edycutjong/loci</span></div>
+  <aside class="speaker-notes"><p>No photo or key needed to judge it: the example palace opens in under two seconds with no AI call.</p><p>Then try your own room and list; building takes about half a minute.</p></aside>
+</section>
+
+</main></div>
+
+<div class="ui arrows"><button type="button" id="prev" aria-label="Previous slide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button><button type="button" id="next" aria-label="Next slide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button><span class="keys">← → · Esc grid · P notes · C contrast</span></div>
+<div class="ui counter" id="counter" aria-hidden="true">01 / 10</div>
+<div class="notes-panel" id="notes" aria-live="polite"><div class="n" id="notes-text"></div><div class="side"><b id="clock">0:00</b><span id="next-title"></span></div></div>
+
+<script>
+(() => {
+  const stage = document.getElementById("stage");
+  const slides = [...document.querySelectorAll(".slide")];
+  const counter = document.getElementById("counter");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pad = (n) => String(n).padStart(2, "0");
+  let cur = 0, grid = false;
+
+  // Fit the 1920×1080 stage to the window. documentElement.client* is the layout viewport; innerWidth is not on phones.
+  const fit = () => {
+    const el = document.documentElement;
+    const w = el.clientWidth, h = el.clientHeight * (document.body.classList.contains("presenter") ? 0.8 : 1);
+    const s = Math.min(w / 1920, h / 1080);
+    stage.style.transform = `translate(${(w - 1920 * s) / 2}px, ${(h - 1080 * s) / 2}px) scale(${s})`;
+  };
+
+  // The frozen slide runs the real lights-out walk while it is on screen.
+  const ITEMS = ["Olfactory", "Optic", "Oculomotor", "Trochlear", "Trigeminal", "Abducens", "Facial", "Vestibulocochlear", "Glossopharyngeal", "Vagus", "Accessory", "Hypoglossal"];
+  const box = document.getElementById("frozen");
+  const pins = [...box.querySelectorAll(".pin")], pools = [...box.querySelectorAll(".pool")], tracks = [...box.querySelectorAll(".track")];
+  const heard = box.querySelector(".heard span");
+  let lit = 5, t = 0;
+  const paint = (n, all) => {
+    pins.forEach((p, i) => (p.dataset.state = i < n ? "right" : i === n ? "current" : "ahead"));
+    pools.forEach((c, i) => (c.dataset.on = String(i < n)));
+    tracks.forEach((x, i) => (x.dataset.walked = String(i < n)));
+    box.dataset.allLit = String(!!all);
+  };
+  const walk = () => {
+    if (lit < ITEMS.length) { lit++; paint(lit, false); heard.textContent = `Stop ${lit}: ${ITEMS[lit - 1]}. Right.`; t = setTimeout(walk, lit === ITEMS.length ? 900 : 1100); }
+    else if (box.dataset.allLit !== "true") { paint(lit, true); heard.textContent = "Every light is on."; t = setTimeout(walk, 3400); }
+    else { lit = 0; paint(0, false); heard.textContent = "Lights out. Stop 1: the yellow raincoat."; t = setTimeout(walk, 1600); }
+  };
+  const frozenIndex = slides.findIndex((s) => s.contains(box));
+
+  const show = (i, fromHash) => {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => { s.classList.toggle("on", k === cur); s.classList.toggle("before", k < cur); s.setAttribute("aria-hidden", String(k !== cur)); });
+    counter.textContent = `${pad(cur + 1)} / ${pad(slides.length)}`;
+    document.getElementById("prev").disabled = cur === 0;
+    document.getElementById("next").disabled = cur === slides.length - 1;
+    const notes = slides[cur].querySelector(".speaker-notes");
+    document.getElementById("notes-text").innerHTML = notes ? notes.innerHTML : "";
+    const nx = slides[cur + 1];
+    document.getElementById("next-title").textContent = nx ? `next: ${nx.dataset.title}` : "last slide";
+    if (!fromHash) history.replaceState(null, "", `#${cur + 1}`);
+    clearTimeout(t);
+    if (cur === frozenIndex && !still) t = setTimeout(walk, 1400);
+  };
+  const go = (d) => { if (!grid) show(cur + d); };
+
+  // Esc: every slide in one grid; click one to open it.
+  const layoutGrid = () => {
+    const cols = 4, s = 0.228, gw = 1920 * s, gh = 1080 * s, gx = (1920 - cols * gw) / (cols + 1), rows = Math.ceil(slides.length / cols), gy = (1080 - rows * gh) / (rows + 1);
+    slides.forEach((sl, k) => {
+      sl.style.transformOrigin = "0 0";
+      sl.style.transform = grid ? `translate(${gx + (k % cols) * (gw + gx)}px, ${gy + Math.floor(k / cols) * (gh + gy)}px) scale(${s})` : "";
+    });
+  };
+  const toggleGrid = () => { grid = !grid; document.body.classList.toggle("grid", grid); layoutGrid(); };
+  slides.forEach((sl, k) => sl.addEventListener("click", () => { if (grid) { toggleGrid(); show(k); } }));
+
+  // P: presenter (notes + timer, cursor hides after 2 s still). C: contrast check.
+  let started = 0, idle = 0;
+  setInterval(() => {
+    if (!started) return;
+    const s = Math.floor((Date.now() - started) / 1000);
+    document.getElementById("clock").textContent = `${Math.floor(s / 60)}:${pad(s % 60)}`;
+  }, 1000);
+  let calm = setTimeout(() => document.body.classList.add("calm"), 2500);
+  addEventListener("mousemove", () => {
+    document.body.classList.remove("idle", "calm");
+    clearTimeout(idle); clearTimeout(calm);
+    idle = setTimeout(() => document.body.classList.add("idle"), 2000);
+    calm = setTimeout(() => document.body.classList.add("calm"), 2500);
+  });
+
+  addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === "ArrowRight" || k === " " || k === "PageDown") { e.preventDefault(); go(1); }
+    else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); go(-1); }
+    else if (k === "Home") show(0);
+    else if (k === "End") show(slides.length - 1);
+    else if (k === "Escape") toggleGrid();
+    else if (k === "p" || k === "P") { document.body.classList.toggle("presenter"); if (!started) started = Date.now(); fit(); }
+    else if (k === "c" || k === "C") document.body.classList.toggle("debug-contrast");
+  });
+  document.getElementById("prev").addEventListener("click", () => go(-1));
+  document.getElementById("next").addEventListener("click", () => go(1));
+  let x0 = null;
+  addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+  addEventListener("touchend", (e) => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); x0 = null; });
+  addEventListener("resize", fit);
+  addEventListener("hashchange", () => show((parseInt(location.hash.slice(1), 10) || 1) - 1, true));
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1, true);
+})();
+</script>
+</body>
+</html>
