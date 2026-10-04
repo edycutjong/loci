@@ -39,7 +39,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: Walk your palace by typing, miss one on purpose, retry it, and watch the room light back up.
   Commit: `feat: recall by typing with lights-out scoring and retries`
 
-- [ ] **4. Recall by voice: say the list and the pins light up**
+- [x] **4. Recall by voice: say the list and the pins light up**
   Becomes usable: In Chrome or Edge, one tap starts listening; each item you say turns its pin green and moves on by itself; "skip" or "pass" marks a miss; what was heard is shown; an unrecognisable phrase costs nothing; browsers without voice, or a blocked microphone, fall back to typing with a plain message.
   Why now: The eyes-closed recital is the demo's proof moment, and it builds directly on the checker from slice 3.
   PRD ref: `prd.md > Recalling — lights out`, `prd.md > States and Boundaries`
@@ -112,4 +112,5 @@ Reflection: [offered/answered/declined/already covered — personal answer belon
 Activity mode: [live app and editor, explicit static fallback, focused alternative, prior practice, or recap]
 
 ## Revisions
-
+- Voice accuracy with a real microphone was not measured by the agent — automated Chrome on the build machine can't open a microphone (the planning spike hit the same wall). The interpreter is covered by unit tests and by browser checks that drive a stand-in recognizer; the learner's own voice is the remaining check.
+- Sound-alike keys became a pure consonant skeleton and short keys must match exactly — the first version gave "hippo glossal" and "hypoglossal" different keys, and Hydrogen and Nitrogen nearly the same one.

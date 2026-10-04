@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Check, Expand, Shrink } from "lucide-react";
 import { isRight } from "../../shared/score";
+import { interpret } from "../../shared/voice";
 import type { Palace } from "../../shared/types";
 import { go } from "../App";
 import { LineStrip, type DotState } from "../components/LineStrip";
-import { RecallPanel, type Feedback } from "../components/RecallPanel";
+import { RecallPanel, VoiceControl, type Feedback } from "../components/RecallPanel";
 import { ResultPanel } from "../components/ResultPanel";
 import { SceneCard } from "../components/SceneCard";
 import { Stage, type PinState } from "../components/Stage";
 import { liveAnchors, liveScenes, usePalaceBuild, type BuildPhase } from "../lib/build";
-import { answer, currentStop, fold, startWalk, type Result, type Walking } from "../lib/recall";
+import { answer, currentStop, fold, skipTo, startWalk, type Result, type Walking } from "../lib/recall";
 import { dropJob, getJob, type BuildJob } from "../lib/session";
+import { canListen, createListener, type ListenError } from "../lib/speech";
 import { peekPalace, savePalace, saveWalk, type Loaded } from "../lib/store";
 import { formatDuration, useElapsed } from "../lib/time";
 
@@ -113,17 +115,83 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
     setMode("result");
   }
 
-  function respond(right: boolean, kind: Feedback["kind"]) {
-    if (!walk || !palace) return;
-    const stop = currentStop(walk);
-    if (stop === null) return;
-    const next = answer(walk, right, Date.now());
-    setFeedback({ stop, kind, item: palace.stops[stop].item.text });
+  // The walk is also read from outside React's render (the speech recognizer), so it is kept in a ref too.
+  const walkRef = useRef<Walking | null>(null);
+  walkRef.current = walk;
+
+  function commit(next: Walking, fb: Feedback | null) {
+    walkRef.current = next;
     setWalk(next);
-    if (next.endedAt !== null) finish(next, learnSpent);
+    if (fb) setFeedback(fb);
+    if (next.endedAt !== null) {
+      listener.stop();
+      finish(next, learnSpent);
+    }
+  }
+
+  function respond(right: boolean, kind: Feedback["kind"]) {
+    const w = walkRef.current;
+    if (!w || !palace) return;
+    const stop = currentStop(w);
+    if (stop === null) return;
+    commit(answer(w, right, Date.now()), { stop, kind, item: palace.stops[stop].item.text });
+  }
+
+  // ---- Voice ----
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState("");
+  const [interim, setInterim] = useState("");
+  const [voiceError, setVoiceError] = useState<ListenError | null>(null);
+  const onPhrase = useRef<(alternatives: string[]) => void>(() => {});
+  const listener = useMemo(
+    () =>
+      createListener({
+        onPhrase: (alternatives) => onPhrase.current(alternatives),
+        onInterim: setInterim,
+        onListening: setListening,
+        onError: setVoiceError,
+      }),
+    [],
+  );
+  useEffect(() => () => listener.stop(), [listener]);
+
+  onPhrase.current = (alternatives) => {
+    setInterim("");
+    setHeard(alternatives[0]?.trim() ?? "");
+    let w = walkRef.current;
+    if (!w || !palace) return;
+    const items = palace.stops.map((s) => s.item);
+    const answered = items.map((_, i) => w!.outcomes[i] !== "pending" || (w!.kind === "retry" && !w!.order.includes(i)));
+    let fb: Feedback | null = null;
+    const now = Date.now();
+    for (const action of interpret(alternatives, { order: w.order, pos: w.pos, answered }, items)) {
+      const stop = currentStop(w);
+      if (stop === null) break;
+      if (action.kind === "right") {
+        w = answer(w, true, now);
+        fb = { stop: action.stop, kind: "right", item: items[action.stop].text };
+      } else if (action.kind === "skip-to") {
+        w = skipTo(w, action.stop, now);
+        fb = { stop: action.stop, kind: "right", item: items[action.stop].text };
+      } else if (action.kind === "skip" || action.kind === "wrong") {
+        w = answer(w, false, now);
+        fb = { stop, kind: action.kind, item: items[stop].text };
+      } else {
+        fb = { stop, kind: "not-caught", item: items[stop].text };
+      }
+    }
+    if (w !== walkRef.current || fb) commit(w, fb);
+  };
+
+  function toggleVoice() {
+    if (listening) return listener.stop();
+    setVoiceError(null);
+    setHeard("");
+    void listener.start(palace ? palace.stops.flatMap((s) => [s.item.text, ...s.item.accepts]) : []);
   }
 
   function toLearn(only: number[] | null = null) {
+    listener.stop();
     setLearnOnly(only);
     setCurrent(only?.[0] ?? 0);
     setOverview(false);
@@ -190,6 +258,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
             lit={lit}
             allLit={allLit}
             scanning={!palace && build.phase.name === "finding"}
+            listening={mode === "recall" && listening}
             label={labelIndex !== null && anchors[labelIndex] ? { index: labelIndex, text: anchors[labelIndex].label } : null}
             pinLabel={(i) => pinLabel(i, total, anchors[i]?.label ?? "", pinStates[i], palace?.stops[i]?.item.text)}
             onSelect={learning ? (i) => (setOverview(false), setLearnOnly(null), setCurrent(i)) : undefined}
@@ -262,6 +331,8 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
                 respond(ok, ok ? "right" : "wrong");
               }}
               onSkip={() => respond(false, "skip")}
+              focusInput={!listening}
+              voice={<VoiceControl supported={canListen()} listening={listening} error={voiceError} heard={heard} interim={interim} onToggle={toggleVoice} />}
             />
           )}
           {mode === "result" && result && (

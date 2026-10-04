@@ -1277,3 +1277,62 @@ button.dot:hover {
   color: var(--moon-500);
   overflow-wrap: anywhere;
 }
+
+/* ---------- Voice ---------- */
+.voice {
+  display: grid;
+  gap: var(--space-2);
+}
+.mic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  padding: 0 var(--space-5);
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--night-800);
+  color: var(--moon-100);
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.mic:hover {
+  border-color: var(--moon-300);
+  background: var(--night-700);
+}
+.mic[aria-pressed="true"] {
+  background: var(--moon-100);
+  border-color: var(--moon-100);
+  color: var(--night-900);
+  box-shadow:
+    0 0 0 3px var(--night-900),
+    0 0 0 5px var(--moon-100);
+}
+.heard {
+  min-height: 1.6em;
+  font-size: var(--t-small);
+  color: var(--moon-300);
+}
+.heard q {
+  font-family: var(--font-item);
+  font-size: var(--t-body);
+  font-style: italic;
+  color: var(--moon-100);
+}
+.heard .problem {
+  color: var(--miss);
+  font-weight: 600;
+}
+.voice-note {
+  font-size: var(--t-small);
+  color: var(--moon-300);
+}
+.feedback[data-kind="not-caught"] svg {
+  color: var(--moon-300);
+}
