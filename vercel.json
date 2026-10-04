@@ -2,5 +2,9 @@
   "functions": {
     "api/anchors.ts": { "maxDuration": 60 },
     "api/scenes.ts": { "maxDuration": 60 }
-  }
+  },
+  "redirects": [
+    { "source": "/story", "destination": "/story/", "permanent": true },
+    { "source": "/deck", "destination": "/deck/", "permanent": true }
+  ]
 }

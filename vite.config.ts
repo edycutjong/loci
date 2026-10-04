@@ -1,4 +1,6 @@
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { existsSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { defineConfig, loadEnv, type Connect, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
 // Serves the server helpers in api/*.ts at /api/* during `npm run dev`, so a local run needs no Vercel CLI.
@@ -37,11 +39,49 @@ function devApi(): Plugin {
   };
 }
 
+// The story page and the pitch deck are plain HTML in public/<page>/index.html, outside the React app.
+// As on Vercel (vercel.json redirects): "/story" redirects to "/story/" so their relative paths resolve, and
+// "/story/" serves its index.html. Preview also answers unknown pages with 404.html and a 404, like Vercel does.
+const STATIC_PAGES = ["story", "deck"];
+
+function staticPages(): Plugin {
+  const pages: Connect.NextHandleFunction = (req, res, next) => {
+    const [path, query] = (req.url ?? "").split("?");
+    const page = STATIC_PAGES.find((name) => path === `/${name}` || path === `/${name}/`);
+    if (!page) return next();
+    const search = query === undefined ? "" : `?${query}`;
+    if (!path.endsWith("/")) {
+      res.writeHead(308, { Location: `/${page}/${search}` });
+      res.end();
+      return;
+    }
+    req.url = `/${page}/index.html${search}`;
+    next();
+  };
+  return {
+    name: "loci-static-pages",
+    configureServer(server) {
+      server.middlewares.use(pages);
+    },
+    configurePreviewServer(server) {
+      const dist = resolve(server.config.root, server.config.build.outDir);
+      server.middlewares.use(pages);
+      server.middlewares.use((req, res, next) => {
+        const path = decodeURIComponent((req.url ?? "/").split("?")[0]);
+        const page = req.method === "GET" && (req.headers.accept ?? "").includes("text/html");
+        if (!page || existsSync(join(dist, path.endsWith("/") ? `${path}index.html` : path))) return next();
+        res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(readFileSync(join(dist, "404.html")));
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   // Make .env.local keys visible to the helpers in dev, exactly like Vercel environment variables.
   Object.assign(process.env, loadEnv(mode, process.cwd(), ""));
   return {
-    plugins: [react(), devApi()],
+    plugins: [react(), staticPages(), devApi()],
     server: { port: 5174, strictPort: true },
     preview: { port: 4174, strictPort: true },
   };
