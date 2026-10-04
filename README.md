@@ -9,7 +9,7 @@
 Photograph your room, paste a list, and learn it along one route through real objects.<br />
 Then the lights go out, and every item you remember turns its stop back on.
 
-[**Open Loci**](https://loci.edycu.dev) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
+[**Open Loci**](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
 
 <img src="public/og.jpg" width="720" alt="Loci: a student's room at night with a numbered route; seven remembered stops have their light back on." />
 

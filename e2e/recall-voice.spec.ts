@@ -55,8 +55,8 @@ test("eyes closed: saying the 12 items lights 12 pins without touching the scree
   for (const item of NERVES) await say(page, item.toLowerCase());
 
   await expect(page.locator(".result-title")).toHaveText("You remembered all 12 on the first try.");
-  await expect(page.locator('.pin[data-state="right"]')).toHaveCount(12);
-  await expect(page.locator(".stage")).toHaveAttribute("data-all-lit", "true");
+  await expect(page.locator('.palace .pin[data-state="right"]')).toHaveCount(12);
+  await expect(page.locator(".palace .stage")).toHaveAttribute("data-all-lit", "true");
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${SHOTS}/voice-all-lit.png` });
 });
@@ -69,17 +69,17 @@ test("voice: two items in one breath, a mishearing that costs nothing, a skip, a
   await page.getByRole("button", { name: "Say it instead" }).click();
 
   await say(page, "olfactory optic"); // stops 1 and 2
-  await expect(page.locator('.pin[data-state="right"]')).toHaveCount(2);
+  await expect(page.locator('.palace .pin[data-state="right"]')).toHaveCount(2);
   await say(page, "a deuce ends", "a deuce end"); // matches nothing in the list: not caught
   await expect(page.locator(".feedback")).toHaveText("Didn't catch that. Say it again, or type it.");
   await expect(page.locator(".heard")).toContainText("a deuce ends");
-  await expect(page.locator('.pin[data-state="wrong"]')).toHaveCount(0);
+  await expect(page.locator('.palace .pin[data-state="wrong"]')).toHaveCount(0);
   await say(page, "pass"); // stop 3 skipped
   await expect(page.locator(".feedback")).toHaveText("Stop 3: skipped.");
   await say(page, "truck lear"); // sounds like trochlear: stop 4
   await say(page, "abducens"); // stop 6 named while stop 5 is asked: 5 missed, 6 right
-  await expect(page.locator('.pin[data-state="wrong"]')).toHaveCount(2);
-  await expect(page.locator('.pin[data-state="right"]')).toHaveCount(4);
+  await expect(page.locator('.palace .pin[data-state="wrong"]')).toHaveCount(2);
+  await expect(page.locator('.palace .pin[data-state="right"]')).toHaveCount(4);
   await expect(page.locator(".recall .scene-count")).toHaveText(" · stop 7 of 12"); // now asking stop 7
   await page.screenshot({ path: `${SHOTS}/voice-mixed.png` });
 });

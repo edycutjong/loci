@@ -45,7 +45,7 @@ test("scenes fail: Try again asks only for scenes, not for the objects again", a
   });
   await startOwnBuild(page);
   await expect(page.getByRole("alert")).toContainText("Couldn't reach the AI to write your scenes.");
-  await expect(page.locator(".pin")).toHaveCount(12); // the route is already on the photo
+  await expect(page.locator(".palace .pin")).toHaveCount(12); // the route is already on the photo
   await page.getByRole("button", { name: "Try again" }).click();
   await expect(page.locator("#scene-item")).toHaveText("Olfactory");
   expect(calls).toEqual({ anchors: 1, scenes: 2 });
@@ -64,7 +64,7 @@ test("too few objects: offer to shorten the list, then build with exactly that m
   await page.screenshot({ path: `${SHOTS}/fail-too-few.png` });
   await page.getByRole("button", { name: "Use the first 8 items" }).click();
   await expect(page.locator("#scene-item")).toHaveText("Olfactory");
-  await expect(page.locator(".pin")).toHaveCount(8);
+  await expect(page.locator(".palace .pin")).toHaveCount(8);
   await expect(page.locator(".topbar-title")).toHaveText("Olfactory → Vestibulocochlear");
 });
 
@@ -90,8 +90,8 @@ test("reduced motion: no glides, no light animations, the demo holds still on th
   await page.getByRole("button", { name: "Try it: 12 cranial nerves" }).click();
   await expect(page.locator("#scene-item")).toHaveText("Olfactory");
   const durations = await page.evaluate(() => ({
-    camera: getComputedStyle(document.querySelector(".camera")!).transitionDuration,
-    pin: getComputedStyle(document.querySelector(".pin")!).animationName,
+    camera: getComputedStyle(document.querySelector(".palace .camera")!).transitionDuration,
+    pin: getComputedStyle(document.querySelector(".palace .pin")!).animationName,
   }));
   expect(durations.camera).toBe("0s");
   expect(durations.pin).toBe("none");

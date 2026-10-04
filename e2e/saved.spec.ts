@@ -23,7 +23,7 @@ test("a palace and its last walk are still there after a reload, and can be dele
   // It opens from storage (photo included) straight into Learn.
   await row.locator(".palace-open").click();
   await expect(page.locator("#scene-item")).toHaveText("Olfactory");
-  await expect(page.locator(".camera img")).toHaveAttribute("src", /^blob:/);
+  await expect(page.locator(".palace .camera img")).toHaveAttribute("src", /^blob:/);
 
   // A direct link opens it too, after a full reload.
   await page.goto(palaceUrl);

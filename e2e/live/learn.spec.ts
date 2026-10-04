@@ -36,9 +36,9 @@ test("learn walks all 12 stops with a scene each, by button and by arrow key", a
   await page.keyboard.press("ArrowRight");
   await expect(item).toHaveText(NERVES[11]);
   // The line strip jumps to any stop; in the whole-room view any pin can be tapped.
-  await page.getByRole("button", { name: /^Stop 3:/ }).click();
+  await page.locator(".strip button").nth(2).click();
   await expect(item).toHaveText(NERVES[2]);
   await page.getByRole("button", { name: "See the whole room" }).click();
-  await page.locator(".pin").nth(8).click();
+  await page.locator(".palace .pin").nth(8).click();
   await expect(item).toHaveText(NERVES[8]);
 });

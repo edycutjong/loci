@@ -23,7 +23,7 @@ test("the hero's one-tap example opens straight into learning", async ({ page })
   await page.goto("/");
   await page.getByRole("button", { name: "Try it: 12 cranial nerves" }).click();
   await expect(page.locator("#scene-item")).toHaveText("Olfactory");
-  await expect(page.locator(".pin")).toHaveCount(12);
+  await expect(page.locator(".palace .pin")).toHaveCount(12);
   expect(calls).toEqual({ anchors: 0, scenes: 0 });
 });
 

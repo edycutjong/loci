@@ -10,12 +10,12 @@ test("your own photo and a 12-item list become 12 pins along one route", async (
   await page.getByLabel("Your list").fill(NERVES.join("\n"));
   await page.getByRole("button", { name: "Build my palace" }).click();
 
-  await expect(page.locator(".pin")).toHaveCount(12, { timeout: 90_000 });
-  await expect(page.locator(".seg.track")).toHaveCount(11);
+  await expect(page.locator(".palace .pin")).toHaveCount(12, { timeout: 90_000 });
+  await expect(page.locator(".palace .seg.track")).toHaveCount(11);
   await page.waitForTimeout(1200); // let the pins finish dropping in
 
-  const stage = (await page.locator(".stage").boundingBox())!;
-  for (const pin of await page.locator(".pin").all()) {
+  const stage = (await page.locator(".palace .stage").boundingBox())!;
+  for (const pin of await page.locator(".palace .pin").all()) {
     const b = (await pin.boundingBox())!;
     const cx = b.x + b.width / 2;
     const cy = b.y + b.height / 2;
@@ -25,7 +25,7 @@ test("your own photo and a 12-item list become 12 pins along one route", async (
     expect(cy).toBeLessThanOrEqual(stage.y + stage.height);
   }
   // The route starts at the leftmost stop and ends at the rightmost.
-  const xs = await page.locator(".pin").evaluateAll((pins) => pins.map((p) => p.getBoundingClientRect().left));
+  const xs = await page.locator(".palace .pin").evaluateAll((pins) => pins.map((p) => p.getBoundingClientRect().left));
   expect(xs[0]).toBe(Math.min(...xs));
   expect(xs[xs.length - 1]).toBe(Math.max(...xs));
   await page.screenshot({ path: `${SHOTS}/own-photo-route.png` });

@@ -79,7 +79,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: Try a photo of a bare wall with 12 items; you should be offered to shorten the list, never a broken screen.
   Commit: `feat: honest failure states, accessibility and polish`
 
-- [ ] **8. Live on the web**
+- [x] **8. Live on the web**
   Becomes usable: Anyone can open the live link, build a palace from their own photo, and walk it.
   Why now: Last, because it ships what already works; outside testers and judges need a link.
   PRD ref: `prd.md > What We're Building`
@@ -120,3 +120,5 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Home gained the hero the spec's first-viewport plan asked for: the student room's route demonstrating lights out and the room coming back, with a one-tap example.
 - "Too few spots" keeps the objects already found, so "Use the first N items" re-plans instantly with no new AI call; "Try another photo" keeps the typed list for the tab.
 - Disabled buttons use readable colours instead of 45% opacity — impeccable's detector measured the disabled Build label at about 1.3:1. Detector clean afterwards at 390 and 1280 px.
+- Live on Vercel (`devpost-learn-loci`, deployed from GitHub `main`): https://devpost-learn-loci.vercel.app. Real calls on production: student room → 16 objects (gemini-3.1-flash-lite), 12 scenes (deepseek-flash); the 3 live browser checks pass there. `loci.edycu.dev` is attached and verified in Vercel and waits for one DNS record (A 76.76.21.21).
+- Browser checks now look for pins inside the palace screen only: the home page's demo has its own 12 pins, which a live check briefly counted instead.
