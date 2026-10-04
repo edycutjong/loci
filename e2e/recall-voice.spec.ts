@@ -82,6 +82,12 @@ test("voice: two items in one breath, a mishearing that costs nothing, a skip, a
   await expect(page.locator('.palace .pin[data-state="right"]')).toHaveCount(4);
   await expect(page.locator(".recall .scene-count")).toHaveText(" · stop 7 of 12"); // now asking stop 7
   await page.screenshot({ path: `${SHOTS}/voice-mixed.png` });
+
+  for (const item of NERVES.slice(6)) await say(page, item.toLowerCase());
+  await expect(page.locator(".result-title")).toHaveText("You remembered 10 of 12 on the first try.");
+  await page.getByRole("button", { name: "Retry the 2 missed stops" }).click();
+  // The retry starts with nothing heard yet; it showed the last word of the walk before (seen in the demo recording).
+  await expect(page.locator(".heard")).toHaveText("Close your eyes and say the list, one item at a time.");
 });
 
 test("a blocked microphone says so and typing still works", async ({ page }) => {

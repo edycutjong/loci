@@ -127,6 +127,9 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
     stopLearnClock();
     setOverview(false);
     setFeedback(null);
+    // A new walk starts with nothing heard yet, not the last word of the walk before.
+    setHeard("");
+    setInterim("");
     setWalk(startWalk(total, Date.now(), retryStops));
     setMode("recall");
     window.scrollTo({ top: 0, behavior: scrollBehavior() });
