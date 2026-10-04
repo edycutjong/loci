@@ -9,7 +9,7 @@
 Photograph your room, paste a list, and learn it along one route through real objects.<br />
 Then the lights go out, and every item you remember turns its stop back on.
 
-[**Open Loci**](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
+[**Open Loci**](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)) · [Story](https://loci.edycu.dev/story/) · [Pitch deck](https://loci.edycu.dev/deck/) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
 
 <img src="docs/assets/readme-hero-animated.svg" width="100%" alt="Loci — your room as a memory palace. You say the item in the dark; its dim stop turns green and that part of your room lights up." />
 
@@ -60,15 +60,15 @@ Needs Node 22 or newer.
 ```sh
 npm install
 cp .env.example .env.local   # add GEMINI_API_KEY and/or DEEPSEEK_API_KEY
-npm run dev                  # http://localhost:5174 (also serves /api/anchors and /api/scenes)
+npm run dev                  # http://localhost:5174 (also serves /api/anchors, /api/scenes, /story/ and /deck/)
 ```
 
-`npm run examples` rebuilds the prepared example palaces from the real helpers (dev server running).
+`npm run examples` rebuilds the prepared example palaces from the real helpers (dev server running). `npm run demo` records the demo clip of the real app with Playwright and converts it with ffmpeg (preview server running).
 
 ## Tests
 
 - `npm test`: 81 unit tests (Vitest) for the list parser, route, camera, answer checker, voice interpreter, recall walk, model-answer checks, storage, colour contrast and the prepared examples.
-- `npm run e2e`: 19 browser checks (Playwright) against the production build, with the AI helpers and the microphone stubbed, so no keys are needed. They cover typed and spoken recall, retries, saved palaces, examples, failure states, reduced motion and narrow phones (320–390 px).
+- `npm run e2e`: 22 browser checks (Playwright) against the production build, with the AI helpers and the microphone stubbed, so no keys are needed. They cover typed and spoken recall, retries, saved palaces, examples, failure states, reduced motion and narrow phones (320–390 px), plus the story page, the pitch deck and the 404 page.
 - `LIVE=1 BASE_URL=http://localhost:5174 npx playwright test`: 7 checks that use the real AI (also run against the live site): your own photo, learning, and two hands-on passes (typos, a skip, a retry, keyboard only, odd inputs, a reload, delete).
 - `npm run build`: type-check and production build.
 
