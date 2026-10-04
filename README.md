@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/favicon.svg" width="72" height="72" alt="" />
+<img src="docs/assets/icon.svg" width="72" height="72" alt="" />
 
 # Loci
 
@@ -11,7 +11,7 @@ Then the lights go out, and every item you remember turns its stop back on.
 
 [**Open Loci**](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)) · [Scope](devpost/scope.md) · [PRD](devpost/prd.md) · [Spec](devpost/spec.md) · [Build log](devpost/checklist.md)
 
-<img src="public/og.jpg" width="720" alt="Loci: a student's room at night with a numbered route; seven remembered stops have their light back on." />
+<img src="docs/assets/readme-hero-animated.svg" width="100%" alt="Loci — your room as a memory palace. You say the item in the dark; its dim stop turns green and that part of your room lights up." />
 
 </div>
 
