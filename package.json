@@ -13,7 +13,8 @@
     "test": "vitest run",
     "e2e": "vite build && playwright test",
     "examples": "node scripts/prebuild-examples.mjs",
-    "demo": "node scripts/record-demo.mjs"
+    "demo": "node scripts/record-demo.mjs",
+    "receipt": "node scripts/receipt.mjs"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
