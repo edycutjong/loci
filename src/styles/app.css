@@ -1336,3 +1336,93 @@ button.dot:hover {
 .feedback[data-kind="not-caught"] svg {
   color: var(--moon-300);
 }
+
+/* ---------- Your palaces ---------- */
+.palaces {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.palace-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--night-800);
+  border: 1.5px solid var(--night-600);
+  transition: border-color 160ms var(--ease-out);
+}
+.palace-row:hover {
+  border-color: var(--line);
+}
+.palace-open {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+.palace-open img {
+  width: 76px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--night-700);
+}
+.palace-info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.palace-title {
+  font-family: var(--font-item);
+  font-size: var(--t-body);
+  font-weight: 620;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.palace-meta {
+  font-size: var(--t-small);
+  color: var(--moon-300);
+}
+.palace-go {
+  color: var(--moon-300);
+  margin-right: var(--space-1);
+}
+.palace-open:hover .palace-go {
+  color: var(--moon-100);
+}
+.mini-strip {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+}
+.mini-strip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--miss);
+}
+.mini-strip i[data-ok="true"] {
+  background: var(--lit);
+}
+.confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.confirm .btn {
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  font-size: var(--t-small);
+}
+.confirm-yes {
+  border-color: var(--miss);
+}

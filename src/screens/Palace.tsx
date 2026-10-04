@@ -13,28 +13,53 @@ import { liveAnchors, liveScenes, usePalaceBuild, type BuildPhase } from "../lib
 import { answer, currentStop, fold, skipTo, startWalk, type Result, type Walking } from "../lib/recall";
 import { dropJob, getJob, type BuildJob } from "../lib/session";
 import { canListen, createListener, type ListenError } from "../lib/speech";
-import { peekPalace, savePalace, saveWalk, type Loaded } from "../lib/store";
+import { loadPalace, peekPalace, savePalace, saveWalk, type Loaded } from "../lib/store";
 import { formatDuration, useElapsed } from "../lib/time";
 
 type Mode = "learn" | "recall" | "result";
 const SOURCES = { anchors: liveAnchors, scenes: liveScenes };
 
 export function PalaceScreen({ id }: { id: string }) {
-  const [loaded, setLoaded] = useState(() => peekPalace(id));
-  const job = loaded ? null : (getJob(id) ?? null);
+  const [loaded, setLoaded] = useState<Loaded | null>(() => peekPalace(id));
+  const [job] = useState<BuildJob | null>(() => (peekPalace(id) ? null : (getJob(id) ?? null)));
+  const [looked, setLooked] = useState(() => !!peekPalace(id) || !!getJob(id));
+
+  // A palace built earlier is read back from this device's storage.
+  useEffect(() => {
+    if (loaded || job) return;
+    let live = true;
+    void loadPalace(id).then((found) => {
+      if (!live) return;
+      setLoaded(found);
+      setLooked(true);
+    });
+    return () => {
+      live = false;
+    };
+  }, [id, loaded, job]);
 
   const onBuilt = useCallback(
-    (palace: Palace) => {
+    async (palace: Palace) => {
       const own = job?.room.kind === "photo" ? job.room.photo : undefined;
-      void savePalace(palace, own);
+      await savePalace(palace, own);
       setLoaded(peekPalace(palace.id));
       dropJob(palace.id);
     },
     [job],
   );
 
-  if (!loaded && !job) return <Missing />;
-  return <PalaceView loaded={loaded} job={job} onBuilt={onBuilt} />;
+  if (!loaded && !job) return looked ? <Missing /> : <Opening />;
+  return <PalaceView loaded={loaded} job={job} onBuilt={(p) => void onBuilt(p)} />;
+}
+
+function Opening() {
+  return (
+    <main className="home">
+      <p className="made-note" role="status">
+        Opening your palace…
+      </p>
+    </main>
+  );
 }
 
 function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: BuildJob | null; onBuilt: (p: Palace) => void }) {
@@ -295,6 +320,11 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
                 Recall, lights out
               </button>
             </div>
+          )}
+          {loaded && !loaded.saved && (
+            <p className="notice" role="status">
+              This palace couldn't be saved on this device (storage is full or blocked). It works now, but it won't be here next time.
+            </p>
           )}
           {learning && stop && (
             <>

@@ -49,7 +49,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: In Chrome, start recall, tap the microphone once, close your eyes, say the list, and open them to a row of green pins.
   Commit: `feat: recall by voice with continuous listening`
 
-- [ ] **5. Palaces stay on your device**
+- [x] **5. Palaces stay on your device**
   Becomes usable: Every built palace and every finished walk is saved; Home lists them with the room thumbnail, title and last result; a palace reopens after a reload; delete asks first; if saving is blocked, a note says it won't be kept.
   Why now: Coming back before the exam is part of the loop, and the walk record's shape is only settled once recall exists.
   PRD ref: `prd.md > Saved palaces`, `prd.md > States and Boundaries`
