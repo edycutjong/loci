@@ -1,0 +1,364 @@
+<!doctype html>
+<!--
+  Loci — the judge page (/judge/). One file, no script: a page for one reader, readable in thirty seconds.
+  Every number is filled in from its source when the page is made: the run in receipt-*.json beside this file,
+  and the test runners themselves. The claim sentence is the same one as in JUDGE.md and the repository description.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0e1534" />
+<title>For judges — Loci</title>
+<meta name="description" content="Loci in one page: the 30-second path, receipts from a real run on the live site, how to reproduce them, and what it doesn't claim." />
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+<link rel="canonical" href="https://loci.edycu.dev/judge/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Loci" />
+<meta property="og:title" content="For judges — Loci" />
+<meta property="og:description" content="The 30-second path, receipts from a real run on the live site, how to reproduce them, and what Loci doesn't claim." />
+<meta property="og:url" content="https://loci.edycu.dev/judge/" />
+<meta property="og:image" content="https://loci.edycu.dev/og.jpg?v=2" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Loci: one photo, 12 stops. A student's room with the lights out; five remembered stops are lit green." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://loci.edycu.dev/og.jpg?v=2" />
+<link rel="preload" href="../fonts/piazzolla-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+@font-face { font-family: "Piazzolla Variable"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-normal.woff2) format("woff2"); }
+@font-face { font-family: "Piazzolla Variable"; font-style: italic; font-weight: 100 900; font-display: swap; src: url(../fonts/piazzolla-latin-opsz-italic.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Next Variable"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(../fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/atkinson-hyperlegible-mono-latin-700-normal.woff2) format("woff2"); }
+
+/* Loci's tokens: the night, moonlight and state colours of src/styles/tokens.css */
+:root {
+  --bg:      #0e1534;  /* night-900: a room at night is blue, not black */
+  --ink:     #eef1fa;  /* moon-100: moonlight type, the current station, primary actions */
+  --muted:   #b9c1dd;  /* moon-300: secondary text */
+  --before:  #8590b8;  /* state: stop still dark — the hollow station rim and the resting dotted route */
+  --after:   #46d98a;  /* state: remembered — green means only this */
+  --rule:    #6e7aa6;  /* line: every control outline */
+  --miss:    #ff7f6e;  /* judged wrong; never decoration */
+  --night-800: #141c40; --night-700: #1d2752; --night-600: #2a3668;
+  --font-display: "Piazzolla Variable", "Piazzolla", Georgia, serif;
+  --font-body:    "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-data:    "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --shadow-lift: 0 2px 4px rgb(4 7 22 / 0.5), 0 10px 28px rgb(4 7 22 / 0.42);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --wrap: 1180px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; color: var(--ink); font: 400 1.0625rem/1.55 var(--font-body); -webkit-font-smoothing: antialiased;
+  background: radial-gradient(64rem 38rem at 85% -8rem, #18224f 0%, rgb(24 34 79 / 0) 70%), var(--bg);
+}
+::selection { background: rgb(70 217 138 / 0.32); color: var(--ink); }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+img, svg { display: block; max-width: 100%; }
+:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); border-radius: 10px; }
+.wrap { width: min(100% - 48px, var(--wrap)); margin-inline: auto; }
+@media (max-width: 560px) { .wrap { width: min(100% - 32px, var(--wrap)); } }
+code { font: 500 0.8125rem/1.4 var(--font-data); }
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Buttons: moonlight primary, night quiet (the app's button vocabulary). */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 10px;
+  font: 650 1rem/1 var(--font-body); text-decoration: none; white-space: nowrap;
+  border: 1.5px solid var(--rule); background: var(--night-700); color: var(--ink);
+  transition: background-color 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.btn:hover { background: #253064; border-color: var(--ink); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn-primary:hover { background: #ffffff; border-color: #ffffff; box-shadow: var(--shadow-lift); }
+.btn-primary .ic { transition: transform 220ms var(--ease-out); }
+.btn-primary:hover .ic { transform: translateX(3px); }
+.btn.sm { min-height: 40px; padding: 0 16px; font-size: 0.9375rem; }
+
+/* Top bar */
+.top { position: sticky; top: 0; z-index: 20; background: rgb(14 21 52 / 0.92); border-bottom: 1px solid var(--night-600); }
+@supports (backdrop-filter: blur(1px)) { .top { background: rgb(14 21 52 / 0.84); backdrop-filter: saturate(1.2) blur(10px); } }
+.nav { display: flex; align-items: center; gap: 12px; min-height: 68px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: underline 1.5px transparent; text-underline-offset: 0.24em; font: 650 1.5rem/1 var(--font-display); letter-spacing: -0.01em; border-radius: 10px; transition: text-decoration-color 180ms var(--ease-out); }
+.brand:hover { text-decoration-color: var(--rule); }
+.brand svg { width: 30px; height: 30px; }
+.brand small { margin-left: 4px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--muted); font: 650 0.6875rem/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.links { display: flex; gap: 4px; margin: 0 8px 0 0; padding: 0; list-style: none; }
+.links a { display: block; padding: 10px 12px; border-radius: 10px; color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.9375rem; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.links a:hover { color: var(--ink); background: var(--night-800); }
+@media (max-width: 960px) { .links { display: none; } }
+@media (max-width: 420px) { .brand small { display: none; } }
+
+/* Labels: each section is a stop on the page's own walk. */
+.label { display: flex; align-items: center; gap: 12px; margin: 0; color: var(--before); font: 650 0.8125rem/1.2 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.disc { width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--before); background: var(--bg); }
+.disc.on { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+h1 { margin: 20px 0 20px; max-width: 24ch; font: 640 clamp(1.85rem, 1.2rem + 2.6vw, 3.3rem)/1.08 var(--font-display); font-optical-sizing: auto; letter-spacing: -0.012em; text-wrap: balance; }
+h1 em { font-style: italic; font-weight: 560; color: var(--after); }
+h2 { margin: 16px 0 12px; max-width: 26ch; font: 640 clamp(1.9rem, 1.4rem + 1.9vw, 2.8rem)/1.06 var(--font-display); font-optical-sizing: auto; letter-spacing: -0.02em; text-wrap: balance; }
+.lede { max-width: 54ch; margin: 0; color: var(--muted); font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem); }
+.intro { max-width: 66ch; margin: 0 0 32px; color: var(--muted); font-size: 1.0625rem; }
+.intro b, .lede b { color: var(--ink); font-weight: 650; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 0; }
+.sec { padding: clamp(64px, 9vw, 112px) 0 0; }
+
+/* Hero: the claim, and the 30-second path drawn as the line a judge walks. */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: clamp(32px, 5vw, 72px); align-items: start; padding: clamp(40px, 6vw, 72px) 0 0; }
+@media (max-width: 920px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.walk { margin: 0; padding: 26px 26px 18px; border-radius: 16px; border: 1px solid var(--night-600); background: linear-gradient(180deg, var(--night-800), rgb(20 28 64 / 0.55)); box-shadow: var(--shadow-lift); }
+.walk h2 { margin: 0 0 4px; font-size: 1.5rem; max-width: none; }
+.walk > p { margin: 0 0 18px; color: var(--before); font-size: 0.9375rem; }
+.path { margin: 0; padding: 0; list-style: none; }
+.path li { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 16px; padding-bottom: 18px; }
+.path li::before { content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; border-left: 2.5px dotted var(--before); }
+.path li:last-child { padding-bottom: 0; }
+.path li:last-child::before { display: none; }
+.st { position: relative; z-index: 1; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--ink); background: var(--bg); color: var(--ink); font: 700 12px/1 var(--font-data); font-variant-numeric: tabular-nums; }
+.st svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.path li.lit .st { background: var(--after); border-color: var(--after); color: var(--bg); }
+.path .do { margin: 4px 0 2px; font-weight: 650; }
+.path .do a { text-decoration-color: var(--rule); }
+.path .do a:hover { text-decoration-color: currentColor; }
+.path .why { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+.path q { font-family: var(--font-display); font-style: italic; color: var(--ink); quotes: "“" "”"; }
+.answers { margin: 16px 0 0 48px; color: var(--before); font-size: 0.875rem; }
+.answers summary { cursor: pointer; width: fit-content; border-radius: 8px; font-weight: 600; color: var(--muted); transition: color 160ms var(--ease-out); }
+.answers summary:hover { color: var(--ink); }
+.answers p { margin: 8px 0 0; font-family: var(--font-display); font-size: 1rem; color: var(--muted); }
+
+/* Receipts */
+.receipts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--night-600); }
+.rc { padding: 28px 22px 26px 0; }
+.rc + .rc { padding-left: 22px; border-left: 1px solid var(--night-600); }
+.rc .num { margin: 0; font: 700 clamp(2.5rem, 1.9rem + 2.2vw, 3.6rem)/1 var(--font-data); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; white-space: nowrap; }
+.rc .num small { font-size: 0.5em; letter-spacing: 0; color: var(--muted); }
+.rc .what { margin: 12px 0 6px; font-weight: 650; }
+.rc .src { margin: 0; color: var(--before); font-size: 0.9375rem; }
+.rc .src a, .note a, .checks a, td a { text-decoration-color: var(--night-600); transition: color 160ms var(--ease-out), text-decoration-color 160ms var(--ease-out); }
+.rc .src a:hover, .note a:hover, .checks a:hover, td a:hover { color: var(--ink); text-decoration-color: currentColor; }
+@media (max-width: 860px) { .receipts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rc:nth-child(3) { padding-left: 0; border-left: 0; } .rc:nth-child(n + 3) { border-top: 1px solid var(--night-600); } }
+.note { max-width: 78ch; margin: 22px 0 0; color: var(--muted); }
+.note b { color: var(--ink); font-weight: 650; }
+
+/* The nine palaces */
+.table { margin: 36px 0 0; overflow-x: auto; border-radius: 14px; border: 1px solid var(--night-600); background: var(--night-800); }
+table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 0.9375rem; }
+caption { padding: 14px 18px; text-align: left; color: var(--before); font-size: 0.875rem; border-bottom: 1px solid var(--night-600); }
+th, td { padding: 11px 18px; text-align: left; vertical-align: baseline; }
+thead th { color: var(--before); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.12em; text-transform: uppercase; }
+tbody tr { border-top: 1px dashed var(--night-600); }
+tbody th { font-weight: 650; }
+tbody th small { display: block; color: var(--before); font-weight: 500; font-size: 0.8125rem; }
+td.n { font: 700 0.875rem/1.3 var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.m code { color: var(--muted); white-space: nowrap; }
+@media (max-width: 700px) {
+  .table { overflow: visible; border: 0; background: none; }
+  table { min-width: 0; }
+  caption { padding: 0 0 4px; border: 0; }
+  thead { display: none; }
+  tbody, th, td { display: block; }
+  tbody tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px; margin-top: 12px; padding: 16px; border: 1px solid var(--night-600); border-radius: 14px; background: var(--night-800); }
+  tbody th, td.m { grid-column: 1 / -1; padding: 0; }
+  td.m { order: 1; } td.n { order: 2; } /* the three short numbers share the last row */
+  tbody th small { display: inline; margin-left: 6px; }
+  td { padding: 0; }
+  td::before { content: attr(data-label); display: block; margin-bottom: 2px; color: var(--before); font: 650 0.6875rem/1.4 var(--font-body); letter-spacing: 0.12em; text-transform: uppercase; }
+}
+td .ok { color: var(--after); }
+
+/* The checks */
+.checks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 28px 0 0; padding: 0; list-style: none; }
+.checks li { padding: 18px 18px 16px; border-radius: 14px; border: 1px solid var(--night-600); background: var(--night-800); color: var(--muted); font-size: 0.9375rem; }
+.checks b { display: block; margin-bottom: 4px; color: var(--ink); font: 700 1.75rem/1.1 var(--font-data); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+@media (max-width: 860px) { .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Reproduce */
+.runs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .runs { grid-template-columns: minmax(0, 1fr); } }
+.run { display: flex; flex-direction: column; border-radius: 14px; border: 1px solid var(--night-600); background: var(--night-800); overflow: hidden; }
+.run.real { border-color: var(--rule); }
+.run h3 { display: flex; align-items: center; gap: 10px; margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--night-600); font: 600 1.25rem/1.2 var(--font-display); }
+.run h3 span { margin-left: auto; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--before); font: 650 0.6875rem/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+.run.real h3 span { color: var(--ink); border-color: var(--rule); }
+.run pre { margin: 0; padding: 16px 18px; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); color: var(--ink); font: 500 0.8125rem/1.65 var(--font-data); }
+.run pre i { font-style: normal; color: var(--before); }
+@media (max-width: 560px) { .run pre { padding: 14px 16px; font-size: 0.75rem; } }
+.run p { margin: 0; padding: 14px 18px 16px; color: var(--muted); font-size: 0.9375rem; border-top: 1px solid var(--night-600); }
+.run p code { color: var(--ink); }
+.run + .run.wide, .run.wide { grid-column: 1 / -1; }
+
+/* Honest limits */
+.limits { margin: 0; padding: 0; list-style: none; counter-reset: lim; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .limits { grid-template-columns: minmax(0, 1fr); } }
+.limits li { counter-increment: lim; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; padding: 22px 22px 20px; border-radius: 14px; border: 1px solid var(--night-600); }
+.limits li::before { content: counter(lim); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed var(--before); color: var(--muted); font: 700 12px/1 var(--font-data); }
+.limits h3 { margin: 4px 0 6px; font: 600 1.25rem/1.25 var(--font-display); }
+.limits p { margin: 0; color: var(--muted); }
+
+/* Links */
+.where { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; margin: 0; border-top: 1px solid var(--night-600); }
+@media (max-width: 900px) { .where { grid-template-columns: minmax(0, 1fr); } }
+.where div { padding: 16px 0; border-bottom: 1px solid var(--night-600); }
+.where dt { color: var(--before); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.12em; text-transform: uppercase; }
+.where dd { margin: 6px 0 0; }
+.where dd a { color: var(--ink); text-decoration-color: var(--rule); transition: text-decoration-color 160ms var(--ease-out); }
+.where dd a:hover { text-decoration-color: currentColor; }
+.where dd span { color: var(--before); }
+
+/* Footer */
+.foot { margin-top: 88px; padding: 30px 0 44px; border-top: 1px solid var(--night-600); color: var(--before); font-size: 0.875rem; }
+.foot-grid { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; justify-content: space-between; }
+.foot .brand { margin: 0; font-size: 1.25rem; color: var(--ink); }
+.foot .brand svg { width: 24px; height: 24px; }
+.foot p { margin: 0; }
+.ver { font: 700 0.8125rem/1 var(--font-data); padding: 5px 8px; border-radius: 6px; border: 1px solid var(--night-600); color: var(--muted); text-decoration: none; transition: border-color 160ms var(--ease-out), color 160ms var(--ease-out); }
+.ver:hover { border-color: var(--rule); color: var(--ink); }
+@media print { .top { position: static; } .walk, .run, .table, .checks li, .limits li { box-shadow: none; break-inside: avoid; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="mark" viewBox="0 0 32 32"><rect x="2.5" y="2.5" width="27" height="27" rx="8" fill="none" stroke="#eef1fa" stroke-width="2"/><path d="M8.5 21.5 L15.5 11.5 L23.5 19.5" fill="none" stroke="#8590b8" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.1 3.4"/><circle cx="8.5" cy="21.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="15.5" cy="11.5" r="3" fill="#0e1534" stroke="#eef1fa" stroke-width="1.8"/><circle cx="23.5" cy="19.5" r="3.4" fill="#46d98a"/></symbol>
+</svg>
+
+<header class="top">
+  <nav class="wrap nav" aria-label="Loci">
+    <a class="brand" href="../"><svg aria-hidden="true"><use href="#mark"/></svg>Loci<small>For judges</small></a>
+    <ul class="links">
+      <li><a href="#receipts">Receipts</a></li>
+      <li><a href="#reproduce">Reproduce</a></li>
+      <li><a href="#limits">Limits</a></li>
+      <li><a href="#links">Links</a></li>
+    </ul>
+    <a class="btn btn-primary sm" href="../">Open Loci<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+  </nav>
+</header>
+
+<main>
+<section class="wrap hero" aria-labelledby="claim">
+  <div>
+    <p class="label"><span class="disc on"></span>For judges · one page</p>
+    <h1 id="claim">Loci turns a photo of your own room into a memory palace for a list you must learn in order, then <em>lights each stop back up</em> as you say the list in the dark.</h1>
+    <p class="lede">The path to click, receipts from a real run on the live site, how to reproduce them, and what Loci doesn't claim. <b>Every number on this page links to where it came from.</b></p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="../">Open Loci<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a class="btn" href="../story/">The story</a>
+      <a class="btn" href="../deck/"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Pitch deck</a>
+    </div>
+  </div>
+
+  <div class="walk" id="path">
+    <h2>The 30-second path</h2>
+    <p>No sign-up, no key, nothing to install. Any browser; a phone works.</p>
+    <ol class="path">
+      <li><span class="st">1</span><div><p class="do"><a href="../">Open Loci</a></p><p class="why">The home screen shows the method on a real room.</p></div></li>
+      <li><span class="st">2</span><div><p class="do">Tap “Try it: 12 cranial nerves”</p><p class="why">A palace made in advance in an AI-generated student room opens at stop 1. No AI call, so no wait.</p></div></li>
+      <li><span class="st">3</span><div><p class="do">Tap “Next stop” a few times</p><p class="why">Each stop is a real object in the photo, with a strange scene for its item.</p></div></li>
+      <li><span class="st">4</span><div><p class="do">Tap “Lights out” (the moon) and type what you remember</p><p class="why">A right answer turns its stop green and lights that part of the room. <q>occulomotor</q> counts for Oculomotor; <q>Optic</q> at stop 5 stays dark.</p></div></li>
+      <li class="lit"><span class="st"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="do">Read the result, then retry the misses</p><p class="why">First-try score, learning time and recall time. Every stop green brings the whole room back.</p></div></li>
+    </ol>
+    <details class="answers"><summary>The 12 answers, in order</summary><p>Olfactory · Optic · Oculomotor · Trochlear · Trigeminal · Abducens · Facial · Vestibulocochlear (or “auditory”) · Glossopharyngeal · Vagus · Accessory · Hypoglossal</p></details>
+  </div>
+</section>
+
+<section class="sec wrap" id="receipts" aria-labelledby="receipts-title">
+  <p class="label"><span class="disc"></span>Stop 1 · Receipts</p>
+  <h2 id="receipts-title">A real run on the live site, with nothing stubbed.</h2>
+  <p class="intro">On 2026-10-04, 19:44–19:47 UTC, <code>scripts/receipt.mjs</code> built 9 palaces on <b>devpost-learn-loci.vercel.app</b> the way a person does: the three AI-generated example rooms, each uploaded as if it were your own photo, times the three example lists. The browser shrank each photo, the server called the real models, and the clock ran from “Build my palace” to the first scene.</p>
+  <div class="receipts">
+    <div class="rc"><p class="num">9<small>/9</small></p><p class="what">palaces built</p><p class="src">Every one reached its first scene. <a href="receipt-2026-10-04.json">The raw answers</a></p></div>
+    <div class="rc"><p class="num">102</p><p class="what">stops placed by code</p><p class="src">On 142 objects the AI found. <a href="https://github.com/edycutjong/loci/blob/main/shared/route.ts">shared/route.ts</a></p></div>
+    <div class="rc"><p class="num">102<small>/102</small></p><p class="what">scenes spell their item</p><p class="src">The exact item, in the scene for its stop. <a href="https://github.com/edycutjong/loci/blob/main/shared/prompts.ts">shared/prompts.ts</a></p></div>
+    <div class="rc"><p class="num">14.45<small> s</small></p><p class="what">median wait to learn</p><p class="src">Upload included; the slowest took 30.02 s. <a href="https://github.com/edycutjong/loci/blob/main/DEMO.md">DEMO.md</a></p></div>
+  </div>
+  <p class="note"><b>Cost of the whole run: $0.1151 at list prices.</b> DeepSeek, which wrote the scenes, bills that rate: $0.0115. The Gemini part, $0.1036 at paid rates, ran on a free-tier key and was not billed. The answers report the tokens each model used, and <a href="https://github.com/edycutjong/loci/blob/main/scripts/receipt.mjs">the script</a> prices them at the rates published on 2026-10-05.</p>
+
+  <div class="table">
+    <table>
+      <caption>The 9 palaces. Objects and scenes name the model that answered; the AI never decides a stop.</caption>
+      <thead><tr><th scope="col">Room × list</th><th scope="col">Objects found</th><th scope="col">Stops</th><th scope="col">Scenes</th><th scope="col">Wait</th><th scope="col">List price</th></tr></thead>
+      <tbody><tr><th scope="row">Student room<small>12 cranial nerves</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.5-flash</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">28.00 s</td><td class="n" data-label="List price">$0.0230</td></tr><tr><th scope="row">Student room<small>First 12 elements</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.8-flash</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">14.43 s</td><td class="n" data-label="List price">$0.0076</td></tr><tr><th scope="row">Student room<small>Grocery run</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.8-flash</code></td><td class="n" data-label="Stops">10</td><td class="m" data-label="Scenes"><span class="ok">10/10</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">13.94 s</td><td class="n" data-label="List price">$0.0077</td></tr><tr><th scope="row">Studio flat<small>12 cranial nerves</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.1-flash-lite</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">17.97 s</td><td class="n" data-label="List price">$0.0029</td></tr><tr><th scope="row">Studio flat<small>First 12 elements</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.5-flash</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">16.95 s</td><td class="n" data-label="List price">$0.0236</td></tr><tr><th scope="row">Studio flat<small>Grocery run</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.5-flash</code></td><td class="n" data-label="Stops">10</td><td class="m" data-label="Scenes"><span class="ok">10/10</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">13.43 s</td><td class="n" data-label="List price">$0.0247</td></tr><tr><th scope="row">Kitchen<small>12 cranial nerves</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.1-flash-lite</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">13.92 s</td><td class="n" data-label="List price">$0.0027</td></tr><tr><th scope="row">Kitchen<small>First 12 elements</small></th><td class="m" data-label="Objects found">16 · <code>gemini-3.1-flash-lite</code></td><td class="n" data-label="Stops">12</td><td class="m" data-label="Scenes"><span class="ok">12/12</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">30.02 s</td><td class="n" data-label="List price">$0.0030</td></tr><tr><th scope="row">Kitchen<small>Grocery run</small></th><td class="m" data-label="Objects found">14 · <code>gemini-3.5-flash</code></td><td class="n" data-label="Stops">10</td><td class="m" data-label="Scenes"><span class="ok">10/10</span> spell their item · <code>deepseek-flash</code></td><td class="n" data-label="Wait">14.45 s</td><td class="n" data-label="List price">$0.0199</td></tr></tbody>
+    </table>
+  </div>
+
+  <ul class="checks" aria-label="Automated checks">
+    <li><b>97</b><a href="https://github.com/edycutjong/loci/tree/main/tests">unit tests</a>: the checker, route, voice, storage, the model ladder and the bugs we fixed</li>
+    <li><b>60,000</b><a href="https://github.com/edycutjong/loci/blob/main/tests/score.property.test.ts">generated answers</a> per run: no wrong one ever turns a stop green</li>
+    <li><b>28</b><a href="https://github.com/edycutjong/loci/tree/main/e2e">browser checks</a> on the production build, the AI stubbed</li>
+    <li><b>7</b><a href="https://github.com/edycutjong/loci/tree/main/e2e/live">live checks</a> with the real AI, also run on the live site</li>
+  </ul>
+</section>
+
+<section class="sec wrap" id="reproduce" aria-labelledby="reproduce-title">
+  <p class="label"><span class="disc"></span>Stop 2 · Reproduce</p>
+  <h2 id="reproduce-title">Run it yourself. The real path needs no key.</h2>
+  <p class="intro">The receipt runs against the live site, so the server's own keys do the AI calls. The tests are a separate, deterministic replay: they stub the AI and never stand in for the product.</p>
+  <div class="runs">
+    <div class="run real">
+      <h3>The real run<span>live AI</span></h3>
+<pre><code>git clone https://github.com/edycutjong/loci && cd loci
+npm ci && npx playwright install chromium
+<i># 9 palaces on the live site → public/judge/receipt-&lt;date&gt;.json</i>
+npm run receipt</code></pre>
+      <p>About 3 minutes. Prints one line per palace and the totals. <code>BASE_URL=http://localhost:5174</code> points it at your own dev server and keys.</p>
+    </div>
+    <div class="run">
+      <h3>The tests<span>AI stubbed</span></h3>
+<pre><code><i># 97 unit tests and 60,000 generated answers, no network</i>
+npm test
+<i># 28 browser checks; the AI helpers and the microphone stubbed</i>
+npm run e2e</code></pre>
+      <p>The same commands CI runs on every push, plus <code>tsc</code> and the production build.</p>
+    </div>
+    <div class="run real wide">
+      <h3>One call, with curl and jq<span>live AI</span></h3>
+<pre><code>curl -s https://devpost-learn-loci.vercel.app/rooms/kos.jpg | base64 | tr -d '\n' | jq -Rs '{image: .}' \
+  | curl -s https://devpost-learn-loci.vercel.app/api/anchors -H 'Content-Type: application/json' -d @- \
+  | jq '{model, ms, tried, usage, objects: [.anchors[].label]}'</code></pre>
+      <p>The student room's photo, straight to the object finder: which model answered, how long it took, which models it passed over and why, the tokens it used, and the objects it found.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap" id="limits" aria-labelledby="limits-title">
+  <p class="label"><span class="disc"></span>Stop 3 · Honest limits</p>
+  <h2 id="limits-title">What Loci doesn't claim.</h2>
+  <ol class="limits">
+    <li><div><h3>Recall in one sitting, nothing more</h3><p>Loci shows a first-try score, learning time and recall time. It makes no claim about next week and has no spaced repetition.</p></div></li>
+    <li><div><h3>The receipt's rooms are AI-generated</h3><p>Real rooms are messier. When free-tier Gemini quotas run out, objects come from gemini-3.1-flash-lite, which draws looser boxes.</p></div></li>
+    <li><div><h3>Voice is Chrome and Edge only</h3><p>It uses the browser's own speech recognition. Automated Chrome can't open a microphone, so voice is tested with a stand-in recognizer; typing works everywhere.</p></div></li>
+    <li><div><h3>Your photo goes to an AI once</h3><p>Gemini, or DeepSeek if Gemini is busy, sees it to find objects; the server keeps nothing. A free-tier Gemini key lets Google use what it receives, so leave people and papers out.</p></div></li>
+  </ol>
+</section>
+
+<section class="sec wrap" id="links" aria-labelledby="links-title">
+  <p class="label"><span class="disc"></span>Stop 4 · Links</p>
+  <h2 id="links-title">Everything in one place.</h2>
+  <dl class="where">
+    <div><dt>The app</dt><dd><a href="https://loci.edycu.dev">loci.edycu.dev</a> <span>· mirror</span> <a href="https://devpost-learn-loci.vercel.app">devpost-learn-loci.vercel.app</a></dd></div>
+    <div><dt>The story and the deck</dt><dd><a href="../story/">Story page</a> <span>·</span> <a href="../deck/">Pitch deck</a></dd></div>
+    <div><dt>The code</dt><dd><a href="https://github.com/edycutjong/loci">github.com/edycutjong/loci</a> <span>· MIT</span></dd></div>
+    <div><dt>The receipt</dt><dd><a href="https://github.com/edycutjong/loci/blob/main/DEMO.md">DEMO.md</a> <span>·</span> <a href="receipt-2026-10-04.json">raw JSON</a></dd></div>
+    <div><dt>The plan</dt><dd><a href="https://github.com/edycutjong/loci/blob/main/devpost/scope.md">Scope</a> <span>·</span> <a href="https://github.com/edycutjong/loci/blob/main/devpost/prd.md">PRD</a> <span>·</span> <a href="https://github.com/edycutjong/loci/blob/main/devpost/spec.md">Spec</a> <span>·</span> <a href="https://github.com/edycutjong/loci/blob/main/devpost/checklist.md">Build log</a></dd></div>
+    <div><dt>The event</dt><dd><a href="https://learn-ai-basics.devpost.com/">Build With AI: Basics</a> <span>· Devpost Learn</span></dd></div>
+  </dl>
+</section>
+</main>
+
+<footer class="foot wrap">
+  <div class="foot-grid">
+    <a class="brand" href="../"><svg aria-hidden="true"><use href="#mark"/></svg>Loci</a>
+    <p>The example rooms are AI-generated images. Built with the Devpost Learn skill pack.</p>
+    <a class="ver" href="https://github.com/edycutjong/loci/releases/tag/v0.1.0" title="Latest release">v0.1.0</a>
+  </div>
+</footer>
+</body>
+</html>

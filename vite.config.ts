@@ -39,10 +39,10 @@ function devApi(): Plugin {
   };
 }
 
-// The story page and the pitch deck are plain HTML in public/<page>/index.html, outside the React app.
+// The story page, the pitch deck and the judge page are plain HTML in public/<page>/index.html, outside the React app.
 // As on Vercel (vercel.json redirects): "/story" redirects to "/story/" so their relative paths resolve, and
 // "/story/" serves its index.html. Preview also answers unknown pages with 404.html and a 404, like Vercel does.
-const STATIC_PAGES = ["story", "deck"];
+const STATIC_PAGES = ["story", "deck", "judge"];
 
 function staticPages(): Plugin {
   const pages: Connect.NextHandleFunction = (req, res, next) => {
