@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, BookOpen, Check, Expand, Moon, Shrink } from "lucide-react";
+import { ArrowLeft, BookOpen, Check, Expand, Moon, Shrink, Timer } from "lucide-react";
 import { isRight } from "../../shared/score";
 import { interpret } from "../../shared/voice";
 import type { Palace } from "../../shared/types";
@@ -259,27 +259,29 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
         </button>
         <p className="topbar-title">{title}</p>
         {learning && (
-          <span className="topbar-meta" aria-label={`Learning time ${formatDuration(learnShown)}`}>
+          <span className="topbar-meta" role="timer" aria-label={`Learning time ${formatDuration(learnShown)}`} title="Learning time">
+            <Timer size={15} strokeWidth={2} aria-hidden="true" />
             <span className="meta-word">Learning </span>
             <span className="num">{formatDuration(learnShown)}</span>
           </span>
         )}
         {mode === "recall" && walk && (
-          <span className="topbar-meta" aria-label={`Recall time ${formatDuration(recallNow)}`}>
+          <span className="topbar-meta" role="timer" aria-label={`Recall time ${formatDuration(recallNow)}`} title="Recall time">
+            <Timer size={15} strokeWidth={2} aria-hidden="true" />
             <span className="meta-word">Recall </span>
             <span className="num">{formatDuration(recallNow)}</span>
           </span>
         )}
         {palace &&
           (mode === "learn" ? (
-            <button type="button" className="btn btn-quiet mode-switch" onClick={() => startRecall()} aria-label="Recall, lights out">
+            <button type="button" className="btn btn-quiet mode-switch" onClick={() => startRecall()} aria-label="Recall, lights out" title="Recall, lights out">
               <Moon size={17} strokeWidth={2} aria-hidden="true" />
-              Lights out
+              <span className="mode-word">Lights out</span>
             </button>
           ) : (
-            <button type="button" className="btn btn-quiet mode-switch" onClick={() => toLearn()} aria-label="Back to learning">
+            <button type="button" className="btn btn-quiet mode-switch" onClick={() => toLearn()} aria-label="Back to learning" title="Back to learning">
               <BookOpen size={17} strokeWidth={2} aria-hidden="true" />
-              Learn
+              <span className="mode-word">Learn</span>
             </button>
           ))}
       </header>

@@ -23,10 +23,10 @@ describe("cameraFor", () => {
     expect(cy).toBeCloseTo(220, 0);
   });
 
-  it("never zooms past twice the photo's real pixels on this screen", () => {
+  it("never shows more than 1.5 screen pixels per real photo pixel", () => {
     const tiny: [number, number, number, number] = [490, 490, 510, 510];
     const cam = cameraFor(tiny, landscape, { w: 940, h: 626 }, 1536, 2); // a retina laptop
-    expect((landscape.w * cam.scale * 2) / 1536).toBeLessThanOrEqual(2 + 1e-9);
+    expect((landscape.w * cam.scale * 2) / 1536).toBeLessThanOrEqual(1.5 + 1e-9);
   });
 
   it("never pans past the photo's edge", () => {

@@ -44,16 +44,22 @@ export function ResultPanel({ result, total, onRetry, onRelearn, onWalkAgain }: 
       </h1>
       {result.afterRetry && (
         <p className="result-retry">
-          After retrying: <span className="num">{count(result.afterRetry)}</span> of <span className="num">{total}</span>.
+          <span className="nowrap">
+            After retrying: <span className="num">{count(result.afterRetry)}</span> of <span className="num">{total}</span>.
+          </span>
         </p>
       )}
       <p className="result-times">
         {result.learnMs !== null && (
           <>
-            Learning took <span className="num">{formatDuration(result.learnMs)}</span>.{" "}
+            <span className="nowrap">
+              Learning took <span className="num">{formatDuration(result.learnMs)}</span>.
+            </span>{" "}
           </>
         )}
-        Recall took <span className="num">{formatDuration(result.recallMs)}</span>.
+        <span className="nowrap">
+          Recall took <span className="num">{formatDuration(result.recallMs)}</span>.
+        </span>
       </p>
       {allLit && (
         <p className="result-lit">

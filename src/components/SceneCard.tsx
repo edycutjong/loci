@@ -55,7 +55,7 @@ export function SceneCard({ stop, index, total, next, onBack, onNext, onRecall, 
             on the {keepHyphens(stop.anchor.label)}
             <span className="scene-count">
               {" "}
-              · stop {index + 1} of {total}
+              · <span className="nowrap">stop {index + 1} of {total}</span>
             </span>
           </p>
         </div>

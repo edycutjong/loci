@@ -93,13 +93,15 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
 
 - [x] Early usable behavior explored — after slice 3: the whole typed loop (own photo → pins → scenes → recall → result) in a real browser
   Done by the agent with a real browser run, per the learner's standing instruction (`e2e/live/handson-early.spec.ts`: studio flat, first 12 elements pasted with numbering and "Sodium / Na", real AI calls). Noticed: the loop works end to end; "Berylium" counted (one typo), "Floride" did not, "Na" counted; a skip and a miss gave 10 of 12; relearn → retry → 12 of 12 and the whole room lit. Change requested: in recall the floating object label covered neighbouring pins → removed in recall (the heading already names the object).
-- [ ] Final kick-the-tires exploration and feedback completed — after slice 8, on the live site, at phone and laptop sizes
+- [x] Final kick-the-tires exploration and feedback completed — after slice 8, on the live site, at phone and laptop sizes
+  Done by the agent with a real browser on https://devpost-learn-loci.vercel.app, per the learner's standing instruction (`e2e/live/handson-final.spec.ts`): keyboard only from Home to all lit; awkward inputs (13 items, a 5-word item, one-letter items, "Sodium / Na"; "0" correctly not accepted for "O"); a reload mid-recall (the half walk is dropped, the palace stays); delete; and an own photo through the real AI at laptop size. Feedback: the Recall tab did nothing on the result screen → fixed. An independent design review followed (below).
 
 ## Final Review
 
 - [x] From the result screen, the "Recall, lights out" tab starts a fresh walk (it did nothing before) — fixed, browser check added, retried on the live site
 - [x] Independent design review (impeccable finish reviewer, fresh context) — verdict "fix" with 8 findings, all fixed: strip shows ticks and crosses (never colour alone); on a phone Learn gets a tall frame the camera fills, other modes shrink to the photo's shape; route lines keep one weight at any zoom; example rooms at their native 1536 px, your own photo kept at 2048 px, zoom capped by real resolution; four-step type scale plus one numeral size; hyphenated object names never break; square-ish controls and a solid top bar; a visible dim around the stop being learned. The Learn / Lights out switch moved into the top bar.
 - [x] Narrow phones: a long "Next stop: the …" label widened the page at 320 px (sideways scroll) — fixed with minmax(0, 1fr) grid columns; a browser check now walks every learn and recall stop at 320, 360 and 390 px
+- [x] Design review, round 2 (verdict pass on the fixes): 7 of 8 resolved; photo sharpness partial → the zoom now never shows more than 1.5 screen pixels per photo pixel (the example rooms top out at the generator's 1536 px, so a gentler zoom instead of an artificial upscale); three phone regressions fixed: the next-stop label wraps to two lines, the top bar keeps the palace name with a clock-icon timer and an icon mode switch below 480 px, and times never orphan at 320 px
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
@@ -123,5 +125,5 @@ Activity mode: recap; the app map was rendered offline in a browser and every pa
 - Home gained the hero the spec's first-viewport plan asked for: the student room's route demonstrating lights out and the room coming back, with a one-tap example.
 - "Too few spots" keeps the objects already found, so "Use the first N items" re-plans instantly with no new AI call; "Try another photo" keeps the typed list for the tab.
 - Disabled buttons use readable colours instead of 45% opacity — impeccable's detector measured the disabled Build label at about 1.3:1. Detector clean afterwards at 390 and 1280 px.
-- Live on Vercel (`devpost-learn-loci`, deployed from GitHub `main`): https://devpost-learn-loci.vercel.app. Real calls on production: student room → 16 objects (gemini-3.1-flash-lite), 12 scenes (deepseek-flash); the 3 live browser checks pass there. `loci.edycu.dev` is attached and verified in Vercel and waits for one DNS record (A 76.76.21.21).
+- Live on Vercel (`devpost-learn-loci`, deployed from GitHub `main`): https://devpost-learn-loci.vercel.app. Real calls on production: student room → 16 objects (gemini-3.1-flash-lite), 12 scenes (deepseek-flash); the live browser checks pass there (3 at that point, 7 after the final hands-on pass). `loci.edycu.dev` is attached and verified in Vercel and waits for one DNS record (A 76.76.21.21).
 - Browser checks now look for pins inside the palace screen only: the home page's demo has its own 12 pins, which a live check briefly counted instead.

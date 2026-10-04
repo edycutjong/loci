@@ -52,7 +52,7 @@ export function RecallPanel({ stop, index, asked, total, retry, feedback, onAnsw
             What did you leave here?
             <span className="scene-count">
               {" "}
-              · {retry ? "retry" : "stop"} {asked + 1} of {total}
+              · <span className="nowrap">{retry ? "retry" : "stop"} {asked + 1} of {total}</span>
             </span>
           </p>
         </div>

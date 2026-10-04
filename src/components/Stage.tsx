@@ -37,8 +37,9 @@ type Props = {
 type Size = { w: number; h: number };
 export type Camera = { fit: number; scale: number; tx: number; ty: number };
 
-/** Never show more than this many device pixels per source pixel, so a zoomed photo stays sharp. */
-const MAX_UPSCALE = 2;
+/** Never show more than this many device pixels per source pixel, so a zoomed photo stays sharp
+ *  (the example rooms top out at 1536 px; a gentler zoom beats a soft one). */
+const MAX_UPSCALE = 1.5;
 const MAX_ZOOM = 2.4;
 
 const centred = (offset: number, content: number, frame: number) =>
