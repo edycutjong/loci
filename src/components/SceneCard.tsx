@@ -9,8 +9,10 @@ type Props = {
   onBack: () => void;
   onNext: () => void;
   onRecall: () => void;
-  /** Relearning only the missed stops: the last button returns to the result instead. */
+  /** Relearning only the missed stops: the last button starts their retry instead. */
   finishLabel?: string;
+  /** Whether this is the last stop of the path being learned (all stops, or only the missed ones). */
+  isLast?: boolean;
 };
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -34,10 +36,10 @@ export function markItem(scene: string, item: string): (string | { mark: string 
   return out.length ? out : [scene];
 }
 
-export function SceneCard({ stop, index, total, next, onBack, onNext, onRecall, finishLabel }: Props) {
+export function SceneCard({ stop, index, total, next, onBack, onNext, onRecall, finishLabel, isLast }: Props) {
   const parts = markItem(stop.scene, stop.item.text);
   const sounds = stop.soundsLike && stop.soundsLike.toLowerCase() !== stop.item.text.toLowerCase() ? stop.soundsLike : "";
-  const last = index === total - 1;
+  const last = isLast ?? index === total - 1;
   return (
     <article className="scene" aria-labelledby="scene-item">
       <div className="scene-head">

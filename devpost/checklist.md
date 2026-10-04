@@ -29,7 +29,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: Build a palace, step through every stop, and say whether the scenes are strange enough to stick.
   Commit: `feat: learn mode walks the route with a scene per stop`
 
-- [ ] **3. Recall by typing: lights out, green or red, result and retry**
+- [x] **3. Recall by typing: lights out, green or red, result and retry**
   Becomes usable: Start recall: the photo goes dark, you type each item, right answers turn the pin green and light a pool of the room, wrong ones turn red. Result with first-try score and both times, the all-green moment, Relearn and Retry the misses, Copy result, Walk it again.
   Why now: It completes the kernel — the proof the palace works. Typing first because it works in every browser; voice reuses the same checker.
   PRD ref: `prd.md > Recalling — lights out`, `prd.md > Result and retrying misses`

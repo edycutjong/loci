@@ -1,0 +1,150 @@
+{
+ "note": "A real /api/anchors answer for public/rooms/kos.jpg (recorded 2026-10-04 from the dev server), used to stub the AI in browser checks.",
+ "model": "gemini-3.5-flash",
+ "anchors": [
+  {
+   "label": "yellow raincoat",
+   "box": [
+    136,
+    18,
+    542,
+    151
+   ]
+  },
+  {
+   "label": "orange cat plush",
+   "box": [
+    345,
+    256,
+    388,
+    365
+   ]
+  },
+  {
+   "label": "striped rug",
+   "box": [
+    590,
+    246,
+    898,
+    814
+   ]
+  },
+  {
+   "label": "snake plant",
+   "box": [
+    571,
+    904,
+    871,
+    984
+   ]
+  },
+  {
+   "label": "acoustic guitar",
+   "box": [
+    328,
+    765,
+    510,
+    864
+   ]
+  },
+  {
+   "label": "red kettle",
+   "box": [
+    467,
+    908,
+    542,
+    996
+   ]
+  },
+  {
+   "label": "globe",
+   "box": [
+    254,
+    911,
+    347,
+    1000
+   ]
+  },
+  {
+   "label": "yellow desk lamp",
+   "box": [
+    286,
+    492,
+    363,
+    574
+   ]
+  },
+  {
+   "label": "black backpack",
+   "box": [
+    393,
+    580,
+    513,
+    687
+   ]
+  },
+  {
+   "label": "wall clock",
+   "box": [
+    134,
+    281,
+    194,
+    363
+   ]
+  },
+  {
+   "label": "cork board",
+   "box": [
+    187,
+    378,
+    303,
+    504
+   ]
+  },
+  {
+   "label": "blue bed",
+   "box": [
+    328,
+    160,
+    638,
+    471
+   ]
+  },
+  {
+   "label": "white sneakers",
+   "box": [
+    722,
+    86,
+    800,
+    211
+   ]
+  },
+  {
+   "label": "black desk chair",
+   "box": [
+    379,
+    521,
+    551,
+    704
+   ]
+  },
+  {
+   "label": "white desk",
+   "box": [
+    358,
+    469,
+    511,
+    778
+   ]
+  },
+  {
+   "label": "low bookshelf",
+   "box": [
+    512,
+    843,
+    785,
+    996
+   ]
+  }
+ ]
+}

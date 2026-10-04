@@ -94,10 +94,11 @@ export function Stage(props: Props) {
         />
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <defs>
+            {/* Each pool is black (photo shows) fading to transparent, so overlapping pools merge instead of ringing. */}
             <radialGradient id={`${uid}-pool`}>
-              <stop offset="0%" stopColor="#000" />
-              <stop offset="58%" stopColor="#000" />
-              <stop offset="100%" stopColor="#fff" />
+              <stop offset="0%" stopColor="#000" stopOpacity="1" />
+              <stop offset="55%" stopColor="#000" stopOpacity="1" />
+              <stop offset="100%" stopColor="#000" stopOpacity="0" />
             </radialGradient>
             <mask id={`${uid}-lights`} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
               <rect width={width} height={height} fill="#fff" />

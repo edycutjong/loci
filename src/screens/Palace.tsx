@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Check, Expand, Shrink } from "lucide-react";
+import { isRight } from "../../shared/score";
 import type { Palace } from "../../shared/types";
 import { go } from "../App";
 import { LineStrip, type DotState } from "../components/LineStrip";
+import { RecallPanel, type Feedback } from "../components/RecallPanel";
+import { ResultPanel } from "../components/ResultPanel";
 import { SceneCard } from "../components/SceneCard";
 import { Stage, type PinState } from "../components/Stage";
 import { liveAnchors, liveScenes, usePalaceBuild, type BuildPhase } from "../lib/build";
+import { answer, currentStop, fold, startWalk, type Result, type Walking } from "../lib/recall";
 import { dropJob, getJob, type BuildJob } from "../lib/session";
-import { peekPalace, savePalace } from "../lib/store";
+import { peekPalace, savePalace, saveWalk, type Loaded } from "../lib/store";
 import { formatDuration, useElapsed } from "../lib/time";
 
 type Mode = "learn" | "recall" | "result";
@@ -31,41 +35,58 @@ export function PalaceScreen({ id }: { id: string }) {
   return <PalaceView loaded={loaded} job={job} onBuilt={onBuilt} />;
 }
 
-function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPalace>; job: BuildJob | null; onBuilt: (p: Palace) => void }) {
+function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: BuildJob | null; onBuilt: (p: Palace) => void }) {
   const build = usePalaceBuild(loaded ? null : job, onBuilt, SOURCES);
   const palace = loaded?.palace ?? null;
 
   const photoUrl = loaded?.photoUrl ?? (job?.room.kind === "photo" ? job.room.photo.url : job?.room.kind === "example" ? `/rooms/${job.room.id}.jpg` : "");
   const size = palace?.photo ?? build.size ?? (job?.room.kind === "photo" ? job.room.photo : { width: 4, height: 3 });
   const anchors = palace ? palace.stops.map((s) => s.anchor) : build.route;
+  const total = anchors.length;
   const title = palace?.title ?? job?.title ?? "";
 
   const [mode, setMode] = useState<Mode>("learn");
   const [current, setCurrent] = useState(0);
   const [overview, setOverview] = useState(false);
+  const [learnOnly, setLearnOnly] = useState<number[] | null>(null);
+  const [learnSpent, setLearnSpent] = useState(0);
   const [learnSince, setLearnSince] = useState<number | null>(null);
+  const [walk, setWalk] = useState<Walking | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
 
-  // Learning time starts when Learn first opens on a finished palace.
+  // Learning time runs while Learn is open on a finished palace.
   useEffect(() => {
     if (palace && mode === "learn" && learnSince === null) setLearnSince(Date.now());
   }, [palace, mode, learnSince]);
-  const learnElapsed = useElapsed(learnSince, !!palace && mode === "learn");
+  const learnNow = useElapsed(learnSince, !!palace && mode === "learn");
+  const learnShown = learnSpent + (mode === "learn" ? learnNow : 0);
+  const recallNow = useElapsed(walk?.startedAt ?? null, mode === "recall");
 
-  const total = anchors.length;
+  const stopLearnClock = () => {
+    const spent = learnSince !== null ? learnSpent + (Date.now() - learnSince) : learnSpent;
+    setLearnSpent(spent);
+    setLearnSince(null);
+    return spent;
+  };
+
+  // In Learn, the stops you can step through: all of them, or only the ones to relearn.
+  const path = useMemo(() => learnOnly ?? anchors.map((_, i) => i), [learnOnly, anchors]);
   const step = useCallback(
     (delta: number) => {
       setOverview(false);
-      setCurrent((c) => Math.min(total - 1, Math.max(0, c + delta)));
+      setCurrent((c) => {
+        const at = Math.max(0, path.indexOf(c));
+        return path[Math.min(path.length - 1, Math.max(0, at + delta))] ?? c;
+      });
     },
-    [total],
+    [path],
   );
 
-  // Left and right arrow keys walk the route (not while typing).
   useEffect(() => {
     if (!palace || mode !== "learn") return;
     const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest("input, textarea, [contenteditable]")) return;
+      if ((e.target as HTMLElement).closest("input, textarea, [contenteditable]")) return;
       if (e.key === "ArrowRight") step(1);
       if (e.key === "ArrowLeft") step(-1);
     };
@@ -73,9 +94,68 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPa
     return () => window.removeEventListener("keydown", onKey);
   }, [palace, mode, step]);
 
-  const learnStates: PinState[] = anchors.map((_, i) => (i === current ? "current" : i < current ? "seen" : "plain"));
+  function startRecall(retryStops?: number[]) {
+    if (!palace) return;
+    stopLearnClock();
+    setOverview(false);
+    setFeedback(null);
+    setWalk(startWalk(total, Date.now(), retryStops));
+    setMode("recall");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function finish(done: Walking, learnMs: number) {
+    if (!palace) return;
+    const next = fold(done.kind === "full" ? null : result, done, done.kind === "full" ? (learnMs > 0 ? learnMs : null) : (result?.learnMs ?? null));
+    setResult(next);
+    setLearnSpent(0);
+    void saveWalk(palace.id, { at: next.at, firstTry: next.firstTry, afterRetry: next.afterRetry, learnMs: next.learnMs, recallMs: next.recallMs }, done.kind === "retry");
+    setMode("result");
+  }
+
+  function respond(right: boolean, kind: Feedback["kind"]) {
+    if (!walk || !palace) return;
+    const stop = currentStop(walk);
+    if (stop === null) return;
+    const next = answer(walk, right, Date.now());
+    setFeedback({ stop, kind, item: palace.stops[stop].item.text });
+    setWalk(next);
+    if (next.endedAt !== null) finish(next, learnSpent);
+  }
+
+  function toLearn(only: number[] | null = null) {
+    setLearnOnly(only);
+    setCurrent(only?.[0] ?? 0);
+    setOverview(false);
+    setWalk(null);
+    setMode("learn");
+  }
+
   const learning = !!palace && mode === "learn";
+  const asking = walk ? currentStop(walk) : null;
+  const finalFlags = result ? (result.afterRetry ?? result.firstTry) : null;
+
+  // What each pin shows in each mode.
+  const pinStates: PinState[] = anchors.map((_, i) => {
+    if (!palace) return "plain";
+    if (mode === "learn") return i === current ? "current" : i < current ? "seen" : "plain";
+    if (mode === "recall" && walk) {
+      if (walk.outcomes[i] === "right") return "right";
+      if (walk.outcomes[i] === "wrong") return "wrong";
+      if (i === asking) return "current";
+      if (walk.kind === "retry" && !walk.order.includes(i)) return result && (result.afterRetry ?? result.firstTry)[i] ? "right" : "wrong";
+      return "ahead";
+    }
+    if (mode === "result" && finalFlags) return finalFlags[i] ? "right" : "wrong";
+    return "plain";
+  });
+  const lit = pinStates.map((s) => s === "right");
+  const allLit = mode === "result" && !!finalFlags && finalFlags.every(Boolean);
+  const dots: DotState[] = pinStates.map((s) => (s === "ahead" ? "plain" : s));
+
   const stop = palace?.stops[current];
+  const askingStop = palace && asking !== null ? palace.stops[asking] : null;
+  const labelIndex = learning ? current : mode === "recall" ? asking : null;
 
   return (
     <>
@@ -85,8 +165,13 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPa
         </button>
         <p className="topbar-title">{title}</p>
         {learning && (
-          <span className="topbar-meta">
-            Learning <span className="num">{formatDuration(learnElapsed)}</span>
+          <span className="topbar-meta" aria-label={`Learning time ${formatDuration(learnShown)}`}>
+            Learning <span className="num">{formatDuration(learnShown)}</span>
+          </span>
+        )}
+        {mode === "recall" && walk && (
+          <span className="topbar-meta" aria-label={`Recall time ${formatDuration(recallNow)}`}>
+            Recall <span className="num">{formatDuration(recallNow)}</span>
           </span>
         )}
       </header>
@@ -97,14 +182,16 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPa
             width={size.width}
             height={size.height}
             stops={anchors}
-            states={learning ? learnStates : anchors.map(() => "plain")}
+            states={pinStates}
             mode={palace ? mode : "building"}
             focus={learning && !overview ? current : null}
-            walked={learning ? current : 0}
+            walked={learning ? current : mode === "recall" && asking !== null ? asking : mode === "result" ? total : 0}
+            lit={lit}
+            allLit={allLit}
             scanning={!palace && build.phase.name === "finding"}
-            label={learning && stop ? { index: current, text: stop.anchor.label } : null}
-            pinLabel={(i) => `Stop ${i + 1} of ${total}: ${anchors[i]?.label ?? ""}`}
-            onSelect={learning ? (i) => (setOverview(false), setCurrent(i)) : undefined}
+            label={labelIndex !== null && anchors[labelIndex] ? { index: labelIndex, text: anchors[labelIndex].label } : null}
+            pinLabel={(i) => pinLabel(i, total, anchors[i]?.label ?? "", pinStates[i], palace?.stops[i]?.item.text)}
+            onSelect={learning ? (i) => (setOverview(false), setLearnOnly(null), setCurrent(i)) : undefined}
             onSwipe={learning ? (d) => step(d) : undefined}
           >
             {learning && (
@@ -121,39 +208,63 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPa
           </Stage>
           {total > 0 && (
             <LineStrip
-              states={anchors.map<DotState>((_, i) => (learning ? (i === current ? "current" : i < current ? "seen" : "plain") : "plain"))}
-              label={(i) => `Stop ${i + 1}: ${anchors[i].label}`}
-              onSelect={learning ? (i) => (setOverview(false), setCurrent(i)) : undefined}
+              states={dots}
+              label={(i) => pinLabel(i, total, anchors[i].label, pinStates[i], undefined)}
+              onSelect={learning ? (i) => (setOverview(false), setLearnOnly(null), setCurrent(i)) : undefined}
             />
           )}
         </div>
         <section className="panel">
           {!palace && <BuildProgress phase={build.phase} stops={total} items={job?.items.length ?? 0} onRetry={build.retry} />}
+          {palace && (
+            <div className="modes" role="group" aria-label="Mode">
+              <button type="button" className="mode" aria-pressed={mode === "learn"} onClick={() => mode !== "learn" && toLearn()}>
+                Learn
+              </button>
+              <button type="button" className="mode" aria-pressed={mode !== "learn"} onClick={() => mode === "learn" && startRecall()}>
+                Recall, lights out
+              </button>
+            </div>
+          )}
           {learning && stop && (
             <>
               <SceneCard
                 stop={stop}
                 index={current}
                 total={total}
-                next={palace.stops[current + 1] ?? null}
+                next={(() => {
+                  const at = path.indexOf(current);
+                  const n = at >= 0 ? path[at + 1] : undefined;
+                  return n !== undefined ? palace.stops[n] : null;
+                })()}
+                isLast={path.indexOf(current) === path.length - 1}
                 onBack={() => step(-1)}
                 onNext={() => step(1)}
-                onRecall={() => setMode("recall")}
+                onRecall={() => startRecall(learnOnly ?? undefined)}
+                finishLabel={learnOnly ? (learnOnly.length === 1 ? "Retry this stop" : `Retry these ${learnOnly.length} stops`) : undefined}
               />
               <p className="made-note">
                 {palace.made.prepared ? "Prepared in advance: " : ""}objects found by {palace.made.anchors}; scenes written by {palace.made.scenes}.
               </p>
             </>
           )}
-          {palace && mode === "recall" && (
-            <div className="notice">
-              <h2>Recall arrives in the next build step.</h2>
-              <div className="actions">
-                <button type="button" className="btn btn-quiet" onClick={() => setMode("learn")}>
-                  Back to learning
-                </button>
-              </div>
-            </div>
+          {mode === "recall" && walk && askingStop && asking !== null && (
+            <RecallPanel
+              stop={askingStop}
+              index={asking}
+              asked={walk.pos}
+              total={walk.order.length}
+              retry={walk.kind === "retry"}
+              feedback={feedback}
+              onAnswer={(text) => {
+                const ok = isRight(text, askingStop.item);
+                respond(ok, ok ? "right" : "wrong");
+              }}
+              onSkip={() => respond(false, "skip")}
+            />
+          )}
+          {mode === "result" && result && (
+            <ResultPanel result={result} total={total} onRetry={(stops) => startRecall(stops)} onRelearn={(stops) => toLearn(stops)} onWalkAgain={() => startRecall()} />
           )}
         </section>
       </main>
@@ -161,16 +272,21 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: ReturnType<typeof peekPa
   );
 }
 
+function pinLabel(i: number, total: number, object: string, state: PinState | undefined, item?: string): string {
+  const base = `Stop ${i + 1} of ${total}: the ${object}`;
+  if (state === "right") return `${base}, remembered${item ? `: ${item}` : ""}`;
+  if (state === "wrong") return `${base}, missed`;
+  if (state === "current") return `${base}, current stop`;
+  return base;
+}
+
 function BuildProgress({ phase, stops, items, onRetry }: { phase: BuildPhase; stops: number; items: number; onRetry: () => void }) {
   const findState = phase.name === "finding" ? "active" : phase.name === "too-few" || (phase.name === "failed" && phase.step === "finding") ? "waiting" : "done";
   const writeState = phase.name === "writing" ? "active" : phase.name === "done" ? "done" : "waiting";
-  const steps = useMemo(
-    () => [
-      { state: findState, title: "Finding objects in your room", detail: findState === "done" ? `${stops} stops, joined from left to right.` : "This can take up to half a minute." },
-      { state: writeState, title: "Writing a scene for each stop", detail: writeState === "done" ? "Ready." : "A short, strange scene ties each item to its object." },
-    ],
-    [findState, writeState, stops],
-  );
+  const steps = [
+    { state: findState, title: "Finding objects in your room", detail: findState === "done" ? `${stops} stops, joined from left to right.` : "This can take up to half a minute." },
+    { state: writeState, title: "Writing a scene for each stop", detail: writeState === "done" ? "Ready." : "A short, strange scene ties each item to its object." },
+  ];
   return (
     <>
       <ol className="steps" aria-live="polite">
