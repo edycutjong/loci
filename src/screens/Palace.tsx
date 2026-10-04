@@ -81,6 +81,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
   const [walk, setWalk] = useState<Walking | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Learning time runs while Learn is open on a finished palace.
   useEffect(() => {
@@ -131,13 +132,20 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
     window.scrollTo({ top: 0, behavior: scrollBehavior() });
   }
 
-  function finish(done: Walking, learnMs: number) {
+  async function finish(done: Walking, learnMs: number) {
     if (!palace) return;
     const next = fold(done.kind === "full" ? null : result, done, done.kind === "full" ? (learnMs > 0 ? learnMs : null) : (result?.learnMs ?? null));
-    setResult(next);
     setLearnSpent(0);
-    void saveWalk(palace.id, { at: next.at, firstTry: next.firstTry, afterRetry: next.afterRetry, learnMs: next.learnMs, recallMs: next.recallMs }, done.kind === "retry");
-    setMode("result");
+    // The result appears only once the walk is stored. A reload or a closed tab aborts a write still in progress,
+    // so showing the score first could lose it to the most natural next step: leaving.
+    setSaving(true);
+    try {
+      await saveWalk(palace.id, { at: next.at, firstTry: next.firstTry, afterRetry: next.afterRetry, learnMs: next.learnMs, recallMs: next.recallMs }, done.kind === "retry");
+    } finally {
+      setSaving(false);
+      setResult(next);
+      setMode("result");
+    }
   }
 
   // The walk is also read from outside React's render (the speech recognizer), so it is kept in a ref too.
@@ -150,7 +158,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
     if (fb) setFeedback(fb);
     if (next.endedAt !== null) {
       listener.stop();
-      finish(next, learnSpent);
+      void finish(next, learnSpent);
     }
   }
 
@@ -362,6 +370,11 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
                 Objects found by {palace.made.anchors}. Scenes written by {palace.made.scenes}.
               </p>
             </>
+          )}
+          {mode === "recall" && saving && (
+            <p className="made-note" role="status">
+              Saving your walk…
+            </p>
           )}
           {mode === "recall" && walk && askingStop && asking !== null && (
             <RecallPanel

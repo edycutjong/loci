@@ -31,6 +31,40 @@ test("the Recall tab did nothing on the result screen: from the result, every wa
   await freshWalk();
 });
 
+test("the result showed before the walk was stored, so leaving at once could lose the score: the walk is stored first", async ({ page }) => {
+  // Records, inside the page, when the IndexedDB write that holds the finished walk completes and when the result
+  // first appears. A full reload or a closed tab aborts a write that hasn't completed, so the order must be fixed.
+  await page.addInitScript(() => {
+    const log = { walkStored: null as number | null, resultShown: null as number | null };
+    (window as unknown as { __order: typeof log }).__order = log;
+    const put = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function (this: IDBObjectStore, value: unknown, key?: IDBValidKey) {
+      const request = put.call(this, value, key);
+      const walks = (value as { walks?: unknown[] } | null)?.walks;
+      if (typeof key === "string" && key.startsWith("palace:") && Array.isArray(walks) && walks.length > 0) {
+        this.transaction.addEventListener("complete", () => (log.walkStored ??= performance.now()));
+      }
+      return request;
+    };
+    new MutationObserver(() => {
+      if (log.resultShown === null && document.querySelector(".result-title")) log.resultShown = performance.now();
+    }).observe(document, { childList: true, subtree: true });
+  });
+
+  await openExample(page);
+  await page.getByRole("button", { name: "Recall, lights out" }).click();
+  for (const item of NERVES) await typeAnswer(page, item);
+  await expect(page.locator(".result-title")).toHaveText("You remembered all 12 on the first try.");
+  const order = await page.evaluate(() => (window as unknown as { __order: { walkStored: number | null; resultShown: number | null } }).__order);
+  expect(order.walkStored, "the walk was written to IndexedDB").not.toBeNull();
+  expect(order.walkStored!).toBeLessThanOrEqual(order.resultShown!);
+
+  // And it is there after leaving straight away.
+  await page.reload();
+  await page.goto("/");
+  await expect(page.locator(".palace-row").filter({ hasText: "12 cranial nerves" }).locator(".palace-meta")).toContainText("12/12 first try");
+});
+
 test.describe("on a phone with a fractional pixel ratio", () => {
   test.use({ viewport: { width: 393, height: 851 }, deviceScaleFactor: 2.75, isMobile: true, hasTouch: true });
 
