@@ -1,5 +1,7 @@
 // POST /api/anchors — room photo in, the most memorable objects out (label + box), most memorable first.
 // Runs as a Vercel function in production and through the Vite dev bridge locally (vite.config.ts).
+// Answer: {anchors, model, ms, tried, usage}: the model that answered and its time, the models passed over and why,
+// and the tokens each model that answered used, as its provider counted them.
 import { ANCHOR_JSON_SUFFIX, ANCHOR_PROMPT, ANCHOR_SCHEMA } from "../shared/prompts.js";
 import { deepseekJson, geminiJson, json, runLadder, type Attempt } from "../shared/providers.js";
 import { validateAnchors } from "../shared/validate.js";
@@ -56,8 +58,8 @@ export async function POST(request: Request): Promise<Response> {
   const base64 = image.replace(/^data:image\/[a-z+]+;base64,/, "");
 
   try {
-    const { value, model, ms } = await runLadder(attempts(base64), BUDGET_MS);
-    return json(200, { anchors: value, model, ms });
+    const { value, model, ms, tried, usage } = await runLadder(attempts(base64), BUDGET_MS);
+    return json(200, { anchors: value, model, ms, tried, usage });
   } catch (err) {
     return json(502, { error: "Couldn't reach the AI to look at your photo.", detail: String((err as Error).message) });
   }

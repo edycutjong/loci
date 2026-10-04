@@ -1,4 +1,5 @@
 // POST /api/scenes — object + item pairs in (names only, never the photo), one vivid scene per stop out.
+// Answer: {scenes, model, ms, tried, usage}, the same shape as /api/anchors.
 import { SCENE_JSON_SUFFIX, SCENE_SCHEMA, scenePrompt, type ScenePair } from "../shared/prompts.js";
 import { deepseekJson, geminiJson, json, runLadder, type Attempt } from "../shared/providers.js";
 import { validateScenes } from "../shared/validate.js";
@@ -56,8 +57,8 @@ export async function POST(request: Request): Promise<Response> {
   if (!pairs) return json(400, { error: `Send 1 to ${MAX_STOPS} stops, each {"object", "item"} of up to ${MAX_TEXT} characters.` });
 
   try {
-    const { value, model, ms } = await runLadder(attempts(pairs), BUDGET_MS);
-    return json(200, { scenes: value, model, ms });
+    const { value, model, ms, tried, usage } = await runLadder(attempts(pairs), BUDGET_MS);
+    return json(200, { scenes: value, model, ms, tried, usage });
   } catch (err) {
     return json(502, { error: "Couldn't reach the AI to write your scenes.", detail: String((err as Error).message) });
   }
