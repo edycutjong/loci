@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { ImagePlus, LockKeyhole } from "lucide-react";
 import { shrinkPhoto, UnreadablePhoto } from "../lib/image";
 import type { RoomChoice } from "../lib/session";
+import { EXAMPLE_ROOMS } from "../examples/examples";
 
 type Props = {
   value: RoomChoice | null;
@@ -35,7 +36,7 @@ export function RoomPicker({ value, onChange }: Props) {
         <h2 id="room-label" className="field-label">
           Your room
         </h2>
-        <p className="field-hint">A wide photo with lots of different things in it works best.</p>
+        <p className="field-hint">A wide photo with lots of different things in it works best. Or borrow one of the example rooms.</p>
       </div>
       <div className="room-choices">
         <button
@@ -61,6 +62,21 @@ export function RoomPicker({ value, onChange }: Props) {
             </>
           )}
         </button>
+        {EXAMPLE_ROOMS.map((r) => (
+          <button
+            key={r.id}
+            type="button"
+            className="room-choice"
+            aria-pressed={value?.kind === "example" && value.id === r.id ? "true" : "false"}
+            onClick={() => onChange({ kind: "example", id: r.id })}
+          >
+            <img src={`/rooms/${r.id}-thumb.jpg`} alt="" />
+            <span className="room-name">
+              {r.name}
+              <small>AI-generated example</small>
+            </span>
+          </button>
+        ))}
         <input
           ref={input}
           type="file"

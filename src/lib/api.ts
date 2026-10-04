@@ -42,7 +42,7 @@ export async function findAnchors(imageBase64: string): Promise<AnchorsAnswer> {
 export type ScenesAnswer = { scenes: Scene[]; model: string };
 
 export async function writeScenes(stops: ScenePair[]): Promise<ScenesAnswer> {
-  const data = await post("/api/scenes", { stops }, 45_000);
+  const data = await post("/api/scenes", { stops }, 60_000);
   const scenes = validateScenes(data.scenes, stops.length);
   if (!scenes) throw new ApiError("The scenes came back incomplete.", 200);
   return { scenes, model: String(data.model ?? "unknown") };

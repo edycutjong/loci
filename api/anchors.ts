@@ -28,7 +28,7 @@ function attempts(image: string): Attempt<Anchor[]>[] {
   return [
     gemini(process.env.GEMINI_MODEL || "gemini-3.8-flash", 15_000),
     gemini("gemini-3.5-flash", 20_000),
-    gemini("gemini-3.1-flash-lite", 12_000),
+    gemini("gemini-3.1-flash-lite", 15_000),
     {
       name: "deepseek-flash",
       ms: 15_000,

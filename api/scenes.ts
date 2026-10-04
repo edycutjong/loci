@@ -4,7 +4,7 @@ import { deepseekJson, geminiJson, json, runLadder, type Attempt } from "../shar
 import { validateScenes } from "../shared/validate.js";
 import type { Scene } from "../shared/types.js";
 
-const BUDGET_MS = 26_000; // under the function's 30 s limit
+const BUDGET_MS = 45_000; // under the function's 60 s limit and the browser's 60 s wait
 const MAX_STOPS = 12;
 const MAX_TEXT = 60;
 
@@ -32,11 +32,12 @@ function attempts(pairs: ScenePair[]): Attempt<Scene[]>[] {
     call: (key, signal) => geminiJson(model, [{ text: prompt }], SCENE_SCHEMA, key, signal),
     accept,
   });
-  // Ordered by the planning spike: DeepSeek wrote vivid scenes in well under a second; Gemini 3.8 Flash was as
-  // vivid but slower; Flash-Lite was blander, so it is the last resort.
+  // Ordered by the planning spike: DeepSeek wrote vivid scenes fast (0.15–12 s seen); Gemini 3.8 / 3.5 Flash were as
+  // vivid but slower and quota-limited on the free tier; Flash-Lite was blander, so it is the last resort.
   return [
-    { name: "deepseek-flash", ms: 15_000, key: () => process.env.DEEPSEEK_API_KEY, call: (key, signal) => deepseekJson(prompt + SCENE_JSON_SUFFIX, key, signal), accept },
-    gemini("gemini-3.8-flash", 15_000),
+    { name: "deepseek-flash", ms: 25_000, key: () => process.env.DEEPSEEK_API_KEY, call: (key, signal) => deepseekJson(prompt + SCENE_JSON_SUFFIX, key, signal), accept },
+    gemini("gemini-3.8-flash", 12_000),
+    gemini("gemini-3.5-flash", 12_000),
     gemini("gemini-3.1-flash-lite", 12_000),
   ];
 }

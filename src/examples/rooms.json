@@ -1,0 +1,461 @@
+{
+ "kos": {
+  "name": "Student room",
+  "width": 853,
+  "height": 1280,
+  "anchors": [
+   {
+    "label": "yellow raincoat",
+    "box": [
+     138,
+     23,
+     542,
+     151
+    ]
+   },
+   {
+    "label": "blue bed",
+    "box": [
+     328,
+     162,
+     642,
+     467
+    ]
+   },
+   {
+    "label": "orange cat plush",
+    "box": [
+     345,
+     257,
+     388,
+     365
+    ]
+   },
+   {
+    "label": "acoustic guitar",
+    "box": [
+     328,
+     767,
+     510,
+     862
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     468,
+     908,
+     542,
+     998
+    ]
+   },
+   {
+    "label": "globe",
+    "box": [
+     255,
+     913,
+     348,
+     1000
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     590,
+     242,
+     898,
+     815
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     135,
+     282,
+     192,
+     362
+    ]
+   },
+   {
+    "label": "cork board",
+    "box": [
+     188,
+     378,
+     302,
+     503
+    ]
+   },
+   {
+    "label": "yellow desk lamp",
+    "box": [
+     285,
+     493,
+     362,
+     575
+    ]
+   },
+   {
+    "label": "black backpack",
+    "box": [
+     382,
+     582,
+     510,
+     687
+    ]
+   },
+   {
+    "label": "white desk",
+    "box": [
+     362,
+     468,
+     510,
+     777
+    ]
+   },
+   {
+    "label": "snake plant",
+    "box": [
+     572,
+     905,
+     870,
+     985
+    ]
+   },
+   {
+    "label": "white sneakers",
+    "box": [
+     725,
+     87,
+     800,
+     212
+    ]
+   },
+   {
+    "label": "bookshelf",
+    "box": [
+     338,
+     843,
+     785,
+     998
+    ]
+   },
+   {
+    "label": "window",
+    "box": [
+     92,
+     518,
+     335,
+     815
+    ]
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "date": "2026-10-04"
+ },
+ "studio": {
+  "name": "Studio flat",
+  "width": 1280,
+  "height": 853,
+  "anchors": [
+   {
+    "label": "teal sofa",
+    "box": [
+     375,
+     645,
+     825,
+     839
+    ]
+   },
+   {
+    "label": "yellow armchair",
+    "box": [
+     442,
+     218,
+     735,
+     407
+    ]
+   },
+   {
+    "label": "black bicycle",
+    "box": [
+     10,
+     0,
+     502,
+     175
+    ]
+   },
+   {
+    "label": "wooden bookshelf",
+    "box": [
+     0,
+     832,
+     985,
+     1000
+    ]
+   },
+   {
+    "label": "monstera plant",
+    "box": [
+     235,
+     212,
+     482,
+     371
+    ]
+   },
+   {
+    "label": "round coffee table",
+    "box": [
+     512,
+     471,
+     705,
+     653
+    ]
+   },
+   {
+    "label": "mid-century sideboard",
+    "box": [
+     398,
+     335,
+     525,
+     553
+    ]
+   },
+   {
+    "label": "black floor lamp",
+    "box": [
+     98,
+     192,
+     442,
+     361
+    ]
+   },
+   {
+    "label": "round mirror",
+    "box": [
+     155,
+     362,
+     310,
+     463
+    ]
+   },
+   {
+    "label": "striped area rug",
+    "box": [
+     560,
+     346,
+     932,
+     856
+    ]
+   },
+   {
+    "label": "framed wall art",
+    "box": [
+     152,
+     478,
+     300,
+     555
+    ]
+   },
+   {
+    "label": "wooden coat rack",
+    "box": [
+     245,
+     135,
+     875,
+     242
+    ]
+   },
+   {
+    "label": "black skateboard",
+    "box": [
+     565,
+     896,
+     998,
+     995
+    ]
+   },
+   {
+    "label": "white teapot",
+    "box": [
+     482,
+     529,
+     532,
+     571
+    ]
+   },
+   {
+    "label": "chess set",
+    "box": [
+     525,
+     535,
+     572,
+     617
+    ]
+   },
+   {
+    "label": "large window",
+    "box": [
+     0,
+     582,
+     375,
+     797
+    ]
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "date": "2026-10-04"
+ },
+ "kitchen": {
+  "name": "Kitchen",
+  "width": 1280,
+  "height": 853,
+  "anchors": [
+   {
+    "label": "red kettle",
+    "box": [
+     352,
+     219,
+     477,
+     303
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     14,
+     848,
+     144,
+     936
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     759,
+     391,
+     1000,
+     800
+    ]
+   },
+   {
+    "label": "wooden step stool",
+    "box": [
+     599,
+     772,
+     856,
+     919
+    ]
+   },
+   {
+    "label": "white refrigerator",
+    "box": [
+     38,
+     0,
+     1000,
+     161
+    ]
+   },
+   {
+    "label": "copper pans",
+    "box": [
+     166,
+     275,
+     322,
+     384
+    ]
+   },
+   {
+    "label": "pegboard",
+    "box": [
+     95,
+     134,
+     420,
+     241
+    ]
+   },
+   {
+    "label": "french press",
+    "box": [
+     355,
+     809,
+     447,
+     848
+    ]
+   },
+   {
+    "label": "potted basil",
+    "box": [
+     271,
+     564,
+     385,
+     631
+    ]
+   },
+   {
+    "label": "blue toaster",
+    "box": [
+     352,
+     448,
+     425,
+     505
+    ]
+   },
+   {
+    "label": "spice rack",
+    "box": [
+     173,
+     831,
+     331,
+     930
+    ]
+   },
+   {
+    "label": "green watering can",
+    "box": [
+     799,
+     875,
+     962,
+     931
+    ]
+   },
+   {
+    "label": "kitchen window",
+    "box": [
+     0,
+     575,
+     390,
+     794
+    ]
+   },
+   {
+    "label": "wooden shelves",
+    "box": [
+     0,
+     134,
+     198,
+     533
+    ]
+   },
+   {
+    "label": "blue striped towel",
+    "box": [
+     599,
+     359,
+     846,
+     438
+    ]
+   },
+   {
+    "label": "ceramic bowl",
+    "box": [
+     404,
+     391,
+     447,
+     447
+    ]
+   }
+  ],
+  "model": "gemini-3.1-flash-lite",
+  "date": "2026-10-04"
+ }
+}

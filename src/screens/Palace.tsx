@@ -344,7 +344,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
                 finishLabel={learnOnly ? (learnOnly.length === 1 ? "Retry this stop" : `Retry these ${learnOnly.length} stops`) : undefined}
               />
               <p className="made-note">
-                {palace.made.prepared ? "Prepared in advance: " : ""}objects found by {palace.made.anchors}; scenes written by {palace.made.scenes}.
+                Objects found by {palace.made.anchors}. Scenes written by {palace.made.scenes}.
               </p>
             </>
           )}

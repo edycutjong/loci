@@ -4,6 +4,7 @@ import { planRoute } from "../../shared/route";
 import type { Anchor, Palace, Scene } from "../../shared/types";
 import { ApiError, findAnchors, writeScenes } from "./api";
 import { once, type BuildJob } from "./session";
+import { exampleRoom, preparedPalace } from "../examples/examples";
 
 export type BuildPhase =
   | { name: "finding" }
@@ -20,12 +21,23 @@ export type AnchorSource = (job: BuildJob) => Promise<{ anchors: Anchor[]; model
 export type SceneSource = (job: BuildJob, route: Anchor[]) => Promise<{ scenes: Scene[]; model: string; prepared: boolean }>;
 
 export const liveAnchors: AnchorSource = async (job) => {
-  if (job.room.kind !== "photo") throw new Error("No photo to read.");
+  if (job.room.kind === "example") {
+    // Example rooms carry the objects the real helper found when the example was prepared.
+    const room = exampleRoom(job.room.id);
+    return { anchors: room.anchors, model: `${room.model}, prepared in advance`, size: { width: room.width, height: room.height } };
+  }
   const { anchors, model } = await findAnchors(job.room.photo.base64);
   return { anchors, model, size: { width: job.room.photo.width, height: job.room.photo.height } };
 };
 
+const sameRoute = (a: Anchor[], b: Anchor[]) => a.length === b.length && a.every((x, i) => x.label === b[i].label && x.box.every((v, j) => v === b[i].box[j]));
+
 export const liveScenes: SceneSource = async (job, route) => {
+  if (job.room.kind === "example" && job.exampleListId) {
+    // Example room + example list: scenes prepared in advance by the real helper, if the route is the same one.
+    const prepared = preparedPalace(job.room.id, job.exampleListId);
+    if (prepared && sameRoute(prepared.anchors, route)) return { scenes: prepared.scenes, model: `${prepared.model}, prepared in advance`, prepared: true };
+  }
   const { scenes, model } = await writeScenes(route.map((a, i) => ({ object: a.label, item: job.items[i].text })));
   return { scenes, model, prepared: false };
 };

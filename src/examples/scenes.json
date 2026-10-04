@@ -1,0 +1,1400 @@
+{
+ "kos:cranial-nerves": {
+  "anchors": [
+   {
+    "label": "yellow raincoat",
+    "box": [
+     138,
+     23,
+     542,
+     151
+    ]
+   },
+   {
+    "label": "blue bed",
+    "box": [
+     328,
+     162,
+     642,
+     467
+    ]
+   },
+   {
+    "label": "orange cat plush",
+    "box": [
+     345,
+     257,
+     388,
+     365
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     135,
+     282,
+     192,
+     362
+    ]
+   },
+   {
+    "label": "cork board",
+    "box": [
+     188,
+     378,
+     302,
+     503
+    ]
+   },
+   {
+    "label": "yellow desk lamp",
+    "box": [
+     285,
+     493,
+     362,
+     575
+    ]
+   },
+   {
+    "label": "black backpack",
+    "box": [
+     382,
+     582,
+     510,
+     687
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     590,
+     242,
+     898,
+     815
+    ]
+   },
+   {
+    "label": "snake plant",
+    "box": [
+     572,
+     905,
+     870,
+     985
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     468,
+     908,
+     542,
+     998
+    ]
+   },
+   {
+    "label": "acoustic guitar",
+    "box": [
+     328,
+     767,
+     510,
+     862
+    ]
+   },
+   {
+    "label": "globe",
+    "box": [
+     255,
+     913,
+     348,
+     1000
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your yellow raincoat turns into an old factory, puffing perfume and humming 'Olfactory!'",
+    "soundsLike": "old factory"
+   },
+   {
+    "scene": "Your blue bed becomes an op-tick, ticking like a giant eye and chirping 'Optic!'",
+    "soundsLike": "op-tick"
+   },
+   {
+    "scene": "Your orange cat plush grows a cool motor, rolling its eyes and purring 'Oculomotor!'",
+    "soundsLike": "a cool motor"
+   },
+   {
+    "scene": "Your wall clock turns into a little truck-lear, honking 'Trochlear!' as it circles the room.",
+    "soundsLike": "truck-lear"
+   },
+   {
+    "scene": "Your cork board pushes out three gems, chanting 'Trigeminal!' like a try-gem-in-all choir.",
+    "soundsLike": "try-gem-in-all"
+   },
+   {
+    "scene": "Your yellow desk lamp sprouts ducklings that do sit-ups, quacking 'Abducens!'",
+    "soundsLike": "ab-duck-ins"
+   },
+   {
+    "scene": "Your black backpack grows a grinning face, stretching its cheeks and laughing 'Facial!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your striped rug rolls into a vestibule, where a bull and a rooster leer, blaring 'Vestibulocochlear!'",
+    "soundsLike": "vestibule-oh-cock-leer"
+   },
+   {
+    "scene": "Your snake plant polishes a glossy pharaoh, who gargles 'Glossopharyngeal!' from a tiny jail.",
+    "soundsLike": "glossy pharaoh in jail"
+   },
+   {
+    "scene": "Your red kettle whistles vaguely, steaming the words 'Vagus!' at you.",
+    "soundsLike": "vague us"
+   },
+   {
+    "scene": "Your acoustic guitar sprouts extra strings, wearing rings and scarves as it strums 'Accessory!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your globe spins into a hippo with a glossy tongue, licking continents and roaring 'Hypoglossal!'",
+    "soundsLike": "hippo-glossal"
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "kos:elements": {
+  "anchors": [
+   {
+    "label": "yellow raincoat",
+    "box": [
+     138,
+     23,
+     542,
+     151
+    ]
+   },
+   {
+    "label": "blue bed",
+    "box": [
+     328,
+     162,
+     642,
+     467
+    ]
+   },
+   {
+    "label": "orange cat plush",
+    "box": [
+     345,
+     257,
+     388,
+     365
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     135,
+     282,
+     192,
+     362
+    ]
+   },
+   {
+    "label": "cork board",
+    "box": [
+     188,
+     378,
+     302,
+     503
+    ]
+   },
+   {
+    "label": "yellow desk lamp",
+    "box": [
+     285,
+     493,
+     362,
+     575
+    ]
+   },
+   {
+    "label": "black backpack",
+    "box": [
+     382,
+     582,
+     510,
+     687
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     590,
+     242,
+     898,
+     815
+    ]
+   },
+   {
+    "label": "snake plant",
+    "box": [
+     572,
+     905,
+     870,
+     985
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     468,
+     908,
+     542,
+     998
+    ]
+   },
+   {
+    "label": "acoustic guitar",
+    "box": [
+     328,
+     767,
+     510,
+     862
+    ]
+   },
+   {
+    "label": "globe",
+    "box": [
+     255,
+     913,
+     348,
+     1000
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your yellow raincoat puffs up like a giant balloon, hissing 'Hydrogen!' as it drips water that fizzes into air.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your blue bed floats to the ceiling, squeaking 'Helium!' in a tiny chipmunk voice while you clutch the quilt.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your orange cat plush glows battery-blue and purrs 'Lithium!' while its tail spins like a little generator.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your wall clock grows a bear's fuzzy belly, growling 'Beryllium!' every tick as honey drips from its hands.",
+    "soundsLike": "bear-illium"
+   },
+   {
+    "scene": "Your cork board snores 'Boron!' and every pinned note rolls off like tiny marbles, boring a hole in the wall.",
+    "soundsLike": "bore-on"
+   },
+   {
+    "scene": "Your yellow desk lamp coughs black soot, spelling 'Carbon!' in smoky letters while your homework turns to charcoal.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your black backpack hops on a nitro-boosted rocket, shouting 'Nitrogen!' as frozen fog pours from its zipper.",
+    "soundsLike": "nitro-gen"
+   },
+   {
+    "scene": "Your striped rug breathes in and out like a bellows, sighing 'Oxygen!' as its stripes ripple with fresh green air.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your snake plant squirts minty toothpaste, hissing 'Fluorine!' while its glowing leaves light up your smile.",
+    "soundsLike": "flour-een"
+   },
+   {
+    "scene": "Your red kettle whistles in blazing pink neon, flashing 'Neon!' as steam curls into glowing letters.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your acoustic guitar strums itself, singing 'Sodium!' while salty waves pour from its sound hole.",
+    "soundsLike": "soda-um"
+   },
+   {
+    "scene": "Your globe spins so fast it bursts into white magnesium fireworks, shouting 'Magnesium!' as continents blur into light.",
+    "soundsLike": ""
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "kos:groceries": {
+  "anchors": [
+   {
+    "label": "yellow raincoat",
+    "box": [
+     138,
+     23,
+     542,
+     151
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     135,
+     282,
+     192,
+     362
+    ]
+   },
+   {
+    "label": "cork board",
+    "box": [
+     188,
+     378,
+     302,
+     503
+    ]
+   },
+   {
+    "label": "yellow desk lamp",
+    "box": [
+     285,
+     493,
+     362,
+     575
+    ]
+   },
+   {
+    "label": "orange cat plush",
+    "box": [
+     345,
+     257,
+     388,
+     365
+    ]
+   },
+   {
+    "label": "blue bed",
+    "box": [
+     328,
+     162,
+     642,
+     467
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     590,
+     242,
+     898,
+     815
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     468,
+     908,
+     542,
+     998
+    ]
+   },
+   {
+    "label": "acoustic guitar",
+    "box": [
+     328,
+     767,
+     510,
+     862
+    ]
+   },
+   {
+    "label": "globe",
+    "box": [
+     255,
+     913,
+     348,
+     1000
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your yellow raincoat drips creamy Oat milk from its sleeves, splashing little oats that chant 'Oat milk, Oat milk!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your wall clock's hands turn into a fat bass fish flopping on the windowsill, burping 'Basil! Basil!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your cork board sprouts huge wax Lemons that squirt sour juice, rolling off and bouncing 'Lemons!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your yellow desk lamp beams a shower of hot Rice grains that pop and crackle 'Rice! Rice!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your orange cat plush wobbles, then lays three warm Eggs that crackle softly and roll across the shelf.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your blue bed sinks as thousands of Coffee beans pour from the mattress, filling the air with Coffee beans' rich smell.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your striped rug foams up, blowing giant Dish soap bubbles that squeak and slide across the floor.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your red kettle whistles fiercely, spitting fat red Tomatoes that roll steaming across the counter.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your acoustic guitar's strings become sticky white Garlic cloves, strumming a pungent tune over the room.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your globe spins faster, its crust cracking like fresh Bread, and the whole room smells of warm Bread.",
+    "soundsLike": ""
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "studio:cranial-nerves": {
+  "anchors": [
+   {
+    "label": "black bicycle",
+    "box": [
+     10,
+     0,
+     502,
+     175
+    ]
+   },
+   {
+    "label": "wooden coat rack",
+    "box": [
+     245,
+     135,
+     875,
+     242
+    ]
+   },
+   {
+    "label": "yellow armchair",
+    "box": [
+     442,
+     218,
+     735,
+     407
+    ]
+   },
+   {
+    "label": "monstera plant",
+    "box": [
+     235,
+     212,
+     482,
+     371
+    ]
+   },
+   {
+    "label": "round mirror",
+    "box": [
+     155,
+     362,
+     310,
+     463
+    ]
+   },
+   {
+    "label": "framed wall art",
+    "box": [
+     152,
+     478,
+     300,
+     555
+    ]
+   },
+   {
+    "label": "mid-century sideboard",
+    "box": [
+     398,
+     335,
+     525,
+     553
+    ]
+   },
+   {
+    "label": "round coffee table",
+    "box": [
+     512,
+     471,
+     705,
+     653
+    ]
+   },
+   {
+    "label": "striped area rug",
+    "box": [
+     560,
+     346,
+     932,
+     856
+    ]
+   },
+   {
+    "label": "teal sofa",
+    "box": [
+     375,
+     645,
+     825,
+     839
+    ]
+   },
+   {
+    "label": "wooden bookshelf",
+    "box": [
+     0,
+     832,
+     985,
+     1000
+    ]
+   },
+   {
+    "label": "black skateboard",
+    "box": [
+     565,
+     896,
+     998,
+     995
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your black bicycle sprouts a tiny old factory on its handlebars, puffing smells of Olfactory perfume as you pedal.",
+    "soundsLike": "old factory"
+   },
+   {
+    "scene": "Your wooden coat rack grows eight glass eyeballs, each blinking 'Optic!' and snapping photos of your winter hats.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your yellow armchair revs a tiny motor and rolls its eyes, vrooming 'Oculomotor!' as it scoots around you.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your monstera plant grows a tiny truck steering wheel, honking 'Trochlear!' as its leaves drive it in circles.",
+    "soundsLike": "truck-lear"
+   },
+   {
+    "scene": "Your round mirror sprouts three sparkling gems along its rim, chiming 'Trigeminal!' every time you glance in.",
+    "soundsLike": "tri-gem-in-al"
+   },
+   {
+    "scene": "Your framed wall art fills with ducks doing sit-ups, quacking 'Abducens!' each time their fuzzy abs crunch.",
+    "soundsLike": "ab-duck-ens"
+   },
+   {
+    "scene": "Your mid-century sideboard grows a giant grinning face, and its drawers hum 'Facial!' with a face-cream smell.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your round coffee table spins like a carnival ride, a tiny vestibule where a snail cochlea blares 'Vestibulocochlear!'",
+    "soundsLike": "vestibule-cochlea"
+   },
+   {
+    "scene": "Your striped area rug turns glossy, and a tiny pharaoh rises from its fringe, whispering 'Glossopharyngeal!'",
+    "soundsLike": "glossy pharaoh"
+   },
+   {
+    "scene": "Your teal sofa turns vague and misty, its cushions murmuring 'Vagus...' as you sink into the fog.",
+    "soundsLike": "vague"
+   },
+   {
+    "scene": "Your wooden bookshelf drapes itself in giant earrings, each shelf shouting 'Accessory!' as it models the jewellery.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your black skateboard grows a hippo's glossy tongue that licks its wheels, lisping 'Hypoglossal!' as you roll.",
+    "soundsLike": "hippo-glossal"
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "studio:elements": {
+  "anchors": [
+   {
+    "label": "black bicycle",
+    "box": [
+     10,
+     0,
+     502,
+     175
+    ]
+   },
+   {
+    "label": "wooden coat rack",
+    "box": [
+     245,
+     135,
+     875,
+     242
+    ]
+   },
+   {
+    "label": "yellow armchair",
+    "box": [
+     442,
+     218,
+     735,
+     407
+    ]
+   },
+   {
+    "label": "monstera plant",
+    "box": [
+     235,
+     212,
+     482,
+     371
+    ]
+   },
+   {
+    "label": "round mirror",
+    "box": [
+     155,
+     362,
+     310,
+     463
+    ]
+   },
+   {
+    "label": "framed wall art",
+    "box": [
+     152,
+     478,
+     300,
+     555
+    ]
+   },
+   {
+    "label": "mid-century sideboard",
+    "box": [
+     398,
+     335,
+     525,
+     553
+    ]
+   },
+   {
+    "label": "round coffee table",
+    "box": [
+     512,
+     471,
+     705,
+     653
+    ]
+   },
+   {
+    "label": "striped area rug",
+    "box": [
+     560,
+     346,
+     932,
+     856
+    ]
+   },
+   {
+    "label": "teal sofa",
+    "box": [
+     375,
+     645,
+     825,
+     839
+    ]
+   },
+   {
+    "label": "wooden bookshelf",
+    "box": [
+     0,
+     832,
+     985,
+     1000
+    ]
+   },
+   {
+    "label": "black skateboard",
+    "box": [
+     565,
+     896,
+     998,
+     995
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your black bicycle grows a hundred heads and a water bottle named Jen, hissing \"Hydrogen!\" with every pedal.",
+    "soundsLike": "hydra-Jen"
+   },
+   {
+    "scene": "Your wooden coat rack sucks in a breath and squeaks \"Helium!\" in a tiny high voice, floating your coats to the ceiling.",
+    "soundsLike": "heal-ee-um"
+   },
+   {
+    "scene": "Your yellow armchair glows like a battery, bouncing on lithe springs and chirping \"Lithium!\" each time it hops.",
+    "soundsLike": "lithe-ee-um"
+   },
+   {
+    "scene": "Your monstera plant drops fat purple berries that ring like bells, chiming \"Beryllium!\" every time a leaf-lee sways.",
+    "soundsLike": "berry-lee-um"
+   },
+   {
+    "scene": "Your round mirror fogs up and a bored boar leans on it, snorting \"Boron!\" until the glass cracks.",
+    "soundsLike": "bore-on"
+   },
+   {
+    "scene": "Your framed wall art fills with rows of little cars made of buns, each honking \"Carbon!\" in a smoky cloud.",
+    "soundsLike": "car-bun"
+   },
+   {
+    "scene": "Your mid-century sideboard slides open at night and rolls out a genie, yawning \"Nitrogen!\" in a chilly blue fog.",
+    "soundsLike": "night-ro-gen"
+   },
+   {
+    "scene": "Your round coffee table sprouts an ox with giant eyes, and a genie pops up shouting \"Oxygen!\" with every sip.",
+    "soundsLike": "ox-eye-gen"
+   },
+   {
+    "scene": "Your striped area rug turns into a glowing floor-queen, sparkling \"Fluorine!\" as her stripes light up bright green.",
+    "soundsLike": "floor-een"
+   },
+   {
+    "scene": "Your teal sofa grows a giant knee that sits on itself, buzzing \"Neon!\" in bright orange light.",
+    "soundsLike": "knee-on"
+   },
+   {
+    "scene": "Your wooden bookshelf fizzes and pours out soda-um cans, burbling \"Sodium!\" as the shelves get sticky and salty.",
+    "soundsLike": "soda-um"
+   },
+   {
+    "scene": "Your black skateboard sticks to everything like a magnet, zipping \"Magnesium!\" as it glows white and trails fizzy sparks.",
+    "soundsLike": "magnet-zee-um"
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "studio:groceries": {
+  "anchors": [
+   {
+    "label": "black bicycle",
+    "box": [
+     10,
+     0,
+     502,
+     175
+    ]
+   },
+   {
+    "label": "monstera plant",
+    "box": [
+     235,
+     212,
+     482,
+     371
+    ]
+   },
+   {
+    "label": "yellow armchair",
+    "box": [
+     442,
+     218,
+     735,
+     407
+    ]
+   },
+   {
+    "label": "mid-century sideboard",
+    "box": [
+     398,
+     335,
+     525,
+     553
+    ]
+   },
+   {
+    "label": "round mirror",
+    "box": [
+     155,
+     362,
+     310,
+     463
+    ]
+   },
+   {
+    "label": "framed wall art",
+    "box": [
+     152,
+     478,
+     300,
+     555
+    ]
+   },
+   {
+    "label": "round coffee table",
+    "box": [
+     512,
+     471,
+     705,
+     653
+    ]
+   },
+   {
+    "label": "striped area rug",
+    "box": [
+     560,
+     346,
+     932,
+     856
+    ]
+   },
+   {
+    "label": "teal sofa",
+    "box": [
+     375,
+     645,
+     825,
+     839
+    ]
+   },
+   {
+    "label": "wooden bookshelf",
+    "box": [
+     0,
+     832,
+     985,
+     1000
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your black bicycle sprays oat milk from its handlebars, ringing \"Oat milk!\" as creamy puddles form.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your monstera plant's leaves turn into basil, sneezing pesto-scented \"Basil!\" with every tremor.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "The yellow armchair squeezes lemons from its cushions, squirting tart yellow juice as you sit.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your mid-century sideboard rattles open, pouring a waterfall of white rice that crunches underfoot.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "The round mirror cracks into eggshells, and a dozen eggs roll out scrambling themselves.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your framed wall art bursts into coffee beans, raining warm roasted aroma and clattering darkly.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "The round coffee table foams over with dish soap, bubbles sliding off in slippery rainbow mounds.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your striped area rug ripens red, rolling fat tomatoes that burst juicy under bare feet.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "The teal sofa exhales garlic, cloves tumbling from its cushions as you sniff the pungent fabric.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your wooden bookshelf bakes loaves, warm bread sliding off shelves with a yeasty crumb.",
+    "soundsLike": ""
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "kitchen:cranial-nerves": {
+  "anchors": [
+   {
+    "label": "white refrigerator",
+    "box": [
+     38,
+     0,
+     1000,
+     161
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     352,
+     219,
+     477,
+     303
+    ]
+   },
+   {
+    "label": "pegboard",
+    "box": [
+     95,
+     134,
+     420,
+     241
+    ]
+   },
+   {
+    "label": "copper pans",
+    "box": [
+     166,
+     275,
+     322,
+     384
+    ]
+   },
+   {
+    "label": "blue toaster",
+    "box": [
+     352,
+     448,
+     425,
+     505
+    ]
+   },
+   {
+    "label": "potted basil",
+    "box": [
+     271,
+     564,
+     385,
+     631
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     14,
+     848,
+     144,
+     936
+    ]
+   },
+   {
+    "label": "spice rack",
+    "box": [
+     173,
+     831,
+     331,
+     930
+    ]
+   },
+   {
+    "label": "french press",
+    "box": [
+     355,
+     809,
+     447,
+     848
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     759,
+     391,
+     1000,
+     800
+    ]
+   },
+   {
+    "label": "wooden step stool",
+    "box": [
+     599,
+     772,
+     856,
+     919
+    ]
+   },
+   {
+    "label": "green watering can",
+    "box": [
+     799,
+     875,
+     962,
+     931
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your white refrigerator hums like an old factory, puffing swirls of bacon, mint and coffee smells that spell 'Olfactory' in the frost.",
+    "soundsLike": "old factory"
+   },
+   {
+    "scene": "Your red kettle hops like a tiny tick, whistling pictures that flash 'Optic, Optic!' across your eyes.",
+    "soundsLike": "hop-tick"
+   },
+   {
+    "scene": "Your pegboard's pegs spin like a cool-o motor, whirring 'Oculomotor' as every hook rotates in circles.",
+    "soundsLike": "a cool-o motor"
+   },
+   {
+    "scene": "Your copper pans grow tiny wheels, becoming little truck-lears that drive around honking 'Trochlear!'",
+    "soundsLike": "truck-lear"
+   },
+   {
+    "scene": "Your blue toaster pops up a gem stuck in a nail, chiming 'Trigeminal — try a gem in a nail!'",
+    "soundsLike": "try a gem in a nail"
+   },
+   {
+    "scene": "Your potted basil leaves waddle like ducks doing sit-ups, quacking 'Abducens, ab-duck-ens!'",
+    "soundsLike": "ab-duck-ens"
+   },
+   {
+    "scene": "Your wall clock's hands stretch into a giant grinning face, licking its lips and sighing 'Facial' at you.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your spice rack jars put on little vests in a vestibule, each shaking a cockle shell that rings 'Vestibulocochlear!'",
+    "soundsLike": "vestibule-o-cockle-ear"
+   },
+   {
+    "scene": "Your french press plunges a glossy fairy into jelly, gurgling 'Glossopharyngeal — glossy fairy-n-jell!'",
+    "soundsLike": "glossy fairy-n-jell"
+   },
+   {
+    "scene": "Your striped rug ripples vaguely, its stripes whispering 'Vagus… vague-us…' as they slowly wave.",
+    "soundsLike": "vague-us"
+   },
+   {
+    "scene": "Your wooden step stool sprouts extra accessories — dangling scarves, sunglasses and necklaces — jingling 'Accessory!' as you climb.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your green watering can sprouts a hippo's glossy tongue, slurping water and lisping 'Hypoglossal!'",
+    "soundsLike": "hippo-gloss-al"
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "kitchen:elements": {
+  "anchors": [
+   {
+    "label": "white refrigerator",
+    "box": [
+     38,
+     0,
+     1000,
+     161
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     352,
+     219,
+     477,
+     303
+    ]
+   },
+   {
+    "label": "pegboard",
+    "box": [
+     95,
+     134,
+     420,
+     241
+    ]
+   },
+   {
+    "label": "copper pans",
+    "box": [
+     166,
+     275,
+     322,
+     384
+    ]
+   },
+   {
+    "label": "blue toaster",
+    "box": [
+     352,
+     448,
+     425,
+     505
+    ]
+   },
+   {
+    "label": "potted basil",
+    "box": [
+     271,
+     564,
+     385,
+     631
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     14,
+     848,
+     144,
+     936
+    ]
+   },
+   {
+    "label": "spice rack",
+    "box": [
+     173,
+     831,
+     331,
+     930
+    ]
+   },
+   {
+    "label": "french press",
+    "box": [
+     355,
+     809,
+     447,
+     848
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     759,
+     391,
+     1000,
+     800
+    ]
+   },
+   {
+    "label": "wooden step stool",
+    "box": [
+     599,
+     772,
+     856,
+     919
+    ]
+   },
+   {
+    "label": "green watering can",
+    "box": [
+     799,
+     875,
+     962,
+     931
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your white refrigerator sprouts tiny hydra-gen heads, each hissing 'Hydrogen!' as they lift the door.",
+    "soundsLike": "hydra-gen"
+   },
+   {
+    "scene": "Your red kettle sings 'He-lee-um!' while pink balloons squeak 'Helium!' from its spout.",
+    "soundsLike": "he-lee-um"
+   },
+   {
+    "scene": "Your pegboard grows lith-ee-um glowing batteries that hop off pegs, chanting 'Lithium!' in tiny voices.",
+    "soundsLike": "lith-ee-um"
+   },
+   {
+    "scene": "Your copper pans clang like bear-ill-ee-um bells, each ringing 'Beryllium!' until the handles wiggle.",
+    "soundsLike": "bear-ill-ee-um"
+   },
+   {
+    "scene": "Your blue toaster shoots buttery boar-on crumbs, snorting 'Boron!' as toast leaps out.",
+    "soundsLike": "boar-on"
+   },
+   {
+    "scene": "Your potted basil exhales car-bon bubbles, each leaf whispering 'Carbon!' in smoky green puffs.",
+    "soundsLike": "car-bon"
+   },
+   {
+    "scene": "Your wall clock ticks night-ro-gen, fogging the room as it chimes 'Nitrogen!' at every hour.",
+    "soundsLike": "night-ro-gen"
+   },
+   {
+    "scene": "Your spice rack sneezes ox-ey-gen clouds, each jar shouting 'Oxygen!' and rattling its lid.",
+    "soundsLike": "ox-ey-gen"
+   },
+   {
+    "scene": "Your french press plunges floor-een foam, gurgling 'Fluorine!' as bright green bubbles climb the glass.",
+    "soundsLike": "floor-een"
+   },
+   {
+    "scene": "Your striped rug glows knee-on bright, humming 'Neon!' while its stripes flicker pink and electric blue.",
+    "soundsLike": "knee-on"
+   },
+   {
+    "scene": "Your wooden step stool fizzes sew-dee-um salty sparkles, creaking 'Sodium!' as it hops one step.",
+    "soundsLike": "sew-dee-um"
+   },
+   {
+    "scene": "Your green watering can sprinkles mag-nee-zee-um white sparks, singing 'Magnesium!' as it waters the floor.",
+    "soundsLike": "mag-nee-zee-um"
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ },
+ "kitchen:groceries": {
+  "anchors": [
+   {
+    "label": "white refrigerator",
+    "box": [
+     38,
+     0,
+     1000,
+     161
+    ]
+   },
+   {
+    "label": "red kettle",
+    "box": [
+     352,
+     219,
+     477,
+     303
+    ]
+   },
+   {
+    "label": "pegboard",
+    "box": [
+     95,
+     134,
+     420,
+     241
+    ]
+   },
+   {
+    "label": "copper pans",
+    "box": [
+     166,
+     275,
+     322,
+     384
+    ]
+   },
+   {
+    "label": "blue toaster",
+    "box": [
+     352,
+     448,
+     425,
+     505
+    ]
+   },
+   {
+    "label": "potted basil",
+    "box": [
+     271,
+     564,
+     385,
+     631
+    ]
+   },
+   {
+    "label": "striped rug",
+    "box": [
+     759,
+     391,
+     1000,
+     800
+    ]
+   },
+   {
+    "label": "wooden step stool",
+    "box": [
+     599,
+     772,
+     856,
+     919
+    ]
+   },
+   {
+    "label": "french press",
+    "box": [
+     355,
+     809,
+     447,
+     848
+    ]
+   },
+   {
+    "label": "wall clock",
+    "box": [
+     14,
+     848,
+     144,
+     936
+    ]
+   }
+  ],
+  "scenes": [
+   {
+    "scene": "Your white refrigerator pours a waterfall of creamy Oat milk, sloshing 'oat-oat!' as frothy waves flood the kitchen floor.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your red kettle whistles a green tune, sprouting leafy Basil from its spout and sneezing pesto across the counter.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your pegboard rolls out fat yellow Lemons that bounce off the hooks, squirting sour sunshine and singing 'lem-on!'",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your copper pans drum a steel beat, raining thousands of tiny Rice grains that tap-dance across the stove in rhythm.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your blue toaster hiccups warm Eggs, each one cracking open to chirp 'good morning' as yolk drips down the slots.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your potted basil rattles, dropping shiny Coffee beans that roll in circles, smelling of dark roast and buzzing like bees.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your striped rug bubbles over, oozing slippery Dish soap that slides you across the floor leaving rainbow stripes.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your wooden step stool squishes underfoot, bursting ripe Tomatoes that splat red juice up the walls and giggle.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your french press plunges down and erupts with whole Garlic cloves, each shouting 'garl-ick!' in a cloud of pungent steam.",
+    "soundsLike": ""
+   },
+   {
+    "scene": "Your wall clock chimes and slices itself into warm Bread, ticking 'bread, bread' while butter melts down its face.",
+    "soundsLike": ""
+   }
+  ],
+  "model": "deepseek-flash",
+  "date": "2026-10-04"
+ }
+}

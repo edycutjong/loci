@@ -59,7 +59,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: Build a palace, close the tab, open the app again, and find it on the home screen with your last score.
   Commit: `feat: save palaces and results on the device`
 
-- [ ] **6. Example rooms and lists: try it in seconds**
+- [x] **6. Example rooms and lists: try it in seconds**
   Becomes usable: Three AI-generated example rooms and three example lists; an example room with an example list opens instantly (prepared in advance, labelled); an example room with your own list only waits for scenes.
   Why now: Judges and classmates can try the whole loop without a photo, and preparing the examples honestly needs the real helpers from slices 1–2.
   PRD ref: `prd.md > Starting a palace`, `prd.md > Building the palace`
@@ -114,3 +114,7 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 ## Revisions
 - Voice accuracy with a real microphone was not measured by the agent — automated Chrome on the build machine can't open a microphone (the planning spike hit the same wall). The interpreter is covered by unit tests and by browser checks that drive a stand-in recognizer; the learner's own voice is the remaining check.
 - Sound-alike keys became a pure consonant skeleton and short keys must match exactly — the first version gave "hippo glossal" and "hypoglossal" different keys, and Hydrogen and Nitrogen nearly the same one.
+- The three example photos were added to `public/rooms/` in slice 1 as the browser-check fixture, before slice 6 made them examples.
+- The scene prompt now shows one worked example ("…honking 'Trochlear!'…"): with only a rule, DeepSeek dropped the exact item in 8 of 12 scenes when it used a sound-alike. The example script also re-asks up to 3 times until every scene names its item (all 9 prepared sets: every item named).
+- Free-tier Gemini quotas ran out during the build day (`gemini-3.8-flash` then `gemini-3.5-flash` returned 429 on every key), so the example objects come from `gemini-3.1-flash-lite`, checked by eye on all three rooms; the scene ladder gained `gemini-3.5-flash` and a 45 s budget after one scenes call ran out of time.
+- Home gained the hero the spec's first-viewport plan asked for: the student room's route demonstrating lights out and the room coming back, with a one-tap example.

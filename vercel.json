@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/anchors.ts": { "maxDuration": 60 },
+    "api/scenes.ts": { "maxDuration": 60 }
+  }
+}
