@@ -42,7 +42,7 @@ Rules for every scene:
 - One or two short sentences, at most 28 words, present tense, speaking to the learner as "you".
 - Begin with the object ("Your red kettle ..." or "The red kettle ...").
 - The object itself does something strange, exaggerated, funny or sensory with the item: movement, sound, smell, size, colour.
-- Use the item's exact words in the scene.
+- The scene must contain the item exactly as written, e.g. "Olfactory", even when you also use a sound-alike.
 - If the item is abstract or unfamiliar, build the image on a sound-alike keyword (for example "trochlear" -> "truck-lear") and return that keyword as soundsLike. Otherwise soundsLike is "".
 - Never mention another stop's item. Nothing violent, gory or unkind.
 

@@ -710,8 +710,9 @@ textarea {
     font-size: 14px;
   }
 }
-.pin:hover {
-  transform: scale(1.08);
+.pin:hover:not([data-state="current"]):not([data-state="right"]):not([data-state="wrong"]) {
+  background: var(--night-700);
+  border-color: #ffffff;
 }
 /* Stops the camera has walked past are out of view; they wait off-screen. */
 .pin[data-off="true"] {
@@ -1031,4 +1032,109 @@ button.dot:hover {
 .made-note {
   font-size: var(--t-small);
   color: var(--moon-500);
+}
+
+/* ---------- Learn: the scene card ---------- */
+.scene {
+  display: grid;
+  gap: var(--space-4);
+}
+.scene-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+.scene-disc {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 0.3em;
+  border-radius: 50%;
+  background: var(--moon-100);
+  color: var(--night-900);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 3px var(--night-900),
+    0 0 0 5px var(--moon-100);
+}
+.scene-item {
+  font-family: var(--font-item);
+  font-size: var(--t-item);
+  font-weight: 650;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.scene-item[data-long="true"] {
+  font-size: calc(var(--t-item) * 0.76);
+  letter-spacing: -0.015em;
+}
+.scene-where {
+  margin-top: var(--space-2);
+  color: var(--moon-300);
+}
+.scene-count {
+  color: var(--moon-500);
+}
+.scene-text {
+  max-width: 62ch;
+  line-height: 1.6;
+}
+.scene-mark {
+  background: none;
+  color: var(--moon-100);
+  font-family: var(--font-item);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: var(--moon-500);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.scene-sounds {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--moon-300);
+  font-size: var(--t-small);
+}
+.scene-sounds svg {
+  flex: none;
+}
+.scene-sounds em {
+  font-family: var(--font-item);
+  font-size: var(--t-body);
+  font-style: italic;
+  color: var(--moon-100);
+}
+.scene-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.scene-nav .grow {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 959px) {
+  /* The next step stays in the thumb zone while the scene scrolls. */
+  .scene-nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 0 calc(var(--space-4) * -1);
+    padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--night-900) 72%, rgb(14 21 52 / 0));
+  }
+  .palace .stage {
+    --stage-max-h: 50svh;
+  }
+}
+.next-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

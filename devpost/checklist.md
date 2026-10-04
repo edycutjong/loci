@@ -19,7 +19,7 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
   Learner check: Open http://localhost:5174, pick a photo of your room, paste 12 items, tap Build, and check that each pin sits on a real object and the dotted line runs from left to right.
   Commit: `feat: build a route of pins on your own room photo`
 
-- [ ] **2. Learn: walk the route with a scene at each stop**
+- [x] **2. Learn: walk the route with a scene at each stop**
   Becomes usable: After the pins land, the scenes arrive; Learn moves from stop to stop, zooming toward each object, with a scene card (item, object, scene, sound-alike), Next/Back, swipe, arrow keys, tap-a-pin, All stops, a learn timer, and Start recall at the last stop.
   Why now: It completes the memorizing half of the kernel, and the scene writer is the second AI call and the second risk.
   PRD ref: `prd.md > Learning the route`, `prd.md > Building the palace`
