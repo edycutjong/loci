@@ -1,0 +1,28 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+.next/
+dist/
+coverage/
+.DS_Store
+*.tsbuildinfo
+
+# agent tooling installed by `npx skills add` - never public (root CLAUDE.md git rule 3)
+.claude/
+.agents/
+.cursor/
+agent/
+AGENTS.md
+CLAUDE.md
+/devpost/learner-profile.md
+
+# Vercel CLI link (local only)
+.vercel
+
+# Playwright output
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
