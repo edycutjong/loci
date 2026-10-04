@@ -9,8 +9,9 @@ const live = !!process.env.LIVE;
 const base = process.env.BASE_URL;
 
 export default defineConfig({
-  testDir: "e2e",
-  testMatch: live ? "live/*.spec.ts" : "*.spec.ts",
+  testDir: live ? "e2e/live" : "e2e",
+  testMatch: "**/*.spec.ts",
+  testIgnore: live ? [] : ["**/live/**"],
   timeout: live ? 180_000 : 30_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
