@@ -118,6 +118,18 @@ Edit outcome: not applicable (no edit, per the learner's standing instruction no
 Reflection: not offered (standing instruction: "No questions to me").
 Activity mode: recap; the app map was rendered offline in a browser and every path and symbol checked against commit `e7b39bc`.
 
+## Ship (6-ship)
+
+Run by the agent on 2026-10-05, under the learner's standing instruction. Nothing was posted, published or submitted.
+
+- [x] Ready check: typecheck clean, 99 unit tests and 29 browser checks pass on the production build. The live site answers at https://loci.edycu.dev (the custom domain is now live) and at the mirror, including /judge/, /story/ and /deck/.
+- [x] Repository check before going public: gitleaks finds nothing in the full history; no API key value appears in any commit, in the tracked files or in the production build; `devpost/learner-profile.md` and the agent tooling folders are git-ignored and were never committed. `.env.example` holds placeholders only.
+- [x] Planning docs, this build log and the app map stay in `devpost/` for judges. The app map was re-checked against commit `a203896`: every path and name still exists; two lines now match the code (the `answer()` call, and the result showing only after the walk is stored).
+- [x] Sharing recorded in `spec.md` › Where It Runs: live app, repository, demo video.
+- [ ] The demo video uploaded to YouTube as public (learner).
+- [ ] The repository made public, with the MIT license showing in the About section (learner).
+- [ ] The Devpost form and exit survey completed, and the project submitted (learner).
+
 ## Revisions
 - Voice accuracy with a real microphone was not measured by the agent — automated Chrome on the build machine can't open a microphone (the planning spike hit the same wall). The interpreter is covered by unit tests and by browser checks that drive a stand-in recognizer; the learner's own voice is the remaining check.
 - Sound-alike keys became a pure consonant skeleton and short keys must match exactly — the first version gave "hippo glossal" and "hypoglossal" different keys, and Hydrogen and Nitrogen nearly the same one.

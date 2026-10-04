@@ -64,6 +64,10 @@ Agent recommendation, accepted by the learner. *(answered by agent per learner's
   3. `npm run dev` → open **http://localhost:5174**. The dev server also serves `/api/anchors` and `/api/scenes`, so no Vercel tools are needed locally.
 - **Live:** Vercel project `devpost-learn-loci`, deployed automatically from the GitHub repo's `main` branch. The same two keys are set as Vercel environment variables. Canonical address **https://loci.edycu.dev** (custom domain; the DNS record is the learner's to add), plus the project's `*.vercel.app` address. *(answered by agent per learner's standing instruction: a live link so judges and classmates can try it)*
 - **What to record for the demo:** the live site in Chrome; my own room photo + a list I've never studied → Build → Learn once → Recall by voice with eyes closed → all green. Submission still requires the demo video and the public GitHub repository; the live link is extra.
+- **Sharing (recorded at 6-ship, 2026-10-05):**
+  - Live app: https://loci.edycu.dev (custom domain live; mirror https://devpost-learn-loci.vercel.app). No sign-up; the one-tap example needs no AI call.
+  - Repository: https://github.com/edycutjong/loci, MIT. Private while building; the learner makes it public at submission.
+  - Demo video: recorded (2:30, the live site in one take). The learner uploads it to YouTube as public, and its link is added here and to the README.
 - **Checks:** `npm test` (unit), `npm run e2e` (browser checks against the production build, AI and microphone stubbed), `npm run build`.
 
 ## Look and Feel
