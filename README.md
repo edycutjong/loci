@@ -15,6 +15,7 @@ Then the lights go out, and every item you remember turns its stop back on.</p>
 
 [![Open Loci](https://img.shields.io/badge/Open_Loci-loci.edycu.dev-eef1fa?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev)
 [![For judges](https://img.shields.io/badge/For_judges-30--second_path-eef1fa?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/judge/)
+[![Demo video](https://img.shields.io/badge/Demo_video-2%3A30-eef1fa?style=for-the-badge&labelColor=0e1534&logo=youtube&logoColor=FF0000)](https://youtu.be/I5sx5C28xR0)
 [![Story](https://img.shields.io/badge/Story-the_night_room-b9c1dd?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/story/)
 [![Pitch deck](https://img.shields.io/badge/Pitch_deck-10_slides-b9c1dd?style=for-the-badge&labelColor=0e1534)](https://loci.edycu.dev/deck/)
 [![Devpost](https://img.shields.io/badge/Devpost-Build_With_AI%3A_Basics-8590b8?style=for-the-badge&labelColor=0e1534&logo=devpost&logoColor=white)](https://learn-ai-basics.devpost.com/)
@@ -226,6 +227,7 @@ JUDGE.md      one page for judges
 ## 📽️ Demo Materials
 
 - **App:** [loci.edycu.dev](https://loci.edycu.dev)
+- **Demo video (2:30):** [youtu.be/I5sx5C28xR0](https://youtu.be/I5sx5C28xR0)
 - **For judges:** [/judge/](https://loci.edycu.dev/judge/) and [JUDGE.md](JUDGE.md)
 - **Story page and pitch deck:** [/story/](https://loci.edycu.dev/story/) · [/deck/](https://loci.edycu.dev/deck/)
 - **The real run:** [DEMO.md](DEMO.md), raw answers in [`public/judge/receipt-2026-10-04.json`](public/judge/receipt-2026-10-04.json)

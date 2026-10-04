@@ -68,7 +68,8 @@ npm run e2e         # browser checks on the production build
 
 ## Links
 
-- **App:** [loci.edycu.dev](https://loci.edycu.dev) · mirror [loci.edycu.dev](https://loci.edycu.dev)
+- **App:** [loci.edycu.dev](https://loci.edycu.dev)
+- **Demo video (2:30):** [youtu.be/I5sx5C28xR0](https://youtu.be/I5sx5C28xR0)
 - **Story page and pitch deck:** [/story/](https://loci.edycu.dev/story/) · [/deck/](https://loci.edycu.dev/deck/)
 - **Code:** [github.com/edycutjong/loci](https://github.com/edycutjong/loci) (MIT)
 - **Plan, made with the Devpost Learn skill pack:** [scope](devpost/scope.md) · [PRD](devpost/prd.md) · [spec](devpost/spec.md) · [build log](devpost/checklist.md)
