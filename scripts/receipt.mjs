@@ -14,7 +14,7 @@ import { chromium } from "@playwright/test";
 import { parseList } from "../shared/list.ts";
 import { EXAMPLE_LISTS } from "../src/examples/lists.ts";
 
-const BASE = (process.env.BASE_URL ?? "https://devpost-learn-loci.vercel.app").replace(/\/$/, "");
+const BASE = (process.env.BASE_URL ?? "https://loci.edycu.dev").replace(/\/$/, "");
 const ROOMS = [
   { id: "kos", name: "Student room" },
   { id: "studio", name: "Studio flat" },

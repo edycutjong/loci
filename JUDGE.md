@@ -2,13 +2,13 @@
 
 **Loci turns a photo of your own room into a memory palace for a list you must learn in order, then lights each stop back up as you say the list in the dark.**
 
-This page is also on the site: [loci.edycu.dev/judge/](https://loci.edycu.dev/judge/) ([mirror](https://devpost-learn-loci.vercel.app/judge/)). Every number below links to where it came from.
+This page is also on the site: [loci.edycu.dev/judge/](https://loci.edycu.dev/judge/) ([mirror](https://loci.edycu.dev/judge/)). Every number below links to where it came from.
 
 ## The 30-second path
 
 No sign-up, no key, nothing to install. Any browser; a phone works.
 
-1. Open [loci.edycu.dev](https://loci.edycu.dev) ([mirror](https://devpost-learn-loci.vercel.app)).
+1. Open [loci.edycu.dev](https://loci.edycu.dev) ([mirror](https://loci.edycu.dev)).
 2. Tap **Try it: 12 cranial nerves**. A palace made in advance in an AI-generated student room opens at stop 1. No AI call, so no wait.
 3. Tap **Next stop** a few times. Each stop is a real object in the photo, with a strange scene for its item.
 4. Tap **Lights out** (the moon) and type what you remember. A right answer turns its stop green and lights that part of the room. "occulomotor" counts for Oculomotor; "Optic" at stop 5 stays dark.
@@ -68,7 +68,7 @@ npm run e2e         # browser checks on the production build
 
 ## Links
 
-- **App:** [loci.edycu.dev](https://loci.edycu.dev) · mirror [devpost-learn-loci.vercel.app](https://devpost-learn-loci.vercel.app)
+- **App:** [loci.edycu.dev](https://loci.edycu.dev) · mirror [loci.edycu.dev](https://loci.edycu.dev)
 - **Story page and pitch deck:** [/story/](https://loci.edycu.dev/story/) · [/deck/](https://loci.edycu.dev/deck/)
 - **Code:** [github.com/edycutjong/loci](https://github.com/edycutjong/loci) (MIT)
 - **Plan, made with the Devpost Learn skill pack:** [scope](devpost/scope.md) · [PRD](devpost/prd.md) · [spec](devpost/spec.md) · [build log](devpost/checklist.md)

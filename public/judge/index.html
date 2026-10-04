@@ -320,8 +320,8 @@ npm run e2e</code></pre>
     </div>
     <div class="run real wide">
       <h3>One call, with curl and jq<span>live AI</span></h3>
-<pre><code>curl -s https://devpost-learn-loci.vercel.app/rooms/kos.jpg | base64 | tr -d '\n' | jq -Rs '{image: .}' \
-  | curl -s https://devpost-learn-loci.vercel.app/api/anchors -H 'Content-Type: application/json' -d @- \
+<pre><code>curl -s https://loci.edycu.dev/rooms/kos.jpg | base64 | tr -d '\n' | jq -Rs '{image: .}' \
+  | curl -s https://loci.edycu.dev/api/anchors -H 'Content-Type: application/json' -d @- \
   | jq '{model, ms, tried, usage, objects: [.anchors[].label]}'</code></pre>
       <p>The student room's photo, straight to the object finder: which model answered, how long it took, which models it passed over and why, the tokens it used, and the objects it found.</p>
     </div>
@@ -343,7 +343,7 @@ npm run e2e</code></pre>
   <p class="label"><span class="disc"></span>Stop 4 · Links</p>
   <h2 id="links-title">Everything in one place.</h2>
   <dl class="where">
-    <div><dt>The app</dt><dd><a href="https://loci.edycu.dev">loci.edycu.dev</a> <span>· mirror</span> <a href="https://devpost-learn-loci.vercel.app">devpost-learn-loci.vercel.app</a></dd></div>
+    <div><dt>The app</dt><dd><a href="https://loci.edycu.dev">loci.edycu.dev</a></dd></div>
     <div><dt>The story and the deck</dt><dd><a href="../story/">Story page</a> <span>·</span> <a href="../deck/">Pitch deck</a></dd></div>
     <div><dt>The code</dt><dd><a href="https://github.com/edycutjong/loci">github.com/edycutjong/loci</a> <span>· MIT</span></dd></div>
     <div><dt>The receipt</dt><dd><a href="https://github.com/edycutjong/loci/blob/main/DEMO.md">DEMO.md</a> <span>·</span> <a href="receipt-2026-10-04.json">raw JSON</a></dd></div>

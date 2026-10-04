@@ -77,8 +77,8 @@ BASE_URL=http://localhost:5174 npm run receipt    # the same, on your own dev se
 One call to the object finder, with `curl` and `jq`:
 
 ```sh
-curl -s https://devpost-learn-loci.vercel.app/rooms/kos.jpg | base64 | tr -d '\n' | jq -Rs '{image: .}' \
-  | curl -s https://devpost-learn-loci.vercel.app/api/anchors -H 'Content-Type: application/json' -d @- \
+curl -s https://loci.edycu.dev/rooms/kos.jpg | base64 | tr -d '\n' | jq -Rs '{image: .}' \
+  | curl -s https://loci.edycu.dev/api/anchors -H 'Content-Type: application/json' -d @- \
   | jq '{model, ms, tried, usage, objects: [.anchors[].label]}'
 ```
 

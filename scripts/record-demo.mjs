@@ -2,7 +2,7 @@
 // lights out until every stop is green. No AI call is made (the example palace was prepared in advance).
 // The answers are typed by this script, not recalled by a person; say so wherever the clip is shown.
 //
-//   npm run build && npm run preview      (or BASE_URL=https://devpost-learn-loci.vercel.app)
+//   npm run build && npm run preview      (or BASE_URL=https://loci.edycu.dev)
 //   npm run demo                          → test-results/demo/loci-demo.{webm,mp4,gif} + poster.jpg
 //
 // Needs ffmpeg on PATH; gifsicle is used too when installed.

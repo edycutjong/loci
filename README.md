@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/assets/icon.svg" width="88" height="88" alt="Loci icon: a room with a dotted route through three stops, the last one lit green" />
+<img src="docs/assets/icon-animated.svg" width="144" height="144" alt="Loci icon: a room with a dotted route through three stops, the last one lit green" />
 
-<h1>Loci</h1>
+<h1>Loci 📸</h1>
 
 <p><b>Your room is the memory palace.</b></p>
 
@@ -54,7 +54,7 @@ Then the lights go out, and every item you remember turns its stop back on.</p>
 - **Your own room:** choose a photo, paste a list, **Build my palace**. Building usually takes 10–30 seconds (finding objects, then writing scenes).
 - **Voice:** in Chrome or Edge, tap **Say it instead** once during recall and say the list. Other browsers type.
 
-If `loci.edycu.dev` doesn't open yet, the same app is at [devpost-learn-loci.vercel.app](https://devpost-learn-loci.vercel.app).
+If `loci.edycu.dev` doesn't open yet, the same app is at [loci.edycu.dev](https://loci.edycu.dev).
 
 ## 💡 The Problem & Solution
 
@@ -225,7 +225,7 @@ JUDGE.md      one page for judges
 
 ## 📽️ Demo Materials
 
-- **App:** [loci.edycu.dev](https://loci.edycu.dev) (mirror: [devpost-learn-loci.vercel.app](https://devpost-learn-loci.vercel.app))
+- **App:** [loci.edycu.dev](https://loci.edycu.dev)
 - **For judges:** [/judge/](https://loci.edycu.dev/judge/) and [JUDGE.md](JUDGE.md)
 - **Story page and pitch deck:** [/story/](https://loci.edycu.dev/story/) · [/deck/](https://loci.edycu.dev/deck/)
 - **The real run:** [DEMO.md](DEMO.md), raw answers in [`public/judge/receipt-2026-10-04.json`](public/judge/receipt-2026-10-04.json)
