@@ -73,8 +73,13 @@ test.describe("on a phone with a fractional pixel ratio", () => {
     await page.getByRole("button", { name: "Recall, lights out" }).click();
     await expect(page.locator(".palace .stage")).toHaveAttribute("data-mode", "recall");
 
-    // Both boxes in one synchronous read: the camera may still be gliding out of Learn's zoom, and photo and night
-    // move together inside it, so they must be measured in the same frame.
+    // Why these numbers hold on any phone:
+    // - The night overhangs the photo by 1% of the photo's longer side (Stage.tsx, `bleed`), scaled by the camera:
+    //   4.4 CSS px on every side here once the glide settles (about 12 device px at 2.75x), and more mid-glide.
+    //   Requiring at least 1 px per side keeps sub-pixel rounding from ever passing for an overhang; the bug was 0.
+    // - There is no tolerance to tune. Photo and night move together inside the camera, so in one synchronous read
+    //   their boxes always agree. The one CI failure (run 37230882687) read them in two separate calls while the
+    //   camera was still gliding out of Learn's zoom, so the photo was measured larger than the night.
     const { photo, night, overflow } = await page.locator(".palace .camera").evaluate((camera) => {
       const box = (el: Element) => {
         const r = el.getBoundingClientRect();
@@ -86,10 +91,10 @@ test.describe("on a phone with a fractional pixel ratio", () => {
         overflow: [getComputedStyle(camera).overflow, getComputedStyle(camera.querySelector("svg")!).overflow],
       };
     });
-    expect(night.left).toBeLessThan(photo.left);
-    expect(night.top).toBeLessThan(photo.top);
-    expect(night.right).toBeGreaterThan(photo.right);
-    expect(night.bottom).toBeGreaterThan(photo.bottom);
+    expect(photo.left - night.left, "overhang on the left").toBeGreaterThanOrEqual(1);
+    expect(photo.top - night.top, "overhang at the top").toBeGreaterThanOrEqual(1);
+    expect(night.right - photo.right, "overhang on the right").toBeGreaterThanOrEqual(1);
+    expect(night.bottom - photo.bottom, "overhang at the bottom").toBeGreaterThanOrEqual(1);
     expect(overflow).toEqual(["hidden", "visible"]);
   });
 });
