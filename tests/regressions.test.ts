@@ -4,7 +4,8 @@ import { createListener } from "../src/lib/speech";
 import { scenePrompt } from "../shared/prompts";
 import { runLadder, type Attempt } from "../shared/providers";
 import { closeEnough, distance, normalize } from "../shared/score";
-import { soundKey, soundsAlike } from "../shared/voice";
+import { heardOnce, interpret, soundKey, soundsAlike } from "../shared/voice";
+import { parseList } from "../shared/list";
 
 // Regression tests, one per real defect found while planning and building Loci (devpost/checklist.md, git log).
 // Each name says what went wrong; the body pins the fix. The browser-level ones are in e2e/regressions.spec.ts.
@@ -140,5 +141,18 @@ describe("regressions", () => {
         expect(interim, "plain recognition still shows what it is hearing").toEqual([echo]);
       }
     }
+  });
+
+  it("the on-device recognizer echoed the hints in its final answers too: 'Cambrian Jurassic Quaternary' for Quaternary got \"didn't catch that\", and 'Cretaceous Cretaceous Cretaceous' was shown as heard", () => {
+    // Seen while recording the demo video, in about one word of a hundred: the said word last, stops already answered first.
+    const periods = parseList("Cambrian\nOrdovician\nSilurian\nDevonian\nCarboniferous\nPermian\nTriassic\nJurassic\nCretaceous\nPaleogene\nNeogene\nQuaternary").items;
+    const walk = { order: periods.map((_, i) => i), pos: 11, answered: periods.map((_, i) => i < 11 && i !== 5) };
+    expect(interpret(["Cambrian Jurassic Quaternary"], walk, periods)).toEqual([{ kind: "right", stop: 11 }]);
+    // Starting over from an answered stop still counts, and a phrase that already counts is read as it is.
+    expect(interpret(["Neogene Quaternary"], walk, periods)).toEqual([{ kind: "right", stop: 11 }]);
+    const vitamins = parseList("Vitamin C\nVitamin D").items;
+    expect(interpret(["vitamin d"], { order: [0, 1], pos: 1, answered: [true, false] }, vitamins)).toEqual([{ kind: "right", stop: 1 }]);
+    expect(heardOnce("Cretaceous Cretaceous Cretaceous Cretaceous")).toBe("Cretaceous");
+    expect(heardOnce(" olfactory  optic ")).toBe("olfactory optic");
   });
 });

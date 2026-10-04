@@ -94,6 +94,30 @@ function consume(words: string[], walk: WalkView, items: Item[]): VoiceAction[] 
 
 const progress = (actions: VoiceAction[]) => actions.filter((a) => a.kind === "right" || a.kind === "skip-to").length;
 
+/** Drops leading words that name stops already answered: someone starting over, or Chrome's on-device model echoing
+ *  the list's hints before the word itself ("Cambrian Jurassic Quaternary" for "Quaternary"). Tried only as a second
+ *  reading, so a phrase that already counts as said is never changed ("vitamin d" after Vitamin C). */
+function dropAnswered(words: string[], walk: WalkView, items: Item[]): string[] {
+  let i = 0;
+  scan: while (i < words.length) {
+    for (let len = Math.min(MAX_WINDOW, words.length - i); len >= 1; len--) {
+      const said = words.slice(i, i + len).join(" ");
+      if (items.some((item, k) => walk.answered[k] && spokenMatch(said, item))) {
+        i += len;
+        continue scan;
+      }
+    }
+    break;
+  }
+  return words.slice(i);
+}
+
+/** What was heard, each word once: the on-device model with hints can repeat a word ("Cretaceous Cretaceous Cretaceous"). */
+export function heardOnce(text: string): string {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  return words.filter((w, i) => i === 0 || w.toLowerCase() !== words[i - 1].toLowerCase()).join(" ");
+}
+
 export function interpret(alternatives: string[], walk: WalkView, items: Item[]): VoiceAction[] {
   const current = walk.order[walk.pos];
   if (current === undefined) return [];
@@ -105,8 +129,10 @@ export function interpret(alternatives: string[], walk: WalkView, items: Item[])
   let best: VoiceAction[] = [];
   for (const alt of alternatives) {
     const words = normalize(alt).split(" ").filter(Boolean);
-    const actions = consume(words, walk, items);
-    if (progress(actions) > progress(best)) best = actions;
+    for (const attempt of [words, dropAnswered(words, walk, items)]) {
+      const actions = consume(attempt, walk, items);
+      if (progress(actions) > progress(best)) best = actions;
+    }
   }
   if (best.length) return best;
 

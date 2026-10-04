@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, BookOpen, Check, Expand, Moon, Shrink, Timer } from "lucide-react";
 import { isRight } from "../../shared/score";
-import { interpret } from "../../shared/voice";
+import { heardOnce, interpret } from "../../shared/voice";
 import type { Palace } from "../../shared/types";
 import { go } from "../App";
 import { LineStrip, type DotState } from "../components/LineStrip";
@@ -193,7 +193,7 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
 
   onPhrase.current = (alternatives) => {
     setInterim("");
-    setHeard(alternatives[0]?.trim() ?? "");
+    setHeard(heardOnce(alternatives[0] ?? ""));
     let w = walkRef.current;
     if (!w || !palace) return;
     const items = palace.stops.map((s) => s.item);
