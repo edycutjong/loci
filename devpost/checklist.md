@@ -91,7 +91,8 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 3: the whole typed loop (own photo → pins → scenes → recall → result) in a real browser
+- [x] Early usable behavior explored — after slice 3: the whole typed loop (own photo → pins → scenes → recall → result) in a real browser
+  Done by the agent with a real browser run, per the learner's standing instruction (`e2e/live/handson-early.spec.ts`: studio flat, first 12 elements pasted with numbering and "Sodium / Na", real AI calls). Noticed: the loop works end to end; "Berylium" counted (one typo), "Floride" did not, "Na" counted; a skip and a miss gave 10 of 12; relearn → retry → 12 of 12 and the whole room lit. Change requested: in recall the floating object label covered neighbouring pins → removed in recall (the heading already names the object).
 - [ ] Final kick-the-tires exploration and feedback completed — after slice 8, on the live site, at phone and laptop sizes
 
 ## Final Review

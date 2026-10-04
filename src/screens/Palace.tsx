@@ -155,7 +155,8 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
 
   const stop = palace?.stops[current];
   const askingStop = palace && asking !== null ? palace.stops[asking] : null;
-  const labelIndex = learning ? current : mode === "recall" ? asking : null;
+  // The object's name floats beside its pin only while the room is lit; in recall the heading names it.
+  const labelIndex = learning ? current : null;
 
   return (
     <>
