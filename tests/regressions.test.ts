@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createListener } from "../src/lib/speech";
 import { scenePrompt } from "../shared/prompts";
 import { runLadder, type Attempt } from "../shared/providers";
 import { closeEnough, distance, normalize } from "../shared/score";
@@ -10,7 +11,45 @@ import { soundKey, soundsAlike } from "../shared/voice";
 
 const text = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
+// A stand-in for Chrome's SpeechRecognition: reports whether on-device recognition is installed, and lets a test
+// deliver results the way Chrome does (in-progress guesses, then a final answer).
+type Result = { transcript: string; confidence: number }[] & { isFinal: boolean };
+const result = (isFinal: boolean, ...transcripts: string[]): Result => Object.assign(transcripts.map((transcript) => ({ transcript, confidence: 0.9 })), { isFinal });
+function fakeRecognition(onDevice: "available" | "downloadable") {
+  const made: { onresult: ((e: { resultIndex: number; results: Result[] }) => void) | null; phrases: unknown[] }[] = [];
+  class Recognition {
+    lang = "";
+    continuous = false;
+    interimResults = false;
+    maxAlternatives = 1;
+    processLocally = false;
+    phrases: unknown[] = [];
+    onstart: (() => void) | null = null;
+    onresult: ((e: { resultIndex: number; results: Result[] }) => void) | null = null;
+    onerror = null;
+    onend = null;
+    static available = async () => onDevice;
+    constructor() {
+      made.push(this);
+    }
+    start() {
+      this.onstart?.();
+    }
+    stop() {}
+    abort() {}
+  }
+  class SpeechRecognitionPhrase {
+    constructor(
+      readonly phrase: string,
+      readonly boost: number,
+    ) {}
+  }
+  vi.stubGlobal("window", { SpeechRecognition: Recognition, SpeechRecognitionPhrase });
+  return made;
+}
+
 describe("regressions", () => {
+  afterEach(() => vi.unstubAllGlobals());
   it("one typo allowance for the whole answer let 'Vitamin D' pass for 'Vitamin C': typos now count per word", () => {
     // The planning notes' first rule: up to min(2, 20% of the whole answer's length) typos anywhere in it.
     const wholeAnswerRule = (said: string, target: string) => distance(normalize(said), normalize(target)) <= Math.min(2, Math.floor(0.2 * normalize(target).length));
@@ -77,5 +116,29 @@ describe("regressions", () => {
     const ground = primary.match(/background:\s*var\(--([\w-]+)\)/)![1];
     const label = primary.match(/(?:^|;|\s)color:\s*var\(--([\w-]+)\)/)![1];
     expect(ratio(token(label), token(ground)), `${label} on ${ground}`).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("with the list as phrase hints, Chrome's on-device recognizer echoed them in its in-progress guesses ('Permian Triassic Permian Cambrian Cambrian…'): with hints on, only final answers are shown", async () => {
+    // Seen while recording the demo video: every in-progress guess began with words of the list nobody had said yet.
+    const echo = "Permian Triassic Permian Cambrian Cambrian Cambrian";
+    for (const onDevice of ["available", "downloadable"] as const) {
+      const made = fakeRecognition(onDevice);
+      const interim: string[] = [];
+      const phrases: string[][] = [];
+      const listener = createListener({ onPhrase: (a) => phrases.push(a), onInterim: (t) => interim.push(t), onListening: () => {}, onError: () => {} });
+      await listener.start(["Cambrian", "Ordovician", "Permian", "Triassic"]);
+      const rec = made.at(-1)!;
+      rec.onresult!({ resultIndex: 0, results: [result(false, echo)] });
+      rec.onresult!({ resultIndex: 0, results: [result(true, "Cambrian", "Camber")] });
+      listener.stop();
+      expect(phrases, onDevice).toEqual([["Cambrian", "Camber"]]);
+      if (onDevice === "available") {
+        expect(rec.phrases.length, "hints on").toBe(4);
+        expect(interim, "an echoed guess never reaches the screen").toEqual([]);
+      } else {
+        expect(rec.phrases.length, "no hints without the on-device model").toBe(0);
+        expect(interim, "plain recognition still shows what it is hearing").toEqual([echo]);
+      }
+    }
   });
 });

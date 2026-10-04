@@ -46,18 +46,21 @@ type Handlers = {
   onError: (error: ListenError) => void;
 };
 
-/** Where on-device recognition is already installed, hint it with the list's own words (Chrome's phrase biasing). */
-async function biasTowards(rec: Recognition, phrases: string[]) {
+/** Where on-device recognition is already installed, hint it with the list's own words (Chrome's phrase biasing).
+ *  Says whether the hints are on. */
+async function biasTowards(rec: Recognition, phrases: string[]): Promise<boolean> {
   const Ctor = recognitionCtor();
   const Phrase = (window as unknown as { SpeechRecognitionPhrase?: new (text: string, boost: number) => unknown }).SpeechRecognitionPhrase;
-  if (!phrases.length || !Phrase || !Ctor?.available || !("phrases" in rec)) return;
+  if (!phrases.length || !Phrase || !Ctor?.available || !("phrases" in rec)) return false;
   try {
     const status = await Promise.race([Ctor.available({ langs: ["en-US"], processLocally: true }), new Promise<string>((r) => setTimeout(() => r("timeout"), 1500))]);
-    if (status !== "available") return;
+    if (status !== "available") return false;
     rec.processLocally = true;
     rec.phrases = phrases.map((p) => new Phrase(p, 5));
+    return true;
   } catch {
     // Biasing is a bonus; plain recognition still works.
+    return false;
   }
 }
 
@@ -76,14 +79,16 @@ export function createListener(handlers: Handlers) {
     r.continuous = true;
     r.interimResults = true;
     r.maxAlternatives = 5;
-    await biasTowards(r, phrases);
+    // With the hints on, Chrome's on-device model echoes them in its in-progress guesses ("Permian Triassic Permian
+    // Cambrian Cambrian…") even when asked for final answers only; its final answers stay clean, so only those are shown.
+    let hinted = await biasTowards(r, phrases);
     r.onstart = () => handlers.onListening(true);
     r.onresult = (e) => {
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const result = e.results[i];
         const alternatives = Array.from(result, (a) => a.transcript);
         if (result.isFinal) handlers.onPhrase(alternatives);
-        else handlers.onInterim(alternatives[0] ?? "");
+        else if (!hinted) handlers.onInterim(alternatives[0] ?? "");
       }
     };
     r.onerror = (e) => {
@@ -93,6 +98,7 @@ export function createListener(handlers: Handlers) {
       else if (e.error === "phrases-not-supported") {
         r.phrases = [];
         r.processLocally = false;
+        hinted = false;
       }
       // "no-speech" and "aborted" are normal pauses: the end handler starts listening again.
     };
