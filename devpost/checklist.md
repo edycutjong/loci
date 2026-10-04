@@ -98,6 +98,8 @@ Build mode: fast *(answered by agent per learner's standing instruction: the lea
 ## Final Review
 
 - [x] From the result screen, the "Recall, lights out" tab starts a fresh walk (it did nothing before) — fixed, browser check added, retried on the live site
+- [x] Independent design review (impeccable finish reviewer, fresh context) — verdict "fix" with 8 findings, all fixed: strip shows ticks and crosses (never colour alone); on a phone Learn gets a tall frame the camera fills, other modes shrink to the photo's shape; route lines keep one weight at any zoom; example rooms at their native 1536 px, your own photo kept at 2048 px, zoom capped by real resolution; four-step type scale plus one numeral size; hyphenated object names never break; square-ish controls and a solid top bar; a visible dim around the stop being learned. The Learn / Lights out switch moved into the top bar.
+- [x] Narrow phones: a long "Next stop: the …" label widened the page at 320 px (sideways scroll) — fixed with minmax(0, 1fr) grid columns; a browser check now walks every learn and recall stop at 320, 360 and 390 px
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

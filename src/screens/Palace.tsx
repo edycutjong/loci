@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Check, Expand, Shrink } from "lucide-react";
+import { ArrowLeft, BookOpen, Check, Expand, Moon, Shrink } from "lucide-react";
 import { isRight } from "../../shared/score";
 import { interpret } from "../../shared/voice";
 import type { Palace } from "../../shared/types";
@@ -260,14 +260,28 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
         <p className="topbar-title">{title}</p>
         {learning && (
           <span className="topbar-meta" aria-label={`Learning time ${formatDuration(learnShown)}`}>
-            Learning <span className="num">{formatDuration(learnShown)}</span>
+            <span className="meta-word">Learning </span>
+            <span className="num">{formatDuration(learnShown)}</span>
           </span>
         )}
         {mode === "recall" && walk && (
           <span className="topbar-meta" aria-label={`Recall time ${formatDuration(recallNow)}`}>
-            Recall <span className="num">{formatDuration(recallNow)}</span>
+            <span className="meta-word">Recall </span>
+            <span className="num">{formatDuration(recallNow)}</span>
           </span>
         )}
+        {palace &&
+          (mode === "learn" ? (
+            <button type="button" className="btn btn-quiet mode-switch" onClick={() => startRecall()} aria-label="Recall, lights out">
+              <Moon size={17} strokeWidth={2} aria-hidden="true" />
+              Lights out
+            </button>
+          ) : (
+            <button type="button" className="btn btn-quiet mode-switch" onClick={() => toLearn()} aria-label="Back to learning">
+              <BookOpen size={17} strokeWidth={2} aria-hidden="true" />
+              Learn
+            </button>
+          ))}
       </header>
       <main className="palace">
         <div className="stage-col">
@@ -319,16 +333,6 @@ function PalaceView({ loaded, job, onBuilt }: { loaded: Loaded | null; job: Buil
               onShorten={(n) => build.shorten(n)}
               onNewPhoto={() => go("/")}
             />
-          )}
-          {palace && (
-            <div className="modes" role="group" aria-label="Mode">
-              <button type="button" className="mode" aria-pressed={mode === "learn"} onClick={() => mode !== "learn" && toLearn()}>
-                Learn
-              </button>
-              <button type="button" className="mode" aria-pressed={mode !== "learn"} onClick={() => mode !== "recall" && startRecall()}>
-                Recall, lights out
-              </button>
-            </div>
           )}
           {loaded && !loaded.saved && (
             <p className="notice" role="status">

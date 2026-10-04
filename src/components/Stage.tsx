@@ -1,13 +1,15 @@
-import { useId, useRef, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Check, X } from "lucide-react";
 import { boxCentre } from "../../shared/route";
 import type { Anchor, Box } from "../../shared/types";
+import { keepHyphens } from "./text";
 
 export type PinState = "plain" | "current" | "seen" | "ahead" | "right" | "wrong";
 export type StageMode = "building" | "learn" | "recall" | "result";
 
 type Props = {
   photoUrl: string;
+  /** The photo's coordinate size (the shrunk copy the AI read). */
   width: number;
   height: number;
   /** Objects in route order: stop k is stops[k]. */
@@ -32,48 +34,90 @@ type Props = {
   children?: ReactNode;
 };
 
-/** Where the camera goes to look at one object: zoom so the box fills ~60% of the stage, never past the photo edges. */
-export function cameraFor(box: Box | null): { z: number; tx: number; ty: number } {
-  if (!box) return { z: 1, tx: 0, ty: 0 };
+type Size = { w: number; h: number };
+export type Camera = { fit: number; scale: number; tx: number; ty: number };
+
+/** Never show more than this many device pixels per source pixel, so a zoomed photo stays sharp. */
+const MAX_UPSCALE = 2;
+const MAX_ZOOM = 2.4;
+
+const centred = (offset: number, content: number, frame: number) =>
+  content <= frame ? (frame - content) / 2 : Math.min(0, Math.max(frame - content, offset));
+
+/**
+ * Where the camera looks, in frame pixels. The whole room fits the frame; walking to a stop fills the frame and
+ * zooms until the object takes about 60% of it, capped by the photo's real resolution and the screen's pixel density.
+ */
+export function cameraFor(box: Box | null, photo: Size, frame: Size, naturalWidth: number, dpr: number): Camera {
+  const fit = Math.min(frame.w / photo.w, frame.h / photo.h);
+  if (!box || frame.w === 0 || frame.h === 0) {
+    return { fit, scale: fit, tx: (frame.w - photo.w * fit) / 2, ty: (frame.h - photo.h * fit) / 2 };
+  }
+  const cover = Math.max(frame.w / photo.w, frame.h / photo.h);
   const [y0, x0, y1, x1] = box.map((v) => v / 1000);
-  const z = Math.min(2.4, Math.max(1, Math.min(0.6 / (x1 - x0), 0.6 / (y1 - y0))));
-  const cx = (x0 + x1) / 2;
-  const cy = (y0 + y1) / 2;
-  const clamp = (v: number) => Math.min(0, Math.max(1 - z, v));
-  return { z, tx: clamp(0.5 - cx * z), ty: clamp(0.5 - cy * z) };
+  const wanted = Math.min((0.6 * frame.w) / ((x1 - x0) * photo.w), (0.6 * frame.h) / ((y1 - y0) * photo.h));
+  const sharp = (MAX_UPSCALE * naturalWidth) / (photo.w * dpr);
+  const scale = Math.max(cover, Math.min(wanted, fit * MAX_ZOOM, sharp));
+  const cx = ((x0 + x1) / 2) * photo.w;
+  const cy = ((y0 + y1) / 2) * photo.h;
+  return { fit, scale, tx: centred(frame.w / 2 - cx * scale, photo.w * scale, frame.w), ty: centred(frame.h / 2 - cy * scale, photo.h * scale, frame.h) };
 }
 
-const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
+const px = (v: number) => `${v.toFixed(2)}px`;
 
 export function Stage(props: Props) {
   const { photoUrl, width, height, stops, states, mode, focus = null, lit = [], allLit = false, walked = 0 } = props;
   const uid = useId().replace(/:/g, "");
+  const frameRef = useRef<HTMLDivElement>(null);
   const swipe = useRef<{ x: number; y: number } | null>(null);
+  const [frame, setFrame] = useState<Size>({ w: 0, h: 0 });
+  const [natural, setNatural] = useState(0);
 
+  // The camera works in the frame's real pixels, so it needs the frame's size (and its changes).
+  useLayoutEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const measure = () => setFrame({ w: el.clientWidth, h: el.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const photo = { w: width, h: height };
   const focusBox = mode === "learn" && focus !== null && stops[focus] ? stops[focus].box : null;
-  const cam = cameraFor(focusBox);
-  const centres = stops.map((s) => boxCentre(s.box, width, height));
-  // Where each stop lands on screen, as a share of the stage, given the camera.
-  const onScreen = centres.map((c) => ({ x: (c.x / width) * cam.z + cam.tx, y: (c.y / height) * cam.z + cam.ty }));
+  const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  const cam = cameraFor(focusBox, photo, frame, natural || width, dpr);
+  const z = cam.fit > 0 ? cam.scale / cam.fit : 1;
+  const ready = frame.w > 0;
 
-  const dimAt = focusBox
+  const centres = stops.map((s) => boxCentre(s.box, width, height));
+  const offscreen = (i: number) => {
+    const x = centres[i].x * cam.scale + cam.tx;
+    const y = centres[i].y * cam.scale + cam.ty;
+    return x < -12 || y < -12 || x > frame.w + 12 || y > frame.h + 12;
+  };
+  const dim = focusBox
     ? {
-        "--cx": pct((focusBox[1] + focusBox[3]) / 2000),
-        "--cy": pct((focusBox[0] + focusBox[2]) / 2000),
-        "--rw": pct(((focusBox[3] - focusBox[1]) / 1000) * 0.95 + 0.08),
-        "--rh": pct(((focusBox[2] - focusBox[0]) / 1000) * 0.95 + 0.08),
+        "--fcx": px(((focusBox[1] + focusBox[3]) / 2000) * width * cam.fit),
+        "--fcy": px(((focusBox[0] + focusBox[2]) / 2000) * height * cam.fit),
+        "--frw": px(((focusBox[3] - focusBox[1]) / 1000) * width * cam.fit * 0.9 + 28 / z),
+        "--frh": px(((focusBox[2] - focusBox[0]) / 1000) * height * cam.fit * 0.9 + 28 / z),
       }
     : {};
-
-  const label = props.label && onScreen[props.label.index] ? { ...props.label, at: onScreen[props.label.index] } : null;
+  const stageStyle = { "--ar": width / height, "--z": z, "--tx": px(cam.tx), "--ty": px(cam.ty), ...dim } as Record<string, string | number> as React.CSSProperties;
+  const label = props.label && centres[props.label.index] ? props.label : null;
+  const labelLeft = label ? centres[label.index].x * cam.scale + cam.tx > frame.w * 0.62 : false;
 
   return (
     <div
+      ref={frameRef}
       className="stage"
       data-mode={mode}
+      data-ready={ready ? "true" : "false"}
       data-focused={focusBox ? "true" : "false"}
       data-all-lit={allLit ? "true" : "false"}
-      style={{ "--ar": width / height, "--z": cam.z, "--tx": pct(cam.tx), "--ty": pct(cam.ty) } as React.CSSProperties}
+      style={stageStyle}
       onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
       onPointerUp={(e) => {
         const start = swipe.current;
@@ -83,15 +127,8 @@ export function Stage(props: Props) {
         if (Math.abs(dx) > 48 && Math.abs(e.clientY - start.y) < 60) props.onSwipe(dx < 0 ? 1 : -1);
       }}
     >
-      <div className="camera">
-        <img src={photoUrl} alt="" draggable={false} />
-        <div
-          className="focus-dim"
-          style={{
-            ...dimAt,
-            background: "radial-gradient(ellipse var(--rw) var(--rh) at var(--cx) var(--cy), transparent 62%, rgb(14 21 52 / 0.5) 100%)",
-          } as React.CSSProperties}
-        />
+      <div className="camera" style={{ width: px(width * cam.fit), height: px(height * cam.fit) }}>
+        <img src={photoUrl} alt="" draggable={false} onLoad={(e) => setNatural(e.currentTarget.naturalWidth)} />
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <defs>
             {/* Each pool is black (photo shows) fading to transparent, so overlapping pools merge instead of ringing. */}
@@ -113,9 +150,8 @@ export function Stage(props: Props) {
           {centres.slice(1).map((c, i) => {
             const from = centres[i];
             const d = `M${from.x} ${from.y}L${c.x} ${c.y}`;
-            const shown = { animationDelay: `${(i + 1) * 70}ms` };
             return (
-              <g key={i} className="seg-pair" style={shown}>
+              <g key={i} className="seg-pair" style={{ animationDelay: `${(i + 1) * 70}ms` }}>
                 <path className="seg casing" d={d} />
                 <path className="seg track" d={d} data-walked={i + 1 <= walked ? "true" : "false"} />
               </g>
@@ -125,6 +161,8 @@ export function Stage(props: Props) {
         {props.scanning && <div className="scan" />}
       </div>
 
+      <div className="focus-dim" aria-hidden="true" />
+
       <div className="pins">
         {stops.map((_, i) => (
           <button
@@ -133,11 +171,11 @@ export function Stage(props: Props) {
             className="pin"
             data-state={states[i] ?? "plain"}
             data-listening={props.listening && states[i] === "current" ? "true" : "false"}
-            data-off={onScreen[i].x < -0.02 || onScreen[i].x > 1.02 || onScreen[i].y < -0.02 || onScreen[i].y > 1.02 ? "true" : "false"}
-            style={{ "--px": pct(onScreen[i].x), "--py": pct(onScreen[i].y), "--delay": `${i * 70}ms` } as React.CSSProperties}
+            data-off={ready && offscreen(i) ? "true" : "false"}
+            style={{ "--cx": px(centres[i].x * cam.fit), "--cy": px(centres[i].y * cam.fit), "--delay": `${i * 70}ms` } as React.CSSProperties}
             aria-label={props.pinLabel(i)}
             aria-current={states[i] === "current" ? "step" : undefined}
-            tabIndex={props.onSelect ? 0 : -1}
+            tabIndex={props.onSelect && !(ready && offscreen(i)) ? 0 : -1}
             onClick={() => props.onSelect?.(i)}
           >
             {states[i] === "right" ? (
@@ -150,8 +188,12 @@ export function Stage(props: Props) {
           </button>
         ))}
         {label && (
-          <span className="station-label" data-side={label.at.x > 0.62 ? "left" : "right"} style={{ "--px": pct(label.at.x), "--py": pct(label.at.y) } as React.CSSProperties}>
-            {label.text}
+          <span
+            className="station-label"
+            data-side={labelLeft ? "left" : "right"}
+            style={{ "--cx": px(centres[label.index].x * cam.fit), "--cy": px(centres[label.index].y * cam.fit) } as React.CSSProperties}
+          >
+            {keepHyphens(label.text)}
           </span>
         )}
       </div>

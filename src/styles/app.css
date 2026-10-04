@@ -1,3 +1,40 @@
+/* ---------- The camera: one set of animated values moves photo, pins, labels, dim and line together ---------- */
+@property --z {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --tx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --ty {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --fcx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --fcy {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --frw {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --frh {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* ---------- Base and browser surfaces ---------- */
 *,
 *::before,
@@ -104,7 +141,7 @@ textarea {
   gap: var(--space-2);
   min-height: 48px;
   padding: 0 var(--space-5);
-  border-radius: 12px;
+  border-radius: var(--radius);
   border: 1.5px solid transparent;
   font-size: var(--t-body);
   font-weight: 650;
@@ -178,7 +215,7 @@ textarea {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--line);
   background: var(--night-800);
   color: var(--moon-100);
@@ -214,14 +251,8 @@ textarea {
   gap: var(--space-3);
   min-height: 56px;
   padding: var(--space-2) var(--space-4);
-  background: rgb(14 21 52 / 0.94);
+  background: var(--night-900);
   border-bottom: 1px solid var(--night-600);
-}
-@supports (backdrop-filter: blur(1px)) {
-  .topbar {
-    background: rgb(14 21 52 / 0.82);
-    backdrop-filter: blur(10px) saturate(1.2);
-  }
 }
 
 .wordmark {
@@ -229,7 +260,7 @@ textarea {
   align-items: center;
   gap: 10px;
   font-family: var(--font-item);
-  font-size: 1.375rem;
+  font-size: var(--t-title);
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--moon-100);
@@ -243,7 +274,7 @@ textarea {
   min-width: 0;
   flex: 1;
   font-family: var(--font-item);
-  font-size: 1.0625rem;
+  font-size: var(--t-body);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -254,6 +285,16 @@ textarea {
   font-size: var(--t-small);
   color: var(--moon-300);
   white-space: nowrap;
+}
+@media (max-width: 479px) {
+  .meta-word {
+    display: none;
+  }
+}
+.mode-switch {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  font-size: var(--t-small);
 }
 
 /* ---------- Home ---------- */
@@ -273,9 +314,9 @@ textarea {
 }
 .home-intro h1 {
   font-family: var(--font-item);
-  font-size: clamp(2rem, 1.5rem + 2.4vw, 3rem);
+  font-size: var(--t-item);
   font-weight: 640;
-  line-height: 1.08;
+  line-height: 1.06;
   letter-spacing: -0.015em;
 }
 .home-intro p {
@@ -441,7 +482,7 @@ textarea {
 .chip {
   min-height: 40px;
   padding: 0 var(--space-4);
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--line);
   background: transparent;
   color: var(--moon-100);
@@ -509,6 +550,7 @@ textarea {
 .palace {
   flex: 1;
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* a long label can never widen the page */
   grid-template-rows: auto auto 1fr;
   width: 100%;
   max-width: 1440px;
@@ -549,9 +591,6 @@ textarea {
 /* ---------- Stage: the photo, the line, the stations ---------- */
 .stage {
   --ar: 1.5;
-  --z: 1;
-  --tx: 0%;
-  --ty: 0%;
   position: relative;
   width: min(100%, calc(var(--stage-max-h, 58svh) * var(--ar)));
   aspect-ratio: var(--ar);
@@ -560,6 +599,39 @@ textarea {
   background: var(--night-800);
   isolation: isolate;
   touch-action: pan-y;
+  transition:
+    --z var(--walk-ms) var(--ease-out),
+    --tx var(--walk-ms) var(--ease-out),
+    --ty var(--walk-ms) var(--ease-out),
+    --fcx var(--walk-ms) var(--ease-out),
+    --fcy var(--walk-ms) var(--ease-out),
+    --frw var(--walk-ms) var(--ease-out),
+    --frh var(--walk-ms) var(--ease-out);
+}
+.stage[data-ready="false"] .camera,
+.stage[data-ready="false"] .pins {
+  visibility: hidden;
+}
+@media (max-width: 959px) {
+  /* On a phone, Learn gets a tall frame that the walked-to object fills; the whole-room modes shrink to the
+     photo's own shape, so a wide room never sits between empty bars. */
+  .palace .stage {
+    width: 100%;
+    height: min(52svh, calc(100vw / var(--ar)));
+    aspect-ratio: auto;
+    transition:
+      height var(--walk-ms) var(--ease-out),
+      --z var(--walk-ms) var(--ease-out),
+      --tx var(--walk-ms) var(--ease-out),
+      --ty var(--walk-ms) var(--ease-out),
+      --fcx var(--walk-ms) var(--ease-out),
+      --fcy var(--walk-ms) var(--ease-out),
+      --frw var(--walk-ms) var(--ease-out),
+      --frh var(--walk-ms) var(--ease-out);
+  }
+  .palace .stage[data-mode="learn"] {
+    height: 52svh;
+  }
 }
 @media (min-width: 960px) {
   .stage {
@@ -571,10 +643,10 @@ textarea {
 
 .camera {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
   transform-origin: 0 0;
   transform: translate(var(--tx), var(--ty)) scale(var(--z));
-  transition: transform var(--walk-ms) var(--ease-out);
   will-change: transform;
 }
 .camera > img {
@@ -601,6 +673,11 @@ textarea {
   inset: 0;
   pointer-events: none;
   opacity: 0;
+  background: radial-gradient(
+    ellipse calc(var(--frw) * var(--z)) calc(var(--frh) * var(--z)) at calc(var(--fcx) * var(--z) + var(--tx)) calc(var(--fcy) * var(--z) + var(--ty)),
+    rgb(14 21 52 / 0) 45%,
+    rgb(14 21 52 / 0.6) 100%
+  );
   transition: opacity var(--walk-ms) var(--ease-out);
 }
 .stage[data-mode="learn"][data-focused="true"] .focus-dim {
@@ -642,12 +719,12 @@ textarea {
 }
 .seg.casing {
   stroke: rgb(14 21 52 / 0.72);
-  stroke-width: 6px;
+  stroke-width: calc(6px / var(--z));
 }
 .seg.track {
   stroke: var(--moon-100);
-  stroke-width: 2.5px;
-  stroke-dasharray: 0.1 7;
+  stroke-width: calc(2.5px / var(--z));
+  stroke-dasharray: calc(0.1px / var(--z)) calc(7px / var(--z));
 }
 .seg.track[data-walked="true"] {
   stroke-dasharray: none;
@@ -685,9 +762,9 @@ textarea {
 .pin {
   --size: 30px;
   position: absolute;
-  /* Centred on the object, but never pushed past the photo's edge. */
-  left: clamp(calc(var(--size) / 2 + 2px), var(--px), calc(100% - var(--size) / 2 - 2px));
-  top: clamp(calc(var(--size) / 2 + 2px), var(--py), calc(100% - var(--size) / 2 - 2px));
+  /* Centred on the object as the camera moves, but never pushed past the frame's edge. */
+  left: clamp(calc(var(--size) / 2 + 2px), calc(var(--cx) * var(--z) + var(--tx)), calc(100% - var(--size) / 2 - 2px));
+  top: clamp(calc(var(--size) / 2 + 2px), calc(var(--cy) * var(--z) + var(--ty)), calc(100% - var(--size) / 2 - 2px));
   width: var(--size);
   height: var(--size);
   margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
@@ -698,7 +775,7 @@ textarea {
   background: rgb(14 21 52 / 0.9);
   color: var(--moon-100);
   font-family: var(--font-num);
-  font-size: 13px;
+  font-size: var(--t-mark);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -707,8 +784,6 @@ textarea {
   cursor: pointer;
   padding: 0;
   transition:
-    left var(--walk-ms) var(--ease-out),
-    top var(--walk-ms) var(--ease-out),
     background-color 220ms var(--ease-out),
     border-color 220ms var(--ease-out),
     color 220ms var(--ease-out),
@@ -720,7 +795,6 @@ textarea {
 @media (min-width: 960px) {
   .pin {
     --size: 34px;
-    font-size: 14px;
   }
 }
 .pin:hover:not([data-state="current"]):not([data-state="right"]):not([data-state="wrong"]) {
@@ -789,8 +863,8 @@ textarea {
 /* The station name beside the current stop. */
 .station-label {
   position: absolute;
-  left: var(--px);
-  top: var(--py);
+  left: calc(var(--cx) * var(--z) + var(--tx));
+  top: calc(var(--cy) * var(--z) + var(--ty));
   transform: translate(26px, -50%);
   max-width: 46%;
   padding: 4px 10px;
@@ -805,9 +879,6 @@ textarea {
   text-overflow: ellipsis;
   box-shadow: var(--shadow-pin);
   pointer-events: none;
-  transition:
-    left var(--walk-ms) var(--ease-out),
-    top var(--walk-ms) var(--ease-out);
 }
 .station-label[data-side="left"] {
   transform: translate(calc(-100% - 26px), -50%);
@@ -863,6 +934,7 @@ textarea {
   padding: var(--space-2) var(--space-4);
   margin: 0;
   list-style: none;
+  container-type: inline-size;
 }
 @media (min-width: 960px) {
   .strip {
@@ -881,8 +953,9 @@ textarea {
 .strip li:not(:last-child)::after {
   content: "";
   flex: 1;
+  min-width: 2px;
   height: 2px;
-  margin: 0 3px;
+  margin: 0 2px;
   background-image: radial-gradient(circle, var(--moon-500) 1px, transparent 1.5px);
   background-size: 6px 2px;
   background-repeat: repeat-x;
@@ -892,18 +965,20 @@ textarea {
   border-radius: 2px;
 }
 .dot {
+  /* As big as 26px, but always small enough for every station to fit the strip. */
+  --dot: clamp(16px, calc((100cqw - (var(--n, 12) - 1) * 6px) / var(--n, 12)), 26px);
   flex: none;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: var(--dot);
+  height: var(--dot);
   padding: 0;
   border-radius: 50%;
   border: 2px solid var(--moon-500);
   background: var(--night-900);
   color: var(--moon-300);
   font-family: var(--font-num);
-  font-size: 10px;
+  font-size: var(--t-mark);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: default;
@@ -922,7 +997,9 @@ button.dot:hover {
   background: var(--moon-100);
   border-color: var(--moon-100);
   color: var(--night-900);
-  transform: scale(1.2);
+  box-shadow:
+    0 0 0 2px var(--night-900),
+    0 0 0 3.5px var(--moon-100);
 }
 .dot[data-state="seen"] {
   border-color: var(--moon-100);
@@ -1067,7 +1144,7 @@ button.dot:hover {
   border-radius: 50%;
   background: var(--moon-100);
   color: var(--night-900);
-  font-size: 15px;
+  font-size: var(--t-small);
   font-weight: 700;
   box-shadow:
     0 0 0 3px var(--night-900),
@@ -1079,11 +1156,8 @@ button.dot:hover {
   font-weight: 650;
   line-height: 1.04;
   letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
-}
-.scene-item[data-long="true"] {
-  font-size: calc(var(--t-item) * 0.76);
-  letter-spacing: -0.015em;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 .scene-where {
   margin-top: var(--space-2);
@@ -1147,40 +1221,10 @@ button.dot:hover {
   }
 }
 .next-label {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* ---------- Mode switch ---------- */
-.modes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 4px;
-  gap: 4px;
-  border-radius: 14px;
-  background: var(--night-800);
-  border: 1.5px solid var(--line);
-}
-.mode {
-  min-height: 42px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--moon-300);
-  font-weight: 650;
-  font-size: var(--t-small);
-  cursor: pointer;
-  transition:
-    background-color 200ms var(--ease-out),
-    color 200ms var(--ease-out);
-}
-.mode:hover {
-  color: var(--moon-100);
-}
-.mode[aria-pressed="true"] {
-  background: var(--moon-100);
-  color: var(--night-900);
 }
 
 /* ---------- Recall ---------- */
@@ -1194,6 +1238,11 @@ button.dot:hover {
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.nowrap {
+  white-space: nowrap;
 }
 .answer-row {
   display: grid;
@@ -1203,12 +1252,12 @@ button.dot:hover {
 .answer-input {
   min-height: 52px;
   padding: 0 var(--space-4);
-  border-radius: 12px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--line);
   background: var(--night-800);
   color: var(--moon-100);
   font-family: var(--font-item);
-  font-size: 1.25rem;
+  font-size: var(--t-title);
   font-weight: 600;
   min-width: 0;
 }
@@ -1252,7 +1301,7 @@ button.dot:hover {
 }
 .result-title {
   font-family: var(--font-item);
-  font-size: clamp(1.75rem, 1.4rem + 1.6vw, 2.375rem);
+  font-size: var(--t-item);
   font-weight: 640;
   line-height: 1.1;
   letter-spacing: -0.015em;
@@ -1286,7 +1335,7 @@ button.dot:hover {
   flex: 1 1 220px;
 }
 .result-line {
-  font-size: 12px;
+  font-size: var(--t-small);
   color: var(--moon-500);
   overflow-wrap: anywhere;
 }
@@ -1303,7 +1352,7 @@ button.dot:hover {
   gap: var(--space-2);
   min-height: 52px;
   padding: 0 var(--space-5);
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1.5px solid var(--line);
   background: var(--night-800);
   color: var(--moon-100);
@@ -1482,4 +1531,21 @@ button.dot:hover {
   font-size: var(--t-small);
   color: var(--moon-500);
   text-align: center;
+}
+
+/* Single-column grids never grow past their container because of one long line inside them. */
+.home,
+.panel,
+.scene,
+.recall,
+.result,
+.form,
+.field,
+.section {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 960px) {
+  .hero {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
 }

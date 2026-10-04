@@ -1,5 +1,6 @@
-// Shrinks the chosen photo on the device before anything is sent: longest side 1280 px, JPEG.
-// Phone photos keep their real orientation (EXIF rotation is applied while decoding).
+// Makes two copies of the chosen photo on the device, both JPEG, both with phone rotation applied:
+// - the one sent to the AI: longest side 1280 px (`base64`, `width`, `height` — also the palace's coordinate size);
+// - the one shown and kept on the device: longest side 2048 px (`blob`, `url`), so zooming in stays sharp.
 
 export type ShrunkPhoto = { blob: Blob; url: string; width: number; height: number; base64: string };
 
@@ -36,24 +37,28 @@ export function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-export async function shrinkPhoto(file: Blob, maxSide = 1280, quality = 0.82): Promise<ShrunkPhoto> {
-  if (file.type && !file.type.startsWith("image/")) throw new UnreadablePhoto();
-  const source = await decode(file);
-  const sw = source.width;
-  const sh = source.height;
-  if (!sw || !sh) throw new UnreadablePhoto();
-  const scale = Math.min(1, maxSide / Math.max(sw, sh));
-  const width = Math.round(sw * scale);
-  const height = Math.round(sh * scale);
+async function draw(source: ImageBitmap | HTMLImageElement, maxSide: number, quality: number) {
+  const scale = Math.min(1, maxSide / Math.max(source.width, source.height));
+  const width = Math.round(source.width * scale);
+  const height = Math.round(source.height * scale);
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new UnreadablePhoto();
   ctx.drawImage(source, 0, 0, width, height);
-  if ("close" in source) source.close();
   const blob = await new Promise<Blob>((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new UnreadablePhoto())), "image/jpeg", quality),
   );
-  return { blob, url: URL.createObjectURL(blob), width, height, base64: await blobToBase64(blob) };
+  return { blob, width, height };
+}
+
+export async function shrinkPhoto(file: Blob, aiSide = 1280, displaySide = 2048): Promise<ShrunkPhoto> {
+  if (file.type && !file.type.startsWith("image/")) throw new UnreadablePhoto();
+  const source = await decode(file);
+  if (!source.width || !source.height) throw new UnreadablePhoto();
+  const ai = await draw(source, aiSide, 0.82);
+  const display = await draw(source, displaySide, 0.85);
+  if ("close" in source) source.close();
+  return { blob: display.blob, url: URL.createObjectURL(display.blob), width: ai.width, height: ai.height, base64: await blobToBase64(ai.blob) };
 }

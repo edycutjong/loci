@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, CornerDownLeft, Ear, Mic, MicOff, X } from "lucide-react";
 import { LISTEN_ERRORS, type ListenError } from "../lib/speech";
 import type { Stop } from "../../shared/types";
+import { keepHyphens } from "./text";
 
 export type Feedback = { stop: number; kind: "right" | "wrong" | "skip" | "not-caught"; item: string };
 
@@ -45,7 +46,7 @@ export function RecallPanel({ stop, index, asked, total, retry, feedback, onAnsw
         </span>
         <div className="scene-titles">
           <h1 id="recall-place" className="recall-place">
-            the {stop.anchor.label}
+            the {keepHyphens(stop.anchor.label)}
           </h1>
           <p className="scene-where">
             What did you leave here?

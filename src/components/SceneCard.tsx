@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, AudioLines } from "lucide-react";
 import type { Stop } from "../../shared/types";
+import { keepHyphens } from "./text";
 
 type Props = {
   stop: Stop;
@@ -47,11 +48,11 @@ export function SceneCard({ stop, index, total, next, onBack, onNext, onRecall, 
           {index + 1}
         </span>
         <div className="scene-titles">
-          <h1 id="scene-item" className="scene-item" data-long={stop.item.text.length > 12 ? "true" : "false"}>
+          <h1 id="scene-item" className="scene-item" lang="en">
             {stop.item.text}
           </h1>
           <p className="scene-where">
-            on the {stop.anchor.label}
+            on the {keepHyphens(stop.anchor.label)}
             <span className="scene-count">
               {" "}
               · stop {index + 1} of {total}
@@ -88,7 +89,7 @@ export function SceneCard({ stop, index, total, next, onBack, onNext, onRecall, 
           </button>
         ) : (
           <button type="button" className="btn btn-primary grow" onClick={onNext}>
-            <span className="next-label">Next stop: the {next?.anchor.label}</span>
+            <span className="next-label">Next stop: the {next ? keepHyphens(next.anchor.label) : ""}</span>
             <ArrowRight size={18} strokeWidth={2.25} aria-hidden="true" />
           </button>
         )}

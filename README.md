@@ -67,8 +67,8 @@ npm run dev                  # http://localhost:5174 (also serves /api/anchors a
 
 ## Tests
 
-- `npm test`: 76 unit tests (Vitest) for the list parser, route, answer checker, voice interpreter, recall walk, model-answer checks, storage, colour contrast and the prepared examples.
-- `npm run e2e`: 16 browser checks (Playwright) against the production build, with the AI helpers and the microphone stubbed, so no keys are needed. They cover typed and spoken recall, retries, saved palaces, examples, failure states and reduced motion.
+- `npm test`: 81 unit tests (Vitest) for the list parser, route, camera, answer checker, voice interpreter, recall walk, model-answer checks, storage, colour contrast and the prepared examples.
+- `npm run e2e`: 19 browser checks (Playwright) against the production build, with the AI helpers and the microphone stubbed, so no keys are needed. They cover typed and spoken recall, retries, saved palaces, examples, failure states, reduced motion and narrow phones (320–390 px).
 - `LIVE=1 BASE_URL=http://localhost:5174 npx playwright test`: 7 checks that use the real AI (also run against the live site): your own photo, learning, and two hands-on passes (typos, a skip, a retry, keyboard only, odd inputs, a reload, delete).
 - `npm run build`: type-check and production build.
 

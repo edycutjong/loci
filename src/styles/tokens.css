@@ -27,9 +27,10 @@
   --t-body: 1.0625rem;
   --t-title: 1.5rem;
   --t-item: clamp(2.25rem, 1.55rem + 2.8vw, 3.25rem);
+  --t-mark: 12px; /* the one numeral size, on pins and strip stations */
 
-  --radius: 10px;
-  --radius-lg: 16px;
+  --radius: 10px; /* every control */
+  --radius-lg: 16px; /* the photo frame and panels */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
