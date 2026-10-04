@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Loci mark: a room with a dotted route through three stops; two are still dark, the last one is lit green">
+  <!-- The shipped Loci mark (build/src/components/Mark.tsx, 32-unit grid) at 16x, on its own night plate so it holds
+       on GitHub light AND dark. A room, a route through it, two stops still dark, one switched back on. -->
+  <defs>
+    <radialGradient id="loci-pool" cx="376" cy="312" r="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="var(--night-700, #1d2752)" stop-opacity="1"/>
+      <stop offset="0.55" stop-color="var(--night-700, #1d2752)" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="var(--night-700, #1d2752)" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="loci-room">
+      <rect x="56" y="56" width="400" height="400" rx="112"/>
+    </clipPath>
+  </defs>
+  <!-- plate: night-900 -->
+  <rect width="512" height="512" rx="128" fill="var(--bg-base, #0e1534)"/>
+  <!-- the lit stop's part of the room, a soft pool inside the walls -->
+  <circle cx="376" cy="312" r="168" fill="url(#loci-pool)" clip-path="url(#loci-room)"/>
+  <!-- the room: moonlight walls -->
+  <rect x="40" y="40" width="432" height="432" rx="128" fill="none" stroke="var(--text-hi, #eef1fa)" stroke-width="32"/>
+  <!-- the route: dotted, resting moon-500 (state: stop still dark) -->
+  <path d="M136 344 L248 184 L376 312" fill="none" stroke="var(--primary, #8590b8)" stroke-width="28.8" stroke-linecap="round" stroke-dasharray="1.6 54.4"/>
+  <!-- two stops still dark: hollow stations -->
+  <circle cx="136" cy="344" r="48" fill="var(--bg-base, #0e1534)" stroke="var(--text-hi, #eef1fa)" stroke-width="28.8"/>
+  <circle cx="248" cy="184" r="48" fill="var(--bg-base, #0e1534)" stroke="var(--text-hi, #eef1fa)" stroke-width="28.8"/>
+  <!-- one stop switched back on (state: item recalled) -->
+  <circle cx="376" cy="312" r="54.4" fill="var(--accent, #46d98a)"/>
+</svg>
