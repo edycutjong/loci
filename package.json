@@ -1,0 +1,37 @@
+{
+  "name": "loci",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Turn a photo of your own room into a memory palace for any list, then say it back with the lights off.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --port 5174 --strictPort",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 4174 --strictPort",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "e2e": "vite build && playwright test",
+    "examples": "node scripts/prebuild-examples.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "@fontsource-variable/piazzolla": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible-mono": "^5.3.0",
+    "idb-keyval": "^6.3.0",
+    "lucide-react": "^1.52.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
+  }
+}

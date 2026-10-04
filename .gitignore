@@ -26,3 +26,8 @@ CLAUDE.md
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# impeccable design workspace - kitchen, never public (root CLAUDE.md "impeccable (trial)")
+.impeccable/
+DESIGN.md
+PRODUCT.md
