@@ -137,12 +137,12 @@ A real run on the live site with nothing stubbed, and the checks that run on eve
 | Scenes that spell their item exactly | **102 / 102** | [DEMO.md](DEMO.md) |
 | Wait from "Build my palace" to the first scene | median **14.45 s**, slowest 30.02 s | [DEMO.md](DEMO.md) |
 | Cost of all nine palaces | **$0.1151** at list prices, **$0.0115** billed | [DEMO.md](DEMO.md#tokens-and-cost) |
-| Unit tests | **97** | [`tests/`](tests) |
+| Unit tests | **98** | [`tests/`](tests) |
 | Generated answers on the checker, per run | **60,000** | [`tests/score.property.test.ts`](tests/score.property.test.ts) |
 | Browser checks, AI and microphone stubbed | **29** | [`e2e/`](e2e) |
 | Live checks with the real AI | **7** | [`e2e/live/`](e2e/live) |
 
-### Regression tests named after their bugs (9)
+### Regression tests named after their bugs (10)
 
 Each one pins a real defect found while planning and building ([build log](devpost/checklist.md)):
 
@@ -155,6 +155,7 @@ Each one pins a real defect found while planning and building ([build log](devpo
 7. A thin lit sliver showed at the photo's edge in recall on phones; the night now overhangs the photo. `e2e/regressions.spec.ts`
 8. The zoomed room looked soft because `will-change` kept the photo painted small; the camera never sets it. `e2e/regressions.spec.ts`
 9. The result appeared a few milliseconds before the finished walk was stored, so a reload or a closed tab right away could lose the score; the result now appears only once the walk is saved. Found by an independent audit of this repository. `e2e/regressions.spec.ts`
+10. With the list as phrase hints, Chrome's on-device speech recognition echoed them in its in-progress guesses ("Permian Triassic Permian Cambrian Cambrian…"), and the app showed them under "Hearing"; with hints on, only its final answers are shown. Found while recording the demo video. `tests/regressions.test.ts`
 
 ### Checked, not promised
 
@@ -192,7 +193,7 @@ npm run dev                  # http://localhost:5174 (also serves /api/anchors, 
 
 ```sh
 npm run typecheck   # tsc -b, strict
-npm test            # 97 unit tests, including 60,000 generated answers and the no-key build check
+npm test            # 98 unit tests, including 60,000 generated answers and the no-key build check
 npm run e2e         # 29 browser checks on the production build, AI helpers and microphone stubbed
 npm run receipt     # the real run: 9 palaces on the live site, nothing stubbed (needs no key)
 LIVE=1 BASE_URL=http://localhost:5174 npx playwright test   # 7 checks with the real AI

@@ -37,7 +37,7 @@ On 2026-10-04, 19:44–19:47 UTC, [`scripts/receipt.mjs`](scripts/receipt.mjs) b
 
 Checks in the repo:
 
-- **97 unit tests** ([`tests/`](tests)): the answer checker, the route, voice, storage, the model ladder, a no-key-in-the-browser build check, and regression tests named after the bugs they pin.
+- **98 unit tests** ([`tests/`](tests)): the answer checker, the route, voice, storage, the model ladder, a no-key-in-the-browser build check, and regression tests named after the bugs they pin.
 - **60,000 generated answers** per run ([`tests/score.property.test.ts`](tests/score.property.test.ts)): typed sloppily but right, they always count; one letter off a short word, or one change too many, they never do.
 - **29 browser checks** ([`e2e/`](e2e)) on the production build with the AI and the microphone stubbed, including this page and its 30-second path.
 - **7 live checks** ([`e2e/live/`](e2e/live)) with the real AI, also run on the live site.
