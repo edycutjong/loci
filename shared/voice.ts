@@ -36,10 +36,18 @@ export function soundsAlike(spoken: string, target: string): boolean {
   return a === b || (b.length >= 6 && distance(a, b) <= 1);
 }
 
+/** Every word of 4 letters or fewer in the target was heard exactly. The two rules below join the words, so without
+ *  this they would let "vitamin d" pass for "vitamin c": the checker's short-words-exact rule, kept for voice. */
+function shortWordsHeard(spoken: string, target: string): boolean {
+  const heard = new Set(normalize(spoken).split(" "));
+  return normalize(target).split(" ").every((w) => w.length > 4 || heard.has(w));
+}
+
 /** Is this stretch of speech the item (or one of its accepted answers)? */
 export function spokenMatch(spoken: string, item: Item): boolean {
   for (const target of [item.text, ...item.accepts]) {
     if (closeEnough(spoken, target)) return true;
+    if (!shortWordsHeard(spoken, target)) continue; // "vitamin d" ≠ "vitamin c", as when typed
     const a = normalize(spoken).replaceAll(" ", "");
     const b = normalize(target).replaceAll(" ", "");
     if (b.length >= 5 && distance(a, b) <= allowance(b.length)) return true; // "vestibular cochlear"

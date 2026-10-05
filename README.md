@@ -138,7 +138,7 @@ A real run on the live site with nothing stubbed, and the checks that run on eve
 | Scenes that spell their item exactly | **102 / 102** | [DEMO.md](DEMO.md) |
 | Wait from "Build my palace" to the first scene | median **14.45 s**, slowest 30.02 s | [DEMO.md](DEMO.md) |
 | Cost of all nine palaces | **$0.1151** at list prices, **$0.0115** billed | [DEMO.md](DEMO.md#tokens-and-cost) |
-| Unit tests | **99** | [`tests/`](tests) |
+| Unit tests | **102** | [`tests/`](tests) |
 | Generated answers on the checker, per run | **60,000** | [`tests/score.property.test.ts`](tests/score.property.test.ts) |
 | Browser checks, AI and microphone stubbed | **29** | [`e2e/`](e2e) |
 | Live checks with the real AI | **7** | [`e2e/live/`](e2e/live) |
@@ -195,7 +195,7 @@ npm run dev                  # http://localhost:5174 (also serves /api/anchors, 
 
 ```sh
 npm run typecheck   # tsc -b, strict
-npm test            # 99 unit tests, including 60,000 generated answers and the no-key build check
+npm test            # 102 unit tests, including 60,000 generated answers and the no-key build check
 npm run e2e         # 29 browser checks on the production build, AI helpers and microphone stubbed
 npm run receipt     # the real run: 9 palaces on the live site, nothing stubbed (needs no key)
 LIVE=1 BASE_URL=http://localhost:5174 npx playwright test   # 7 checks with the real AI
